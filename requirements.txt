@@ -1,0 +1,5 @@
+pysftp>=0.2.9
+dotenv
+pandas
+numpy
+
