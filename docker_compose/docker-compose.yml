@@ -13,7 +13,6 @@ services:
     ports:
       - 6789:6789
     volumes:
-      - .:/home/src/
-      - /home/mohammadp/RenewableInsight/docker_compose/personal-gcp.json:/home/src/personal-gcp.json
+      - /home/mohammadp/RenewableInsight:/home/src/RenewableInsight
     restart: on-failure:5
   
