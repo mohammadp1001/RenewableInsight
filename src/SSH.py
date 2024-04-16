@@ -1,4 +1,4 @@
-#https://sftptogo.com/blog/python-sftp/
+#see here for original code https://sftptogo.com/blog/python-sftp/
 from urllib.parse import urlparse
 import os
 import paramiko
@@ -91,35 +91,3 @@ class SSH:
             print(f"File successfully downloaded to {local_path}")
         except Exception as e:
             print(f"Failed to download file: {e}")
-
-
-if __name__ == "__main__":
-
-    from dotenv import load_dotenv
-    from pathlib import Path
-    
-    dotenv_path = Path('/home/mohammadp/RenewableInsight/.env')
-    load_dotenv(dotenv_path=dotenv_path)
-
-    sftp_url = os.environ.get("SFTPTOGO_URL")
-    rsa_key = os.environ.get("RSA_KEY")
-
-    if not sftp_url:
-        print("First, please set environment variable SFTPTOGO_URL and try again.")
-        exit(0)
-
-    parsed_url = urlparse(sftp_url)
-    
-    ssh = SSH(
-        hostname=parsed_url.hostname,
-        username=parsed_url.username,
-        password=parsed_url.password,
-        hostkey=rsa_key
-    )
-   
-    ssh.connect()
-    ssh.open_sftp()
-
-    ssh.download_file("/TP_export/ActualTotalLoad_6.1.A/2024_03_ActualTotalLoad_6.1.A.csv","/home/mohammadp/RenewableInsight/data/")
-    
-    ssh.disconnect()
