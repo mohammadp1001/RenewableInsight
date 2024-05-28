@@ -12,6 +12,9 @@ class WeatherParameter(Enum):
     FF = ("wind", "Wind Speed in km/h", ['QN_3', 'eor'], '_akt')
     ST = ("solar", "Solar Radiation", ['QN_592', 'eor','MESS_DATUM_WOZ','ATMO_LBERG'], '_row')  
     F = ("wind_synop", "Synoptic Wind Data", ['QN_8', 'eor'], '_akt')
+    VN = ("total_cloud_cover", "Total Cloud Cover", ['QN_8', 'V_N_I'], '_akt')
+    R1 = ("precipitation", "Precipitation in mm", ['QN_8', 'WRTR', 'RS_IND'], '_akt')
+
     
     def __init__(self, category, description, columns_rm, url_suffix):
         self.category = category

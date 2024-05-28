@@ -1,4 +1,8 @@
 version: '3'
+networks:
+  default:
+    name: kafka-spark-network
+    external: true
 services:
   magic:
     image: mageai/mageai:latest
@@ -11,7 +15,7 @@ services:
     environment:
       USER_CODE_PATH: /home/src/${PROJECT_NAME}
     ports:
-      - 6789:6789
+      - 6789:6789  
     volumes:
       - /home/mohammadp/RenewableInsight:/home/src/RenewableInsight
     restart: on-failure:5

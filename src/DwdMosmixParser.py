@@ -1,13 +1,17 @@
 # see here for orginal code https://www.hackitu.de/dwd_mosmix/
-import logging
 from xml.etree.ElementTree import iterparse, Element
 from zipfile import ZipFile, BadZipFile
+import zipfile
 from datetime import datetime, timezone
 from typing import IO, Iterator, Dict, ClassVar, Optional, Tuple, Any, List, Set, Generator
 from pathlib import Path
 from contextlib import contextmanager
 import lxml.etree as ET  # Using lxml for better performance
 import pandas as pd
+import requests
+import os
+import logging
+import subprocess
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -109,7 +113,6 @@ class DwdMosmixParser:
 
             forecasts[name] = cls._parse_values(value.text)
         return forecasts
-
     def parse_forecasts(self, fp: IO[bytes], stations: Optional[Set[str]] = None) -> Iterator[Tuple[str, Dict[str, List[Optional[float]]]]]:
         """Give all value series in ``Forecast``, optionally limited to certain stations."""
         for elem in self._iter_tag(fp, "kml:Placemark"):
@@ -118,28 +121,100 @@ class DwdMosmixParser:
                 yield placemark_desc, self._parse_forecast(elem)
 
     @staticmethod            
-    def convert_to_dataframe(gen_mosmix: Iterator[dict],stations:str)-> pd.DataFrame:
-        return pd.DataFrame.from_dict(dict(gen_mosmix)[stations])
+    def convert_to_dataframe(forecasts: Iterator[dict],station:str)-> pd.DataFrame:
+        return pd.DataFrame.from_dict(dict(forecasts)[station])
                     
-
 @contextmanager
 def kmz_reader(fp: IO[bytes]) -> Generator[IO[bytes], None, None]:
+    """
+    Wrap reading from *.kmz files, which are merely compressed *.kml (XML) files.
+    """
+
     try:
         with ZipFile(fp) as zf:
             if len(zf.filelist) != 1:
-                logging.error(f"Unexpected archive contents: {' '.join(zf.namelist())}")
-                raise OSError("KMZ file should contain exactly one KML file.")
+                raise OSError(f"Unexpected archive contents: {' '.join(zf.namelist())}")
             with zf.open(zf.filelist[0]) as zp:
                 yield zp
     except BadZipFile as e:
-        logging.exception("Failed to open KMZ file.")
-        raise OSError("Provided file is not a valid KMZ.") from e
+        raise OSError(str(e)) from None
+
 
 @contextmanager
 def kml_reader(filename: Path, compressed: Optional[bool] = None) -> Generator[IO[bytes], None, None]:
+    """
+    Read access for *.kml or compressed *.kmz files.
+    """
+
     with open(filename, "rb") as fp:
-        if compressed or (compressed is None and filename.suffix == ".kmz"):
+        if compressed is True or (compressed is None and filename.suffix == ".kmz"):
             with kmz_reader(fp) as zp:
                 yield zp
         else:
             yield fp
+
+if __name__ == "__main__":
+
+    # https://www.scrapingbee.com/blog/python-wget/
+    def runcmd(cmd, verbose = False, *args, **kwargs):
+
+        process = subprocess.Popen(
+            cmd,
+            stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE,
+            text = True,
+            shell = True
+        )
+        std_out, std_err = process.communicate()
+        if verbose:
+            print(std_out.strip(), std_err)
+        pass
+
+
+    def download_kmz_file(url: str, save_dir: Path, filename: str) -> Path:
+        """
+        Downloads a KMZ file from the specified URL and saves it to the specified directory with the given filename.
+
+        Parameters:
+        - url: The URL of the KMZ file to download.
+        - save_dir: The directory where the KMZ file should be saved.
+        - filename: The name to save the KMZ file as.
+
+        Returns:
+        - The full path to the saved KMZ file.
+        """
+        runcmd(f"wget --directory-prefix={save_dir} {url}", verbose = False)
+
+        
+        logging.info(f"KMZ file downloaded and saved to {save_dir}")
+        
+        save_dir = save_dir + filename
+        save_dir = Path(save_dir)
+        
+        return save_dir
+
+            
+    url = "https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_S/all_stations/kml/MOSMIX_S_LATEST_240.kmz"  # Replace with the actual URL of the KMZ file
+   
+    save_dir = "/tmp/"
+    filename = "MOSMIX_S_LATEST_240.kmz"
+    station_name = "STUTTGART-ECHT."  
+    
+    kmz_file_path = download_kmz_file(url, save_dir, filename)
+
+    parser = DwdMosmixParser()
+
+    # kmz_file_path = "/home/mohammadp/RenewableInsight/src/MOSMIX_S_LATEST_240.kmz"
+    # kmz_file_path = Path(kmz_file_path)
+
+    with kml_reader(kmz_file_path) as fp:
+        timestamps = parser.parse_timestamps(fp)
+        fp.seek(0)  # Reset the file pointer to reuse it for reading forecasts
+        forecasts = list(parser.parse_forecasts(fp, {station_name}))
+
+    if not forecasts:
+        logging.warning(f"No data found for station: {station_name}")
+        
+    df = parser.convert_to_dataframe(forecasts, station_name)
+    print(df.shape)
+
