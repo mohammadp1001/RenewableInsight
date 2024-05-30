@@ -1,0 +1,23 @@
+version: '3'
+networks:
+  default:
+    name: kafka-spark-network
+    external: true
+services:
+  magic:
+    image: mageai/mageai:latest
+    command: mage start ${PROJECT_NAME}
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      USER_CODE_PATH: /home/src/${PROJECT_NAME}
+    ports:
+      - 6789:6789  
+    volumes:
+      - /home/mohammadp/RenewableInsight/src/mage:/home/src/${PROJECT_NAME}
+      - /home/mohammadp/RenewableInsight/src/utilities:/home/src/${PROJECT_NAME}/utilities
+    restart: on-failure:5
+  
