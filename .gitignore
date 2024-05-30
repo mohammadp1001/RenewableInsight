@@ -162,3 +162,7 @@ cython_debug/
 
 # docker
 /docker_compose_mage
+
+#mage
+.file_versions
+.ssh_tunnel

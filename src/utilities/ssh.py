@@ -4,6 +4,7 @@ import os
 import paramiko
 from paramiko import RSAKey
 from paramiko.py3compat import decodebytes
+import logging
 
 
 class SSH:
@@ -39,7 +40,7 @@ class SSH:
         except Exception as err:
             raise Exception(err)
         finally:
-            print(f"Connected to {self.hostname} as {self.username}.")
+            logging.info(f"Connected to {self.hostname} as {self.username}.")
 
     def open_sftp(self):
         try:
@@ -48,23 +49,24 @@ class SSH:
         except Exception as err:
             raise Exception(err)    
         finally:
-            print(f"Sftp connection to {self.hostname} was established.")     
+            logging.info(f"Sftp connection to {self.hostname} was established.")     
             
     def disconnect(self):
         """Closes the sftp connection"""
         if self.sftp is not None:
             self.sftp.close()
         self.connection.close()
-        print(f"Disconnected from host {self.hostname}")
+        logging.error(f"Disconnected from host {self.hostname}")
     
     def listdir(self,remote_path=None):
+        
         if self.sftp is not None:
             if remote_path is not None:
-                print(self.sftp.listdir(remote_path))
+                logging.info(self.sftp.listdir(remote_path))
             else:    
-                print(self.sftp.listdir('.'))
+                logging.info(self.sftp.listdir('.'))
         else:
-            print(f"Please first open the sftp connection to {self.hostname}.")    
+            logging.error(f"Please first open the sftp connection to {self.hostname}.")    
 
     def download_file(self, remote_path, local_path):
         """
@@ -78,7 +80,7 @@ class SSH:
             # Check if remote_path is a directory
             try:
                 self.listdir(remote_path)
-                print(f"Error: The specified remote_path '{remote_path}' is a directory.")
+                logging.error(f"Error: The specified remote_path '{remote_path}' is a directory.")
                 return
             except IOError:
                 pass  # remote_path is not a directory, continue
@@ -88,6 +90,10 @@ class SSH:
                 local_path = os.path.join(local_path, os.path.basename(remote_path))
 
             self.sftp.get(remote_path, local_path)
-            print(f"File successfully downloaded to {local_path}")
+            logging.info(f"File successfully downloaded to {local_path}")
         except Exception as e:
-            print(f"Failed to download file: {e}")
+           logging.error(f"Failed to download file: {e}")
+            
+
+
+

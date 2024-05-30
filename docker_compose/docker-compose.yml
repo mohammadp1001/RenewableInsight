@@ -8,7 +8,7 @@ services:
     image: mageai/mageai:latest
     command: mage start ${PROJECT_NAME}
     env_file:
-      - /home/mohammadp/RenewableInsight/.env
+      - .env
     build:
       context: .
       dockerfile: Dockerfile
@@ -17,6 +17,7 @@ services:
     ports:
       - 6789:6789  
     volumes:
-      - /home/mohammadp/RenewableInsight:/home/src/RenewableInsight
+      - /home/mohammadp/RenewableInsight/src/mage:/home/src/${PROJECT_NAME}
+      - /home/mohammadp/RenewableInsight/src/utilities:/home/src/${PROJECT_NAME}/utilities
     restart: on-failure:5
   

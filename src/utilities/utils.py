@@ -1,11 +1,13 @@
 import secrets
 import string
 from datetime import datetime, timedelta
-from RenewableInsight.src.WeatherDataDownloader import WeatherParameter
+from RenewableInsight.src.weather_data_downloader import WeatherParameter
 from pathlib import Path
 import requests
 import logging
 import subprocess
+
+
 def generate_random_string(n=10):
     """
     Generate a random string of lowercase letters and digits.
@@ -61,7 +63,7 @@ def create_s3_keys_historical_weather(weather_param,station_code):
         object_key = f"historical_weather/{WeatherParameter[weather_param].category}/{station_code}/{today.day}_{today.month}/{weather_param}_{today.day}_{today.month}_{date.year}.csv"
         yield object_key, date  
 
-def create_s3_keys_weather_forecast(n_day):
+def create_s3_keys_weather_forecast(n_day,station_name):
     """
     Generate S3 object keys with embedded dates and a random string, formatted specifically for use as filenames.
     
@@ -76,7 +78,7 @@ def create_s3_keys_weather_forecast(n_day):
     last_day = today + timedelta(days = n_day)
     for i in range(n_day):
         date = last_day - timedelta(days=i)
-        object_key = f"weather_forcast/{station_code}/{date.day:02}_{date.month:02}_{date.year}/{generate_random_string(10)}.parquet"
+        object_key = f"weather_forcast/{station_name}/{date.day:02}_{date.month:02}_{date.year}/{generate_random_string(10)}.parquet"
         yield object_key,date
 
 
@@ -93,7 +95,7 @@ def runcmd(cmd, verbose = False, *args, **kwargs):
     )
     std_out, std_err = process.communicate()
     if verbose:
-        print(std_out.strip(), std_err)
+        logging.info(std_out.strip(), std_err)
     pass
 
 

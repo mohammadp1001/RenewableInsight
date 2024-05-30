@@ -88,11 +88,4 @@ class ActualLoadProd:
         sleep(1)
 
 if __name__ == "__main__":
-    config = {
-        'bootstrap_servers': [BOOTSTRAP_SERVERS],
-        'key_serializer': lambda x: x.encode('utf-8'),
-        'value_serializer': lambda x: x.encode('utf-8')}
-    producer = ActualLoadProd(props=config)
-    load_records = producer.read_records(resource_path=INPUT_DATA_PATH)
-    print(load_records)
-    producer.publish(topic=PRODUCE_TOPIC_ACTUALLOAD_CSV, records=load_records)
+    pass
