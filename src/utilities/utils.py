@@ -1,7 +1,7 @@
 import secrets
 import string
 from datetime import datetime, timedelta
-from RenewableInsight.src.weather_data_downloader import WeatherParameter
+from ..utilities.weather_data_downloader import WeatherParameter
 from pathlib import Path
 import requests
 import logging

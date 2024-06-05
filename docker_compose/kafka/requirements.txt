@@ -1,0 +1,9 @@
+csv
+logging
+os
+json
+urllib
+logging
+kafka-python
+python-dotenv
+paramiko

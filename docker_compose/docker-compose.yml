@@ -15,9 +15,9 @@ services:
     environment:
       USER_CODE_PATH: /home/src/${PROJECT_NAME}
     ports:
-      - 6789:6789  
+      - 6789:6789   
     volumes:
-      - /home/mohammadp/RenewableInsight/src/mage:/home/src/${PROJECT_NAME}
-      - /home/mohammadp/RenewableInsight/src/utilities:/home/src/${PROJECT_NAME}/utilities
+      - ../src/mage:/home/src/${PROJECT_NAME}
+      - ../src/utilities:/home/src/${PROJECT_NAME}/utilities
+      - ../logs:/home/src/${PROJECT_NAME}/logs
     restart: on-failure:5
-  
