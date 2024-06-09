@@ -95,33 +95,7 @@ class SSH:
            logging.error(f"Failed to download file: {e}")
 
 if __name__ == "__main__":
-   
-    from dotenv import load_dotenv
-    load_dotenv('/home/mohammadp/RenewableInsight/docker_compose/.env')
-
-    sftp_url = os.environ.get('SFTPTOGO_URL')
-    rsa_key = os.environ.get('RSA_KEY')
-
-    month = '05'
-    year = '2024'
-    resource_path = '/home/mohammadp/RenewableInsight/data'
-    data_item_name = "ActualTotalLoad"
-    data_item_no = "6.1.A"
-    query_filename = f"/TP_export/{data_item_name}_{data_item_no}/{year}_{month}_{data_item_name}_{data_item_no}.csv"
-
-    parsed_url = urlparse(sftp_url)
-    ssh = SSH(
-        hostname=parsed_url.hostname,
-        username=parsed_url.username,
-        password=parsed_url.password,
-        hostkey=rsa_key
-    )
-    ssh.connect()
-    ssh.open_sftp()
-    print(f"try to download {query_filename}")
-    ssh.download_file(query_filename, resource_path)
-    ssh.disconnect()
-
+   pass
 
         
 

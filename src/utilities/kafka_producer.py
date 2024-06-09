@@ -6,18 +6,18 @@ from actual_load_producer import ActualLoadProd
 from dotenv import load_dotenv
 from setup_logging import setup_logging
 
-load_dotenv('/home/mohammadp/RenewableInsight/docker_compose/.env')
-setup_logging('/home/mohammadp/RenewableInsight/logs')
+load_dotenv('.env')
+setup_logging(os.environ.get('LOGGING_PATH'))
 
 SFTP_URL = os.environ.get('SFTPTOGO_URL')
 RSA_KEY = os.environ.get('RSA_KEY')
 
-BOOTSTRAP_SERVERS = 'localhost:9092'
-PRODUCE_TOPIC_ACTUALLOAD_CSV  = 'actualload'
-MONTH = '05'
-YEAR = '2024'
-RESOURCE_PATH = '/home/mohammadp/RenewableInsight/data'
-DATE_TO_READ = '2024-05-05'
+BOOTSTRAP_SERVERS =  os.environ.get('BOOTSTRAP_SERVERS')
+PRODUCE_TOPIC_ACTUALLOAD_CSV  =  os.environ.get('PRODUCE_TOPIC_ACTUALLOAD_CSV')
+MONTH =  os.environ.get('MONTH')
+YEAR =  os.environ.get('YEAR')
+RESOURCE_PATH =  os.environ.get('RESOURCE_PATH')
+DATE_TO_READ =  os.environ.get('DATE_TO_READ')
 
 
 config = {

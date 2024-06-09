@@ -1,6 +1,9 @@
 if 'transformer' not in globals():
     from mage_ai.data_preparation.decorators import transformer
+
+
 import pandas as pd
+
 
 @transformer
 def transform(df, *args, **kwargs):
@@ -17,9 +20,10 @@ def transform(df, *args, **kwargs):
     Returns:
         Anything (e.g. data frame, dictionary, array, int, str, etc.)
     """
-    # Specify your transformation logic here
-    df = df.rename(columns={'TotalLoadValue':'totalloadvalue','AreaName':'areaname','DateTime':'datetime'})
+    df['hour'] = df.datetime.dt.hour.astype('int8')
+    df['day'] = df.datetime.dt.day.astype('int8')
+    df['month'] = df.datetime.dt.month.astype('int8')
+    df['year'] = df.datetime.dt.year.astype('int16')
     
-
 
     return df

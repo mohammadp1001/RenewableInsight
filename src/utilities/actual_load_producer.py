@@ -152,10 +152,3 @@ class ActualLoadProd:
 
 if __name__ == "__main__":
     pass
-    # logging.basicConfig(level=logging.INFO)
-    # Example usage
-    # props = {'bootstrap.servers': 'localhost:9092'}
-    # actual_load_prod = ActualLoadProd(2023, 5, '/path/to/resource', 'sftp://example.com', 'rsa_key', '2023-05-01', props)
-    # filename = actual_load_prod.download_actual_load()
-    # records = actual_load_prod.read_records(filename)
-    # actual_load_prod.publish('actual_load_topic', records)

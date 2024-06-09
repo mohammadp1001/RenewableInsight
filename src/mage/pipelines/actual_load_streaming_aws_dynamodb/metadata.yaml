@@ -2,52 +2,18 @@ blocks:
 - all_upstream_blocks_executed: true
   color: null
   configuration: {}
-  downstream_blocks:
-  - actualload_transform
-  executor_config: null
-  executor_type: pyspark
-  has_callback: false
-  language: python
-  name: data_loader_spark
-  retry_config: {}
-  status: updated
-  timeout: null
-  type: data_loader
-  upstream_blocks: []
-  uuid: data_loader_spark
-- all_upstream_blocks_executed: false
-  color: null
-  configuration: {}
-  downstream_blocks:
-  - actualload_to_s3
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: actualload_transform
-  retry_config: null
-  status: not_executed
-  timeout: null
-  type: transformer
-  upstream_blocks:
-  - data_loader_spark
-  uuid: actualload_transform
-- all_upstream_blocks_executed: false
-  color: null
-  configuration: {}
   downstream_blocks: []
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: yaml
-  name: actualload_to_s3
+  name: actual_load
   retry_config: null
-  status: not_executed
+  status: updated
   timeout: null
-  type: data_exporter
-  upstream_blocks:
-  - actualload_transform
-  uuid: actualload_to_s3
+  type: data_loader
+  upstream_blocks: []
+  uuid: actual_load
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
