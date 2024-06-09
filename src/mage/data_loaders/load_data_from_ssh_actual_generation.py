@@ -8,14 +8,15 @@ if 'data_loader' not in globals():
     from mage_ai.data_preparation.decorators import data_loader
 
 from RenewableInsight.utilities.ssh import SSH
+from RenewableInsight.utilities.setup_logging import setup_logging
+
 import os 
 import logging
 from urllib.parse import urlparse
-
 import pandas as pd
 
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 @data_loader
 def load_data(**kwargs):
@@ -33,6 +34,9 @@ def load_data(**kwargs):
     Returns:
         DataFrame: The loaded DataFrame.
     """
+    setup_logging(kwargs['LOG_DIR'])
+    # logger = logging.getLogger(__name__)
+    
     # Using snake_case for variable names
     month = kwargs['month']
     year = kwargs['year']
@@ -44,7 +48,7 @@ def load_data(**kwargs):
     query_filename = f"/TP_export/{data_item_name}_{data_item_no}/{year}_{month}_{data_item_name}_{data_item_no}.csv"
 
     if not sftp_url:
-        logging.error("First, please set environment variable SFTPTOGO_URL and try again.")
+        logger.error("First, please set environment variable SFTPTOGO_URL and try again.")
         exit(0)
 
     parsed_url = urlparse(sftp_url)

@@ -1,7 +1,7 @@
 import secrets
 import string
 from datetime import datetime, timedelta
-from RenewableInsight.src.weather_data_downloader import WeatherParameter
+from ..utilities.weather_data_downloader import WeatherParameter
 from pathlib import Path
 import requests
 import logging
@@ -81,7 +81,27 @@ def create_s3_keys_weather_forecast(n_day,station_name):
         object_key = f"weather_forcast/{station_name}/{date.day:02}_{date.month:02}_{date.year}/{generate_random_string(10)}.parquet"
         yield object_key,date
 
+def create_s3_keys_dates_actual_load(data_item_name,data_item_no,date_to_read):
+    """
+    Generate S3 object keys with embedded dates and a random string, formatted specifically for use as filenames.
+    
+    Parameters:
+        data_item_name (str): Base name of the data item to include in the key.
+        data_item_no (int): Data item number to include in the key.
 
+    Yields:
+        tuple: A tuple containing the S3 object key and the corresponding date object for each key.
+    
+    The function calculates dates from 5 days ago and generates five S3 keys, one for each day starting from
+    'last_day' (5 days ago) to 'last_day-4' (9 days ago). Each key includes the `data_item_name`, `data_item_no`,
+    the date (day, month, year), and a random string suffix, stored in a .parquet file format in respective date folders.
+    """
+    
+    date = datetime.strptime(date_to_read,'%Y-%m-%d')
+    date_to_read = date_to_read.split('-')
+    for i in range(24):
+        object_key = f"electricity/{data_item_name}_{data_item_no}_{date_to_read[-1]}_{date_to_read[-2]}_{date_to_read[0]}/{i}/{generate_random_string(10)}.parquet"
+        yield object_key,date
 
 # https://www.scrapingbee.com/blog/python-wget/
 def runcmd(cmd, verbose = False, *args, **kwargs):

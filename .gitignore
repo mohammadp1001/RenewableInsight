@@ -36,6 +36,7 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
+
 # Unit test / coverage reports
 data/
 htmlcov/
@@ -166,3 +167,8 @@ cython_debug/
 #mage
 .file_versions
 .ssh_tunnel
+io_config.yaml
+mage_data
+
+#logs
+logs

@@ -93,7 +93,11 @@ class SSH:
             logging.info(f"File successfully downloaded to {local_path}")
         except Exception as e:
            logging.error(f"Failed to download file: {e}")
-            
+
+if __name__ == "__main__":
+   pass
+
+        
 
 
 
