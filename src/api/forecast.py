@@ -1,29 +1,23 @@
-# see here for orginal code https://www.hackitu.de/dwd_mosmix/
-
 # imports
 from xml.etree.ElementTree import iterparse, Element
 from zipfile import ZipFile, BadZipFile
-import zipfile
 from datetime import datetime, timezone
 from typing import IO, Iterator, Dict, ClassVar, Optional, Tuple, Any, List, Set, Generator
 from pathlib import Path
 from contextlib import contextmanager
-import lxml.etree as ET  
+import lxml.etree as ET
 import pandas as pd
 import requests
 import os
 import logging
-import subprocess
+from config import Config
+from setup_logging import SetupLogging
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+@SetupLogging(log_dir=Config.LOG_DIR)
 class DwdMosmixParser:
     """
-    Parsing methods for DWD MOSMIX KML XML files, namely either:
-      * list of timestamps from ``ForecastTimeSteps``
-      * properties of stations in ``Placemark``
-      * value series in ``Forecast``
+    Parsing methods for DWD MOSMIX KML XML files.
     Note that all methods iteratively consume from an i/o stream, such that it cannot be reused without rewinding it.
     """
 
@@ -44,7 +38,7 @@ class DwdMosmixParser:
             elem.clear()
 
     @classmethod
-    def _parse_timestamp(cls, value: Optional[str]) -> int:
+    def _parse_timestamp(cls, value: Optional[str]) -> datetime:
         if not value:
             raise ValueError("Undefined timestamp")
         try:
@@ -52,7 +46,7 @@ class DwdMosmixParser:
         except ValueError as e:
             raise ValueError(f"Cannot parse timestamp '{value}'") from e
 
-    def parse_timestamps(self, fp: IO[bytes]) -> Iterator[int]:
+    def parse_timestamps(self, fp: IO[bytes]) -> Iterator[datetime]:
         """Give all ``ForecastTimeSteps`` as UTC timestamps."""
         for elem in self._iter_tag(fp, "dwd:ForecastTimeSteps"):
             yield from (self._parse_timestamp(_.text) for _ in elem.iterfind("dwd:TimeStep", namespaces=self._ns))
@@ -115,6 +109,7 @@ class DwdMosmixParser:
 
             forecasts[name] = cls._parse_values(value.text)
         return forecasts
+    
     def parse_forecasts(self, fp: IO[bytes], stations: Optional[Set[str]] = None) -> Iterator[Tuple[str, Dict[str, List[Optional[float]]]]]:
         """Give all value series in ``Forecast``, optionally limited to certain stations."""
         for elem in self._iter_tag(fp, "kml:Placemark"):
@@ -122,16 +117,18 @@ class DwdMosmixParser:
             if stations is None or placemark_desc in stations:
                 yield placemark_desc, self._parse_forecast(elem)
 
-    @staticmethod            
-    def convert_to_dataframe(forecasts: Iterator[dict],station:str)-> pd.DataFrame:
-        return pd.DataFrame.from_dict(dict(forecasts)[station])
+    @staticmethod
+    def convert_to_dataframe(forecasts: Iterator[Tuple[str, Dict[str, List[Optional[float]]]]], station: str) -> pd.DataFrame:
+        forecast_dict = dict(forecasts)
+        if station not in forecast_dict:
+            raise ValueError(f"Station '{station}' not found in forecasts")
+        return pd.DataFrame.from_dict(forecast_dict[station])
                     
 @contextmanager
 def kmz_reader(fp: IO[bytes]) -> Generator[IO[bytes], None, None]:
     """
     Wrap reading from *.kmz files, which are merely compressed *.kml (XML) files.
     """
-
     try:
         with ZipFile(fp) as zf:
             if len(zf.filelist) != 1:
@@ -146,7 +143,6 @@ def kml_reader(filename: Path, compressed: Optional[bool] = None) -> Generator[I
     """
     Read access for *.kml or compressed *.kmz files.
     """
-
     with open(filename, "rb") as fp:
         if compressed is True or (compressed is None and filename.suffix == ".kmz"):
             with kmz_reader(fp) as zp:
