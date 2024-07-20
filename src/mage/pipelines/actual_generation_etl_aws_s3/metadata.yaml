@@ -10,12 +10,12 @@ blocks:
   language: python
   name: load_data_from_ssh_actual_generation
   retry_config: null
-  status: executed
+  status: updated
   timeout: null
   type: data_loader
   upstream_blocks: []
   uuid: load_data_from_ssh_actual_generation
-- all_upstream_blocks_executed: true
+- all_upstream_blocks_executed: false
   color: null
   configuration: {}
   downstream_blocks:
@@ -26,13 +26,13 @@ blocks:
   language: python
   name: remove_columns
   retry_config: null
-  status: executed
+  status: failed
   timeout: null
   type: transformer
   upstream_blocks:
   - load_data_from_ssh_actual_generation
   uuid: remove_columns
-- all_upstream_blocks_executed: true
+- all_upstream_blocks_executed: false
   color: null
   configuration: {}
   downstream_blocks:
@@ -49,7 +49,7 @@ blocks:
   upstream_blocks:
   - remove_columns
   uuid: filter_de_actual_generation
-- all_upstream_blocks_executed: true
+- all_upstream_blocks_executed: false
   color: null
   configuration: {}
   downstream_blocks:
@@ -66,7 +66,7 @@ blocks:
   upstream_blocks:
   - filter_de_actual_generation
   uuid: transform_datetime_actual_generation
-- all_upstream_blocks_executed: true
+- all_upstream_blocks_executed: false
   color: null
   configuration: {}
   downstream_blocks:

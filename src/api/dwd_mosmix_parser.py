@@ -1,4 +1,6 @@
 # see here for orginal code https://www.hackitu.de/dwd_mosmix/
+
+# imports
 from xml.etree.ElementTree import iterparse, Element
 from zipfile import ZipFile, BadZipFile
 import zipfile
@@ -6,7 +8,7 @@ from datetime import datetime, timezone
 from typing import IO, Iterator, Dict, ClassVar, Optional, Tuple, Any, List, Set, Generator
 from pathlib import Path
 from contextlib import contextmanager
-import lxml.etree as ET  # Using lxml for better performance
+import lxml.etree as ET  
 import pandas as pd
 import requests
 import os
@@ -138,7 +140,6 @@ def kmz_reader(fp: IO[bytes]) -> Generator[IO[bytes], None, None]:
                 yield zp
     except BadZipFile as e:
         raise OSError(str(e)) from None
-
 
 @contextmanager
 def kml_reader(filename: Path, compressed: Optional[bool] = None) -> Generator[IO[bytes], None, None]:

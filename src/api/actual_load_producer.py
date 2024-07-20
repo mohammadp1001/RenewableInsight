@@ -1,77 +1,92 @@
-"""
-Actual Load Producer Module
-
-This module provides functionality to download actual load data from an SFTP server,
-read the data, and publish it to a Kafka topic.
-"""
-
 import csv
 import logging
 import os
 from time import sleep
 from typing import Dict, Generator
-from urllib.parse import urlparse
 from kafka import KafkaProducer
-from ssh import SSH
+from entsoe import EntsoePandasClient
 import json
+import pandas as pd
+from tenacity import retry, stop_after_attempt, wait_exponential
+from config import Config
 
 class ActualLoadProd:
     """
     Class to handle the production of actual load data to Kafka.
     """
     
-    def __init__(self, year, month, resource_path, sftp_url, rsa_key, date_to_read, props: Dict):
+    def __init__(self, year, month, date_to_read, country_code, props: Dict):
         """
         Initialize the ActualLoadProd instance.
 
         Args:
             year (int): The year of the data.
             month (int): The month of the data.
-            resource_path (str): The path to the resource directory.
-            sftp_url (str): The URL of the SFTP server.
-            rsa_key (str): The RSA key for SFTP authentication.
             date_to_read (str): The date to filter the records.
+            country_code (str): The country code to filter the records.
             props (Dict): Kafka producer properties.
         """
-        # Remove value_serializer from props if it exists to avoid conflict
         if 'value_serializer' in props:
             props.pop('value_serializer')
         self.producer = KafkaProducer(value_serializer=self.serializer, **props)
         self.year = year
         self.month = month
-        self.resource_path = resource_path
-        self.data_item_name = "ActualTotalLoad"
-        self.data_item_no = "6.1.A"
-        self.query_filename = f"/TP_export/{self.data_item_name}_{self.data_item_no}/{self.year}_{self.month}_{self.data_item_name}_{self.data_item_no}.csv"
-        self.sftp_url = sftp_url
-        self.rsa_key = rsa_key
+        self.resource_path = Config.RESOURCE_PATH
+        self.api_key = Config.ENTSOE_API_KEY
         self.date_to_read = date_to_read
+        self.country_code = country_code
         self._index = 0
+        self.client = EntsoePandasClient(api_key=self.api_key)
 
+    @staticmethod
+    def get_end_date(year: int, month: int) -> pd.Timestamp:
+        """
+        Get the end date of the month.
+
+        Args:
+            year (int): The year.
+            month (int): The month.
+
+        Returns:
+            pd.Timestamp: The end date of the month.
+        """
+        return pd.Timestamp(f'{year}-{month+1}-01', tz='Europe/Brussels') - pd.Timedelta(days=1)
+
+    def validate_data(self, data: pd.DataFrame) -> bool:
+        """
+        Validate the fetched data.
+
+        Args:
+            data (pd.DataFrame): The data to validate.
+
+        Returns:
+            bool: True if data is valid, False otherwise.
+        """
+        return not data.empty
+
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     def download_actual_load(self):
         """
-        Download the actual load data from the SFTP server.
+        Download the actual load data using the ENTSO-E API.
 
         Returns:
             str: The filename of the downloaded data.
         """
-        if not self.sftp_url:
-            logging.error("First, please set environment variable SFTPTOGO_URL and try again.")
-            exit(1)
-        parsed_url = urlparse(self.sftp_url)
-    
-        ssh = SSH(
-            hostname=parsed_url.hostname,
-            username=parsed_url.username,
-            password=parsed_url.password,
-            hostkey=self.rsa_key
-        )
-        ssh.connect()
-        ssh.open_sftp()
-        logging.info(f"Trying to download {self.query_filename}")
-        ssh.download_file(self.query_filename, self.resource_path)
-        ssh.disconnect()
-        return f"{self.year}_{self.month}_{self.data_item_name}_{self.data_item_no}.csv"
+        start = pd.Timestamp(f'{self.year}-{self.month}-01', tz='Europe/Brussels')
+        end = self.get_end_date(self.year, self.month)
+
+        try:
+            ts = self.client.query_load(self.country_code, start=start, end=end)
+            if not self.validate_data(ts):
+                raise ValueError("Invalid data received from the API")
+            ts = self.transform_data(ts)
+            filename = os.path.join(self.resource_path, f"{self.year}_{self.month}_ActualTotalLoad.csv")
+            ts.to_csv(filename)
+            return filename
+
+        except Exception as e:
+            logging.error(f"Error fetching data from ENTSO-E API: {e}")
+            return None
 
     @staticmethod
     def serializer(message):
@@ -96,20 +111,17 @@ class ActualLoadProd:
         Yields:
             dict: A record dictionary.
         """
-        with open(os.path.join(self.resource_path, filename), 'r') as f:
-            reader = csv.reader(f)
-            header = next(reader)
-            for row in reader:
-                row = row[0].split('\t')
-                if row[5] == 'DE' and row[0][:10] == self.date_to_read:
-                    record = {
-                        'DateTime': row[0],
-                        'AreaName': row[4],
-                        'TotalLoadValue': row[6],
-                        'key_id': f'record_{self._index}'
-                    }
-                    self._index += 1
-                    yield record
+        df = pd.read_csv(filename)
+        for _, row in df.iterrows():
+            if row['AreaName'] == self.country_code and row['DateTime'][:10] == self.date_to_read:
+                record = {
+                    'DateTime': row['DateTime'],
+                    'AreaName': row['AreaName'],
+                    'TotalLoadValue': row['TotalLoadValue'],
+                    'key_id': f'record_{self._index}'
+                }
+                self._index += 1
+                yield record
 
     def publish(self, topic: str, records: Generator[Dict, None, None], batch_size: int = 100):
         """
@@ -127,7 +139,6 @@ class ActualLoadProd:
                 self._send_batch(topic, batch)
                 batch.clear()
 
-        # Send any remaining records
         if batch:
             self._send_batch(topic, batch)
 

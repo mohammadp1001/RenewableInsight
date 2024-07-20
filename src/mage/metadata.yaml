@@ -1,1 +1,3 @@
 project_uuid: 55ae2b5cf265440eafdf15b2f5e1c739
+features:
+  command_center: true

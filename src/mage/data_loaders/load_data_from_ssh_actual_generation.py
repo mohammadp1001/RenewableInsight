@@ -1,30 +1,28 @@
 """
 Data Loader Module
 
-This module provides a function to load data from an SFTP server.
+This module provides a function to load data from the ENTSO-E API.
 """
 
 if 'data_loader' not in globals():
     from mage_ai.data_preparation.decorators import data_loader
 
-from RenewableInsight.utilities.ssh import SSH
+from entsoe import EntsoePandasClient
 from RenewableInsight.utilities.setup_logging import setup_logging
 
-import os 
 import logging
-from urllib.parse import urlparse
 import pandas as pd
-
-
+import os
 
 
 @data_loader
 def load_data(**kwargs):
     """
-    Load data from an SFTP server.
+    Load data from the ENTSO-E API.
 
     Args:
         **kwargs: Additional keyword arguments.
+
             month (int): The month of the data.
             year (int): The year of the data.
             data_item_name (str): The name of the data item.
@@ -35,36 +33,34 @@ def load_data(**kwargs):
         DataFrame: The loaded DataFrame.
     """
     setup_logging(kwargs['LOG_DIR'])
-    # logger = logging.getLogger(__name__)
+    logger = logging.getLogger(__name__)
     
     # Using snake_case for variable names
     month = kwargs['month']
     year = kwargs['year']
-    data_item_name = kwargs['data_item_name']
-    data_item_no = kwargs['data_item_no']
-    sftp_url = os.environ.get('SFTPTOGO_URL')
-    rsa_key = os.environ.get('RSA_KEY')
     base_directory = kwargs['base_directory']
-    query_filename = f"/TP_export/{data_item_name}_{data_item_no}/{year}_{month}_{data_item_name}_{data_item_no}.csv"
+    api_key = os.environ.get('ENTSOE_API_KEY')
 
-    if not sftp_url:
-        logger.error("First, please set environment variable SFTPTOGO_URL and try again.")
+    if not api_key:
+        logger.error("First, please set environment variable ENTSOE_API_KEY and try again.")
         exit(0)
 
-    parsed_url = urlparse(sftp_url)
+    client = EntsoePandasClient(api_key=api_key)
     
-    ssh = SSH(
-        hostname=parsed_url.hostname,
-        username=parsed_url.username,
-        password=parsed_url.password,
-        hostkey=rsa_key
-    )
-    
-    ssh.connect()
-    logging.info("ssh connection has been made.")
-    ssh.open_sftp()
-    ssh.download_file(query_filename, base_directory)
-    ssh.disconnect()
-    logging.info(f"{year}_{month}_{data_item_name}_{data_item_no}.csv has been successfully downloaded.")
-    df = pd.read_csv(base_directory + f"{year}_{month}_{data_item_name}_{data_item_no}.csv", delimiter="\t")
-    return df
+    start = pd.Timestamp(f'{year}-{month}-01', tz='Europe/Brussels')
+    end = pd.Timestamp(f'{year}-{month}-28', tz='Europe/Brussels')  #TODO # Adjust for the actual month length
+
+    # TODO 
+    # Fetch the data for Germany (DE)
+    country_code = 'DE'
+
+    try:
+        ts = client.query_load(country_code, start=start, end=end)
+        filename = os.path.join(base_directory, f"{year}_{month}_ActualTotalLoad.csv")
+        ts.to_csv(filename)
+        logger.info(f"{filename} has been successfully downloaded.")
+        df = pd.read_csv(filename)
+        return df
+    except Exception as e:
+        logger.error(f"Error fetching data from ENTSO-E API: {e}")
+        return pd.DataFrame()  # Return an empty DataFrame in case of error

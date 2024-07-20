@@ -19,11 +19,8 @@ YEAR =  os.environ.get('YEAR')
 RESOURCE_PATH =  os.environ.get('RESOURCE_PATH')
 DATE_TO_READ =  os.environ.get('DATE_TO_READ')
 
-
 config = {
     'bootstrap_servers': [BOOTSTRAP_SERVERS]}
-
-
 
 producer = ActualLoadProd(YEAR,MONTH,RESOURCE_PATH,SFTP_URL,RSA_KEY,DATE_TO_READ,props=config)
 while True:

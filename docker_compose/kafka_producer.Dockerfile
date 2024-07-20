@@ -5,6 +5,11 @@ RUN apt-get update && \
     apt-get install -y python3 python3-pip && \
     apt-get clean
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Create a directory called app/data
