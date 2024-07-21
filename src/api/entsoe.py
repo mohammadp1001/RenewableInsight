@@ -64,7 +64,10 @@ class EntsoeDataDownloader:
         Returns:
             pd.DataFrame: The transformed data.
         """
-        # Add your transformation logic here
+        data.reset_index(drop=False, inplace=True)
+        data.rename(columns={'index':'date','Actual Load': 'load'}, inplace=True)
+        data.dropna(inplace=True)  
+        data.sort_values(by='date', inplace=True)  
         return data
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
@@ -87,7 +90,7 @@ class EntsoeDataDownloader:
                 ts = self.client.query_load(self.country_code, start=start, end=end)
             elif data_type == 'generation':
                 ts = self.client.query_generation(self.country_code, start=start, end=end)
-            # Add more data types as needed
+            # TODO Add more data types as needed
             else:
                 raise ValueError(f"Unsupported data type: {data_type}")
 
@@ -95,7 +98,7 @@ class EntsoeDataDownloader:
                 raise ValueError("Invalid data received from the API")
             ts = self.transform_data(ts)
             filename = os.path.join(resource_path, f"{self.year}_{self.month}_{data_type}.csv")
-            ts.to_csv(filename)
+            ts.to_csv(filename,index=False)
             return filename
 
         except Exception as e:

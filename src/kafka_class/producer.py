@@ -1,27 +1,31 @@
 import csv
 import logging
 from time import sleep
-from typing import Dict, Generator
+from typing import Dict, Generator, Any, List, Optional
 from kafka import KafkaProducer
 import json
 import pandas as pd
+from datetime import datetime
 
 class KafkaProducerService:
     """
     Class to handle the production of data to Kafka.
     """
     
-    def __init__(self, props: Dict):
+    def __init__(self, props: Dict, field_name: str, last_published_field_value: Optional[str] = None):
         """
         Initialize the KafkaProducerService instance.
 
         Args:
             props (Dict): Kafka producer properties.
+            field_name (str): The column name to use as filter (e.g. datetime).
         """
         if 'value_serializer' in props:
             props.pop('value_serializer')
         self.producer = KafkaProducer(value_serializer=self.serializer, **props)
         self._index = 0
+        self._last_published_field_value = last_published_field_value
+        self._field_name = field_name
 
     @staticmethod
     def serializer(message):
@@ -36,7 +40,19 @@ class KafkaProducerService:
         """
         return json.dumps(message).encode('utf-8')
 
-    def read_records(self, filename: str, filters: Dict[str, Any], fields: List[str]) -> Generator[Dict, None, None]:
+    def is_record_processed(self, record: Dict) -> bool:
+        if self._last_published_field_value is None:
+            return False
+        record_value = datetime.fromisoformat(record[self._field_name])
+        return record_value <= self._last_published_field_value
+
+    def get_last_published_field_value(self) -> str:
+        return isoformat(self._last_published_field_value)
+
+    def _mark_record_as_processed(self, record: Dict) -> None:
+        self._last_published_field_value = datetime.fromisoformat(record[self._field_name])
+
+    def read_records(self, filename: str, filter_funcs: Dict[str, Any], fields: List[str]) -> Generator[Dict, None, None]:
         """
         Read records from the downloaded CSV file.
 
@@ -50,13 +66,16 @@ class KafkaProducerService:
         """
         df = pd.read_csv(filename)
         for _, row in df.iterrows():
-            if all(row[k] == v for k, v in filters.items()):
+            if all(filter_func(row) for filter_func in filter_funcs.values()):
                 record = {field: row[field] for field in fields}
                 record['key_id'] = f'record_{self._index}'
+                if self.is_record_processed(record):
+                    continue
                 self._index += 1
-                yield record
+                self._mark_record_as_processed(record)
+                yield record    
 
-    def publish(self, topic: str, records: Generator[Dict, None, None], batch_size: int = 100):
+    def publish(self, topic: str, records: Generator[Dict, None, None], batch_size: int = 5):
         """
         Publish records to the specified Kafka topic in batches.
 
@@ -93,3 +112,6 @@ class KafkaProducerService:
                 logging.error(f"Exception while producing record - {record}: {e}", exc_info=True)
         self.producer.flush()
         sleep(1)
+
+if __name__ == "__main__":
+    pass

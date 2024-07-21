@@ -1,4 +1,3 @@
-version: '3.6'
 networks:
   default:
     name: kafka-spark-network
@@ -14,6 +13,7 @@ services:
       dockerfile: ./docker_compose/kafka_producer.Dockerfile
     volumes:
       - ./logs:/app/logs
+      - ./src:/app/src
   magic:
     image: mageai/mageai:latest
     command: mage start ${PROJECT_NAME}
@@ -27,7 +27,5 @@ services:
     ports:
       - 6789:6789   
     volumes:
-      - ./src/mage:/home/src/${PROJECT_NAME}
-      - ./src/utilities:/home/src/${PROJECT_NAME}/utilities
-      - ./logs:/home/src/${PROJECT_NAME}/logs
+      - .:/home/src/${PROJECT_NAME}
     restart: on-failure:5

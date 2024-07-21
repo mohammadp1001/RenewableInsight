@@ -1,8 +1,9 @@
 connector_type: kafka
-bootstrap_server: "localhost:9092"
+bootstrap_server: "broker:29092"
 topic: actualload
-
-
+consumer_group: actualload_consumer
+include_metadata: false
+api_version: 0.10.2
 
 # Uncomment the config below to use SSL config
 # security_protocol: "SSL"

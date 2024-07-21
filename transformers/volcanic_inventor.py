@@ -5,7 +5,7 @@ if 'transformer' not in globals():
 
 
 @transformer
-def transform(messages: List[Dict], *args, **kwargs):
+def transform(messages, *args, **kwargs):
     """
     Template code for a transformer block.
 

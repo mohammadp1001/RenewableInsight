@@ -20,10 +20,10 @@ RUN mkdir -p /app/data
 COPY /docker_compose/requirements.txt .
 
 # Copy producer code from outside the current directory
-COPY /src/utilities /app/utilities
+COPY /src .
 
 # Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Specify the command to run your Kafka producer script
-CMD ["python3", "./utilities/kafka_producer.py"]
+CMD ["python3", "./src/kafka_producer.py"]

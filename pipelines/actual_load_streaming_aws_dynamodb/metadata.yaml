@@ -2,7 +2,8 @@ blocks:
 - all_upstream_blocks_executed: true
   color: null
   configuration: {}
-  downstream_blocks: []
+  downstream_blocks:
+  - volcanic_inventor
   executor_config: null
   executor_type: local_python
   has_callback: false
@@ -14,6 +15,39 @@ blocks:
   type: data_loader
   upstream_blocks: []
   uuid: actual_load
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - renewed_ronin
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: volcanic inventor
+  retry_config: null
+  status: updated
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - actual_load
+  uuid: volcanic_inventor
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: renewed ronin
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - volcanic_inventor
+  uuid: renewed_ronin
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}

@@ -10,7 +10,7 @@ blocks:
   language: python
   name: spark_consumer
   retry_config: null
-  status: executed
+  status: failed
   timeout: null
   type: data_loader
   upstream_blocks: []
