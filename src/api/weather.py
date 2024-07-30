@@ -8,9 +8,16 @@ import logging
 from parameters import WeatherParameter
 from config import Config
 from setup_logging import SetupLogging
+from api.base_downloader import BaseDownloader
 
 @SetupLogging(log_dir=Config.LOG_DIR)
-class WeatherDataDownloader:
+class WeatherDataDownloader(BaseDownloader):
+    """
+    A class for downloading and loading weather data from the DWD open data platform.
+
+    This class provides methods to download and extract weather data for specific stations and parameters.
+    """
+
     def __init__(self, base_url: str = None):
         """
         Initializes the WeatherDataDownloader with a base URL for downloading weather data.
@@ -18,9 +25,9 @@ class WeatherDataDownloader:
         Args:
             base_url (str, optional): The base URL for weather data. Defaults to the DWD open data URL.
         """
-        self.base_url = base_url or "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/"
-        
-    def download_and_load_weather_data(self, station_code: str, weather_param: WeatherParameter) -> pd.DataFrame:
+        super().__init__(base_url or "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/")
+
+    def download_and_load_data(self, station_code: str, weather_param: WeatherParameter) -> pd.DataFrame:
         """
         Downloads and loads weather data for a given station and weather parameter.
         
@@ -35,15 +42,15 @@ class WeatherDataDownloader:
             ValueError: If weather_param is not an instance of WeatherParameter Enum.
             FileNotFoundError: If no matching file is found in the ZIP archive.
         """
-        self._validate_weather_param(weather_param)
+        self._validate_parameters(weather_param)
         
         url = self._construct_url(station_code, weather_param)
-        zip_content = self._download_zip_content(url)
-        df = self._extract_data_from_zip(zip_content, station_code, weather_param)
+        zip_content = self._download_content(url)
+        df = self._extract_data(zip_content, station_code, weather_param)
         
         return df
     
-    def _validate_weather_param(self, weather_param: WeatherParameter):
+    def _validate_parameters(self, weather_param: WeatherParameter):
         """
         Validates that the provided weather parameter is an instance of WeatherParameter Enum.
         
@@ -78,7 +85,7 @@ class WeatherDataDownloader:
         logger.info(f"Constructed URL: {url}")
         return url
     
-    def _download_zip_content(self, url: str) -> bytes:
+    def _download_content(self, url: str) -> bytes:
         """
         Downloads the content of the ZIP file from the provided URL.
         
@@ -99,7 +106,7 @@ class WeatherDataDownloader:
             logger.error(f"Failed to download data: {e}")
             raise
     
-    def _extract_data_from_zip(self, zip_content: bytes, station_code: str, weather_param: WeatherParameter) -> pd.DataFrame:
+    def _extract_data(self, zip_content: bytes, station_code: str, weather_param: WeatherParameter) -> pd.DataFrame:
         """
         Extracts data from the ZIP file content and loads it into a pandas DataFrame.
         

@@ -24,7 +24,10 @@ class KafkaProducerService:
             props.pop('value_serializer')
         self.producer = KafkaProducer(value_serializer=self.serializer, **props)
         self._index = 0
-        self._last_published_field_value = last_published_field_value
+        if last_published_field_value:
+            self._last_published_field_value = datetime.fromisoformat(last_published_field_value)
+        else:
+            self._last_published_field_value = None
         self._field_name = field_name
 
     @staticmethod
@@ -43,14 +46,14 @@ class KafkaProducerService:
     def is_record_processed(self, record: Dict) -> bool:
         if self._last_published_field_value is None:
             return False
-        record_value = datetime.fromisoformat(record[self._field_name])
+        record_value = record[self._field_name]
         return record_value <= self._last_published_field_value
 
     def get_last_published_field_value(self) -> str:
-        return isoformat(self._last_published_field_value)
+        return self._last_published_field_value.isoformat()
 
     def _mark_record_as_processed(self, record: Dict) -> None:
-        self._last_published_field_value = datetime.fromisoformat(record[self._field_name])
+        self._last_published_field_value = record[self._field_name]
 
     def read_records(self, filename: str, filter_funcs: Dict[str, Any], fields: List[str]) -> Generator[Dict, None, None]:
         """
@@ -75,6 +78,29 @@ class KafkaProducerService:
                 self._mark_record_as_processed(record)
                 yield record    
 
+    def read_records_from_dataframe(self, dataframe: pd.DataFrame, filter_funcs: Dict[str, Any], fields: List[str]) -> Generator[Dict, None, None]:
+        """
+        Read records from a DataFrame.
+
+        Args:
+            dataframe (pd.DataFrame): The DataFrame to read from.
+            filter_funcs (Dict[str, Any]): A dictionary of filters to apply on the data.
+            fields (List[str]): A list of fields to include in the output.
+
+        Yields:
+            dict: A record dictionary.
+        """
+        for _, row in dataframe.iterrows():
+            if all(filter_func(row) for filter_func in filter_funcs.values()):
+                record = {field: row[field] for field in fields}
+                record['key_id'] = f'record_{self._index}'
+                if self.is_record_processed(record):
+                    continue
+                self._index += 1
+                self._mark_record_as_processed(record)
+                record['date'] = str(record['date'])
+                yield record  
+                
     def publish(self, topic: str, records: Generator[Dict, None, None], batch_size: int = 5):
         """
         Publish records to the specified Kafka topic in batches.

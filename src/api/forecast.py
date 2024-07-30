@@ -1,21 +1,20 @@
-# imports
-from xml.etree.ElementTree import iterparse, Element
-from zipfile import ZipFile, BadZipFile
+import logging
 from datetime import datetime, timezone
 from typing import IO, Iterator, Dict, ClassVar, Optional, Tuple, Any, List, Set, Generator
-from pathlib import Path
-from contextlib import contextmanager
+from xml.etree.ElementTree import Element
 import lxml.etree as ET
 import pandas as pd
-import requests
-import os
-import logging
-from config import Config
-from setup_logging import SetupLogging
-
+from contextlib import contextmanager
+from zipfile import ZipFile, BadZipFile
+from io import BytesIO
+import re
+from pathlib import Path
+from RenewableInsight.src.config import Config
+from RenewableInsight.src.setup_logging import SetupLogging
+from RenewableInsight.src.api.base_parser import BaseParser
 
 @SetupLogging(log_dir=Config.LOG_DIR)
-class DwdMosmixParser:
+class DwdMosmixParser(BaseParser):
     """
     Parsing methods for DWD MOSMIX KML XML files.
     Note that all methods iteratively consume from an i/o stream, such that it cannot be reused without rewinding it.
@@ -47,7 +46,15 @@ class DwdMosmixParser:
             raise ValueError(f"Cannot parse timestamp '{value}'") from e
 
     def parse_timestamps(self, fp: IO[bytes]) -> Iterator[datetime]:
-        """Give all ``ForecastTimeSteps`` as UTC timestamps."""
+        """
+        Parses all ``ForecastTimeSteps`` as UTC timestamps.
+
+        Args:
+            fp (IO[bytes]): The file-like object to parse.
+
+        Returns:
+            Iterator[datetime]: An iterator over parsed timestamps.
+        """
         for elem in self._iter_tag(fp, "dwd:ForecastTimeSteps"):
             yield from (self._parse_timestamp(_.text) for _ in elem.iterfind("dwd:TimeStep", namespaces=self._ns))
             break
@@ -111,7 +118,16 @@ class DwdMosmixParser:
         return forecasts
     
     def parse_forecasts(self, fp: IO[bytes], stations: Optional[Set[str]] = None) -> Iterator[Tuple[str, Dict[str, List[Optional[float]]]]]:
-        """Give all value series in ``Forecast``, optionally limited to certain stations."""
+        """
+        Parses all value series in ``Forecast``, optionally limited to certain stations.
+
+        Args:
+            fp (IO[bytes]): The file-like object to parse.
+            stations (Optional[Set[str]]): A set of station identifiers to filter the forecasts.
+
+        Returns:
+            Iterator[Tuple[str, Dict[str, List[Optional[float]]]]]: An iterator over parsed forecast data.
+        """
         for elem in self._iter_tag(fp, "kml:Placemark"):
             placemark_desc = self._parse_description(elem)
             if stations is None or placemark_desc in stations:
@@ -119,6 +135,19 @@ class DwdMosmixParser:
 
     @staticmethod
     def convert_to_dataframe(forecasts: Iterator[Tuple[str, Dict[str, List[Optional[float]]]]], station: str) -> pd.DataFrame:
+        """
+        Converts parsed forecast data to a pandas DataFrame.
+
+        Args:
+            forecasts (Iterator[Tuple[str, Dict[str, List[Optional[float]]]]]): The parsed forecast data.
+            station (str): The station identifier to extract data for.
+
+        Returns:
+            pd.DataFrame: The forecast data as a pandas DataFrame.
+        
+        Raises:
+            ValueError: If the station is not found in the forecast data.
+        """
         forecast_dict = dict(forecasts)
         if station not in forecast_dict:
             raise ValueError(f"Station '{station}' not found in forecasts")

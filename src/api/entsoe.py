@@ -1,20 +1,26 @@
 import os
-import logging
+import pytz
 import pandas as pd
+import logging
 from entsoe import EntsoePandasClient
 from tenacity import retry, stop_after_attempt, wait_exponential
-from config import Config
-from setup_logging import SetupLogging
+
+from RenewableInsight.src.api.base import BaseAPI
+from RenewableInsight.src.api.config import Config
+from RenewableInsight.src.setup_logging import SetupLogging
+
 
 @SetupLogging(log_dir=Config.LOG_DIR)
-class EntsoeDataDownloader:
+class ENTSOEAPI(BaseAPI):
     """
-    Class to handle downloading data from the ENTSO-E API.
+    API interface for ENTSO-E Transparency Platform data.
+
+    This class provides methods to fetch, transform, and save energy data from the ENTSO-E Transparency Platform.
     """
-    
-    def __init__(self, year: int, month: int, country_code: str, api_key: str = Config.ENTSOE_API_KEY):
+
+    def __init__(self, year: int, month: int, country_code: str, api_key: str):
         """
-        Initialize the EntsoeDataDownloader instance.
+        Initialize the ENTSOEAPI class.
 
         Args:
             year (int): The year of the data.
@@ -22,12 +28,14 @@ class EntsoeDataDownloader:
             country_code (str): The country code for the data.
             api_key (str): The API key for the ENTSO-E API.
         """
+        super().__init__()
+        self._data = None
         self.year = year
         self.month = month
         self.country_code = country_code
         self.api_key = api_key
         self.client = EntsoePandasClient(api_key=self.api_key)
-
+    
     @staticmethod
     def get_end_date(year: int, month: int) -> pd.Timestamp:
         """
@@ -42,19 +50,7 @@ class EntsoeDataDownloader:
         """
         return pd.Timestamp(f'{year}-{month+1}-01', tz='Europe/Brussels') - pd.Timedelta(days=1)
 
-    def validate_data(self, data: pd.DataFrame) -> bool:
-        """
-        Validate the fetched data.
-
-        Args:
-            data (pd.DataFrame): The data to validate.
-
-        Returns:
-            bool: True if data is valid, False otherwise.
-        """
-        return not data.empty
-
-    def transform_data(self, data: pd.DataFrame) -> pd.DataFrame:
+    def transform_data(self) -> None:
         """
         Transform the fetched data if necessary.
 
@@ -64,20 +60,19 @@ class EntsoeDataDownloader:
         Returns:
             pd.DataFrame: The transformed data.
         """
-        data.reset_index(drop=False, inplace=True)
-        data.rename(columns={'index':'date','Actual Load': 'load'}, inplace=True)
-        data.dropna(inplace=True)  
-        data.sort_values(by='date', inplace=True)  
-        return data
-
+        self._data.reset_index(drop=False, inplace=True)
+        self._data.rename(columns={'index':'date','Actual Load': 'load'}, inplace=True)
+        self._data.dropna(inplace=True)  
+        self._data.sort_values(by='date', inplace=True)  
+        
+    
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
-    def download_data(self, data_type: str, resource_path: str = Config.RESOURCE_PATH) -> str:
+    def fetch_data(self, data_type: str) -> None:
         """
         Download data from the ENTSO-E API based on the specified data type.
 
         Args:
             data_type (str): The type of data to download (e.g., 'load', 'generation').
-            resource_path (str): The path to save the downloaded data.
 
         Returns:
             str: The filename of the downloaded data.
@@ -87,20 +82,42 @@ class EntsoeDataDownloader:
 
         try:
             if data_type == 'load':
-                ts = self.client.query_load(self.country_code, start=start, end=end)
+                self._data = self.client.query_load(self.country_code, start=start, end=end)
+                self.transform_data() 
             elif data_type == 'generation':
-                ts = self.client.query_generation(self.country_code, start=start, end=end)
-            # TODO Add more data types as needed
+                self._data = self.client.query_generation(self.country_code, start=start, end=end)
+                self.transform_data() 
             else:
                 raise ValueError(f"Unsupported data type: {data_type}")
 
-            if not self.validate_data(ts):
+            if self._data.empty:
                 raise ValueError("Invalid data received from the API")
-            ts = self.transform_data(ts)
-            filename = os.path.join(resource_path, f"{self.year}_{self.month}_{data_type}.csv")
-            ts.to_csv(filename,index=False)
-            return filename
-
+            
         except Exception as e:
             logging.error(f"Error fetching data from ENTSO-E API: {e}")
-            return None
+
+    def save_data(self, filename: str) -> None:
+        """
+        Save the transformed data to a CSV file.
+
+        :param filename: The name of the file to save the data.
+        """
+        self._data.to_csv(filename, index=False)
+
+    @property
+    def data(self) -> pd.DataFrame:
+        """
+        Get the fetched and transformed data.
+
+        :return: A pandas DataFrame containing the data.
+        """
+        return self._data
+
+    @data.setter
+    def data(self, value: pd.DataFrame) -> None:
+        """
+        Set the data attribute.
+
+        :param value: A pandas DataFrame to set as the data.
+        """
+        self._data = value

@@ -5,4 +5,4 @@ pyspark==3.3.1
 kafka-python
 yfinance
 tenacity
-git+https://github.com/EnergieID/entsoe-py.git
+entsoe-py

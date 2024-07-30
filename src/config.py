@@ -23,5 +23,3 @@ class Config:
     def set_env_variable(slef,variable,value):
 
         set_key('.env', variable, value)
-
-        

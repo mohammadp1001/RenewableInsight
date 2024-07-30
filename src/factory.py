@@ -8,3 +8,5 @@ class DataSourceFactory:
         # Add more sources as needed
         else:
             raise ValueError("Unknown data source type")
+if __name__ == '__main__':
+    pass
