@@ -1,10 +1,12 @@
 import logging
+import datetime
+
 from time import sleep
 
-from src.config import Config
-import src.setup_logging 
-import src.kafka_class.producer 
 import src.api.entsoe_api 
+import src.setup_logging 
+import src.kafka_class.producer
+from src.config import Config 
 
 
 def main():
@@ -16,13 +18,13 @@ def main():
 
     producer_service = src.kafka_class.producer.KafkaProducerService(props= kafka_props,field_name= 'date',last_published_field_value= Config.LAST_PUBLISHED_FIELD_VALUE_LOAD)
     data_downloader = src.api.entsoe_api.ENTSOEAPI(
-        year=int(Config.YEAR), 
-        month=int(Config.MONTH), 
+        year=datetime.datetime.now().year, 
+        month=datetime.datetime.now().month, 
         country_code=Config.COUNTRY_CODE,
         api_key=Config.ENTSOE_API_KEY
     )
 
-    filter_funcs = {'datetome_to_publish': lambda row: row['date'].strftime('%Y-%m-%d') == Config.DATE_TO_READ}
+    filter_funcs = {'datetome_to_publish': lambda row: row['date'].strftime('%Y-%m-%d') == datetime.datetime.now().strftime('%Y-%m-%d')}
     
     while True:
         data_downloader.fetch_data(data_type=Config.DATA_TYPE)

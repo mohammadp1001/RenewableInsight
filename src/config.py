@@ -15,12 +15,9 @@ class Config:
     BOOTSTRAP_SERVERS = os.getenv('BOOTSTRAP_SERVERS')
     PRODUCE_TOPIC_GAS_PRICE = os.getenv('PRODUCE_TOPIC_GAS_PRICE')
     PRODUCE_TOPIC_ACTUALLOAD_CSV = os.getenv('PRODUCE_TOPIC_ACTUALLOAD_CSV')
-    MONTH = os.getenv('MONTH')
-    YEAR = os.getenv('YEAR')
     TIME_OF_SLEEP_PRODUCER_GAS = os.getenv('TIME_OF_SLEEP_PRODUCER_GAS')
     TIME_OF_SLEEP_PRODUCER_LOAD = os.getenv('TIME_OF_SLEEP_PRODUCER_LOAD')
     DATA_TYPE = os.getenv('DATA_TYPE')
-    DATE_TO_READ = os.getenv('DATE_TO_READ')
     COUNTRY_CODE = os.getenv('COUNTRY_CODE')
     LAST_PUBLISHED_FIELD_VALUE_LOAD = os.getenv('LAST_PUBLISHED_FIELD_VALUE_LOAD')
     LAST_PUBLISHED_FIELD_VALUE_GAS = os.getenv('LAST_PUBLISHED_FIELD_VALUE_GAS')
@@ -28,6 +25,10 @@ class Config:
     FIELDS_GAS = ['date', 'open_price', 'close_price']
 
     @staticmethod
-    def set_env_variable(variable,value):
-        set_key('.env', variable, value)
+    def set_env_variable(variable, value):
+        dotenv_path = find_dotenv()
+        if dotenv_path:
+            set_key(dotenv_path, variable, value)
+            return True
+        return False
 

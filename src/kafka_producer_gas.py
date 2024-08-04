@@ -20,7 +20,7 @@ def main():
     while True:
         
         # Fetch the latest data
-        yahoo_finance_api.fetch_data(period='1d',interval='5m')
+        yahoo_finance_api.fetch_data(period='5d',interval='5m')
         yahoo_finance_api.transform_data()
         data = yahoo_finance_api.data
         if not data.empty:

@@ -6,7 +6,7 @@ from src.api.base import BaseAPI
 from src.config import Config
 from src.setup_logging import SetupLogging
 
-#@SetupLogging(log_dir=Config.LOG_DIR)
+@SetupLogging(log_dir=Config.LOG_DIR)
 class YahooAPI(BaseAPI):
     """
     API interface for Yahoo Finance data.
