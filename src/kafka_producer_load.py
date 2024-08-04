@@ -1,20 +1,21 @@
 import logging
 from time import sleep
 
-from RenewableInsight.src.config import Config
-from RenewableInsight.src.setup_logging import SetupLogging
-from RenewableInsight.src.kafka_class.producer import KafkaProducerService
-from RenewableInsight.src.api.entsoe import ENTSOEAPI
+from src.config import Config
+import src.setup_logging 
+import src.kafka_class.producer 
+import src.api.entsoe_api 
+
 
 def main():
-    SetupLogging(Config.LOG_DIR)
+    src.setup_logging.SetupLogging(Config.LOG_DIR)
     
     kafka_props = {
         'bootstrap_servers': [Config.BOOTSTRAP_SERVERS]
     }
 
-    producer_service = KafkaProducerService(props= kafka_props,field_name= 'date',last_published_field_value= Config.LAST_PUBLISHED_FIELD_VALUE_LOAD)
-    data_downloader = ENTSOEAPI(
+    producer_service = src.kafka_class.producer.KafkaProducerService(props= kafka_props,field_name= 'date',last_published_field_value= Config.LAST_PUBLISHED_FIELD_VALUE_LOAD)
+    data_downloader = src.api.entsoe_api.ENTSOEAPI(
         year=int(Config.YEAR), 
         month=int(Config.MONTH), 
         country_code=Config.COUNTRY_CODE,
@@ -29,7 +30,9 @@ def main():
         if not data.empty:
             records = producer_service.read_records_from_dataframe(data, filter_funcs, Config.FIELDS_LOAD)
             producer_service.publish(topic=Config.PRODUCE_TOPIC_ACTUALLOAD_CSV, records=records)
-            Config.set_env_variable('.env','LAST_PUBLISHED_FIELD_VALUE_LOAD', producer_service.get_last_published_field_value())
+
+            Config.set_env_variable('LAST_PUBLISHED_FIELD_VALUE_LOAD', producer_service.get_last_published_field_value())
+            
             logging.info(f"Producer will sleep for {Config.TIME_OF_SLEEP_PRODUCER_LOAD} minutes.")
             sleep(int(Config.TIME_OF_SLEEP_PRODUCER_LOAD) * 60)
 

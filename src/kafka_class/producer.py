@@ -1,11 +1,11 @@
-import csv
 import logging
-from time import sleep
-from typing import Dict, Generator, Any, List, Optional
-from kafka import KafkaProducer
 import json
 import pandas as pd
 from datetime import datetime
+from time import sleep
+from typing import Dict, Generator, Any, List, Optional
+
+from kafka import KafkaProducer
 
 class KafkaProducerService:
     """

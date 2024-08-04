@@ -1,14 +1,13 @@
-import os
-import pytz
-import pandas as pd
+
 import logging
+import pandas as pd
+
 from entsoe import EntsoePandasClient
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from RenewableInsight.src.api.base import BaseAPI
-from RenewableInsight.src.api.config import Config
-from RenewableInsight.src.setup_logging import SetupLogging
-
+from src.api.base import BaseAPI
+from src.config import Config
+from src.setup_logging import SetupLogging
 
 @SetupLogging(log_dir=Config.LOG_DIR)
 class ENTSOEAPI(BaseAPI):
@@ -50,7 +49,7 @@ class ENTSOEAPI(BaseAPI):
         """
         return pd.Timestamp(f'{year}-{month+1}-01', tz='Europe/Brussels') - pd.Timedelta(days=1)
 
-    def transform_data(self) -> None:
+    def transform_data(self,data_type: str) -> None:
         """
         Transform the fetched data if necessary.
 
@@ -61,8 +60,12 @@ class ENTSOEAPI(BaseAPI):
             pd.DataFrame: The transformed data.
         """
         self._data.reset_index(drop=False, inplace=True)
-        self._data.rename(columns={'index':'date','Actual Load': 'load'}, inplace=True)
-        self._data.dropna(inplace=True)  
+        if data_type == 'load': 
+            self._data.rename(columns={'index':'date','Actual Load': 'load'}, inplace=True)
+            self._data.dropna(inplace=True)
+        if data_type == 'generation':
+            self._data.rename(columns={'index':'date'}, inplace=True)
+            self._data.columns = ['_'.join(filter(None, col)).lower().replace(' ', '_').replace('/', '_') for col in self._data.columns]   
         self._data.sort_values(by='date', inplace=True)  
         
     
@@ -83,10 +86,12 @@ class ENTSOEAPI(BaseAPI):
         try:
             if data_type == 'load':
                 self._data = self.client.query_load(self.country_code, start=start, end=end)
-                self.transform_data() 
+                self.transform_data(data_type=data_type)
+                logging.info(f"{data_type} data has been successfully downloaded.") 
             elif data_type == 'generation':
                 self._data = self.client.query_generation(self.country_code, start=start, end=end)
-                self.transform_data() 
+                self.transform_data(data_type=data_type)
+                logging.info(f"{data_type} data has been successfully downloaded.") 
             else:
                 raise ValueError(f"Unsupported data type: {data_type}")
 
@@ -94,7 +99,7 @@ class ENTSOEAPI(BaseAPI):
                 raise ValueError("Invalid data received from the API")
             
         except Exception as e:
-            logging.error(f"Error fetching data from ENTSO-E API: {e}")
+            logging.error(f"Error fetching {data_type} data from ENTSO-E API: {e}")
 
     def save_data(self, filename: str) -> None:
         """

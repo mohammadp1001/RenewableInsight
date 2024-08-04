@@ -1,19 +1,21 @@
 import logging
-from time import sleep
-from RenewableInsight.src.config import Config
-from RenewableInsight.src.setup_logging import SetupLogging
-from RenewableInsight.src.kafka_class.producer import KafkaProducerService
-from RenewableInsight.src.api.yahoo import YahooAPI
+import time 
+
+import src.setup_logging 
+import src.kafka_class.producer 
+import src.api.yahoo 
+
+from src.config import Config
 
 def main():
-    SetupLogging(Config.LOG_DIR)
+    src.setup_logging.SetupLogging(Config.LOG_DIR)
     
     kafka_props = {
         'bootstrap_servers': [Config.BOOTSTRAP_SERVERS]
     }
 
-    producer_service = KafkaProducerService(props=kafka_props, field_name='date', last_published_field_value=Config.LAST_PUBLISHED_FIELD_VALUE_GAS)
-    yahoo_finance_api = YahooAPI(symbol=Config.TICKER_LABEL)
+    producer_service = src.kafka_class.producer.KafkaProducerService(props=kafka_props, field_name='date', last_published_field_value=Config.LAST_PUBLISHED_FIELD_VALUE_GAS)
+    yahoo_finance_api = src.api.yahoo.YahooAPI(symbol=Config.TICKER_LABEL)
 
     while True:
         
@@ -27,13 +29,13 @@ def main():
             
             # Read and publish the records
             records = producer_service.read_records_from_dataframe(data, filter_funcs, Config.FIELDS_GAS)
-            producer_service.publish(topic=Config.PRODUCE_TOPIC_GAS_PRICE, records=records)
+            producer_service.publish(topic= Config.PRODUCE_TOPIC_GAS_PRICE, records=records)
             
             # Update the last published field value in the environment
-            Config.set_env_variable('.env', 'LAST_PUBLISHED_FIELD_VALUE_GAS', producer_service.get_last_published_field_value())
+            Config.set_env_variable('LAST_PUBLISHED_FIELD_VALUE_GAS', producer_service.get_last_published_field_value())
         
         logging.info(f"Producer will sleep for {Config.TIME_OF_SLEEP_PRODUCER_GAS} minutes.")
-        sleep(int(Config.TIME_OF_SLEEP_PRODUCER_GAS) * 60)
+        time.sleep(int(Config.TIME_OF_SLEEP_PRODUCER_GAS) * 60)
 
 if __name__ == '__main__':
     main()

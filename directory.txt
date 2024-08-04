@@ -1,0 +1,161 @@
+/home/mohammad/RenewableInsight/
+├── LICENSE
+├── README.md
+├── data
+│   ├── 2023_7_generation.csv
+│   └── 2023_7_load.csv
+├── data_exporters
+│   ├── __pycache__
+│   │   ├── happy_elixir.cpython-310.pyc
+│   │   ├── magnificent_illusion.cpython-310.pyc
+│   │   └── renewed_ronin.cpython-310.pyc
+│   ├── actual_load_to_s3.py
+│   ├── export_big_querry.py
+│   ├── happy_elixir.py
+│   ├── load_to_s3.yaml
+│   ├── magnificent_illusion.py
+│   ├── renewed_ronin.py
+│   ├── to_aws_s3_actual_generation.py
+│   ├── to_aws_s3_historical_weather.py
+│   ├── to_aws_s3_weather_forecast.py
+│   └── to_gcp.yaml
+├── data_loaders
+│   ├── __pycache__
+│   │   └── load_data_from_ssh_actual_generation.cpython-310.pyc
+│   ├── actual_load.yaml
+│   ├── data_loader_gas.yaml
+│   ├── data_loader_historical_weather.py
+│   ├── dwd_data_loader.py
+│   ├── load_data_from_ssh_actual_generation.py
+│   ├── load_from_s3.py
+│   └── spark_consumer.py
+├── directory.txt
+├── docker-compose.yml
+├── docker_compose
+│   ├── fetch_docker_stats.py
+│   ├── kafka
+│   │   └── docker-compose.yml
+│   ├── kafka_producer_gas.Dockerfile
+│   ├── kafka_producer_load.Dockerfile
+│   ├── mage.Dockerfile
+│   ├── requirements.txt
+│   └── spark
+│       ├── build.sh
+│       ├── cluster-base.Dockerfile
+│       ├── docker-compose.yml
+│       ├── jupyterlab.Dockerfile
+│       ├── spark-base.Dockerfile
+│       ├── spark-master.Dockerfile
+│       └── spark-worker.Dockerfile
+├── logs
+│   └── logging.dev.ini
+├── metadata.yaml
+├── notebooks
+│   ├── data_transformer.ipynb
+│   ├── docker.ipynb
+│   ├── kafka_producer.ipynb
+│   ├── weather_data.ipynb
+│   └── yahoo.ipynb
+├── pipelines
+│   ├── actual_generation_etl_aws_s3
+│   │   └── metadata.yaml
+│   ├── actual_load_aws_s3
+│   │   └── metadata.yaml
+│   ├── actual_load_streaming_aws_s3
+│   │   └── metadata.yaml
+│   ├── gas_streaming_aws_s3
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   └── __init__.cpython-310.pyc
+│   │   └── metadata.yaml
+│   ├── historical_weather_etl_aws_s3
+│   │   └── metadata.yaml
+│   ├── s3_to_bigquerry
+│   │   └── metadata.yaml
+│   └── weather_forecast_etl_aws_s3
+│       └── metadata.yaml
+├── src
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-310.pyc
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── __init__.cpython-38.pyc
+│   │   ├── config.cpython-310.pyc
+│   │   ├── config.cpython-312.pyc
+│   │   ├── config.cpython-38.pyc
+│   │   ├── setup_logging.cpython-310.pyc
+│   │   ├── setup_logging.cpython-312.pyc
+│   │   └── setup_logging.cpython-38.pyc
+│   ├── api
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-310.pyc
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── __init__.cpython-38.pyc
+│   │   │   ├── base.cpython-310.pyc
+│   │   │   ├── base.cpython-312.pyc
+│   │   │   ├── base.cpython-38.pyc
+│   │   │   ├── entsoe.cpython-310.pyc
+│   │   │   ├── entsoe.cpython-312.pyc
+│   │   │   ├── entsoe.cpython-38.pyc
+│   │   │   ├── entsoe_api.cpython-310.pyc
+│   │   │   ├── entsoe_api.cpython-312.pyc
+│   │   │   ├── entsoe_api.cpython-38.pyc
+│   │   │   ├── etos.cpython-312.pyc
+│   │   │   ├── yahoo.cpython-312.pyc
+│   │   │   └── yahoo.cpython-38.pyc
+│   │   ├── base.py
+│   │   ├── base_downloader.py
+│   │   ├── base_parser.py
+│   │   ├── entsoe_api.py
+│   │   ├── forecast.py
+│   │   ├── parameters.py
+│   │   ├── weather.py
+│   │   └── yahoo.py
+│   ├── config.py
+│   ├── kafka_class
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-38.pyc
+│   │   │   └── producer.cpython-38.pyc
+│   │   └── producer.py
+│   ├── kafka_producer_gas.py
+│   ├── kafka_producer_load.py
+│   ├── setup_logging.py
+│   └── utilities
+│       ├── __init__.py
+│       ├── __pycache__
+│       │   ├── __init__.cpython-310.pyc
+│       │   ├── setup_logging.cpython-310.pyc
+│       │   └── streaming.cpython-310.pyc
+│       ├── ssh.py
+│       └── utils.py
+├── test
+│   ├── __init__.py
+│   └── test_ssh.py
+└── transformers
+    ├── __pycache__
+    │   ├── data_type_convert_actual_generation.cpython-310.pyc
+    │   ├── remove_columns.cpython-310.pyc
+    │   └── transform_datetime_actual_generation.cpython-310.pyc
+    ├── actual_load_transform.py
+    ├── add_columns_historical_weather.py
+    ├── add_columns_weather_forecast.py
+    ├── add_time_coulmns.py
+    ├── column_name.py
+    ├── data_type_convert_actual_generation.py
+    ├── data_type_transformer.py
+    ├── datetime_transformer_historical_weather.py
+    ├── filter_de_actual_generation.py
+    ├── magnificent_rune.py
+    ├── remove_columns.py
+    ├── remove_columns_weather_forecast.py
+    ├── remove_selected_columns_historical_weather.py
+    ├── rename_coulmns_weather_forecast.py
+    ├── transform_data_weather_forecast.py
+    ├── transform_datetime_actual_generation.py
+    ├── transform_integer_columns_historical_weather.py
+    ├── transform_temperature.py
+    └── volcanic_inventor.py
+
+30 directories, 128 files

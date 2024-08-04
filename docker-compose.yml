@@ -4,7 +4,6 @@ networks:
     external: true
 services:
   kafka_producer_load:
-    image: kafka_producer_load
     container_name: kafka_producer_load
     env_file:
       - .env
@@ -12,13 +11,13 @@ services:
       context: .
       dockerfile: ./docker_compose/kafka_producer_load.Dockerfile
     environment:
-      PYTHONPATH: /app/${PROJECT_NAME}/src   
+      PYTHONPATH: /app/${PROJECT_NAME}   
     volumes:
       - ./logs:/app/logs
       - ./src:/app/${PROJECT_NAME}/src
       - .env:/app/${PROJECT_NAME}/.env
+   
   kafka_producer_gas:
-    image: kafka_producer_gas
     container_name: kafka_producer_gas
     env_file:
       - .env
@@ -26,7 +25,7 @@ services:
       context: .
       dockerfile: ./docker_compose/kafka_producer_gas.Dockerfile
     environment:
-      PYTHONPATH: /app/${PROJECT_NAME}/src
+      PYTHONPATH: /app/${PROJECT_NAME}
     volumes:
       - ./logs:/app/logs
       - ./src:/app/${PROJECT_NAME}/src
@@ -44,5 +43,6 @@ services:
     ports:
       - 6789:6789   
     volumes:
+      - ./logs:/app/logs
       - .:/home/src/${PROJECT_NAME}
     restart: on-failure:5

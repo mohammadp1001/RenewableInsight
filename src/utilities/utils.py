@@ -1,143 +1,184 @@
 import secrets
 import string
-from datetime import datetime, timedelta
-from ..utilities.weather_data_downloader import WeatherParameter
-from pathlib import Path
-import requests
+import datetime
 import logging
 import subprocess
+import boto3
+
+from pathlib import Path
+from botocore.exceptions import NoCredentialsError, PartialCredentialsError
+
+from src.api.parameters import WeatherParameter
+from src.config import Config
 
 
 def generate_random_string(n=10):
     """
     Generate a random string of lowercase letters and digits.
-    
-    Parameters:
-        n (int): Length of the random string to generate. Default is 10.
-        
-    Returns:
-        str: Random string of specified length.
+
+    :param n: Length of the random string to generate. Default is 10.
+    :type n: int
+    :return: Random string of specified length.
+    :rtype: str
     """
     return ''.join(secrets.choice(string.ascii_lowercase + string.digits) for _ in range(n))
 
-def create_s3_keys_dates(data_item_name,data_item_no):
+
+def create_s3_keys_generation():
     """
-    Generate S3 object keys with embedded dates and a random string, formatted specifically for use as filenames.
-    
-    Parameters:
-        data_item_name (str): Base name of the data item to include in the key.
-        data_item_no (int): Data item number to include in the key.
+    Generate S3 object keys with embedded dates, formatted specifically for use as filenames.
 
     Yields:
         tuple: A tuple containing the S3 object key and the corresponding date object for each key.
-    
-    The function calculates dates from 5 days ago and generates five S3 keys, one for each day starting from
-    'last_day' (5 days ago) to 'last_day-4' (9 days ago). Each key includes the `data_item_name`, `data_item_no`,
-    the date (day, month, year), and a random string suffix, stored in a .parquet file format in respective date folders.
-    """
-    today = datetime.now()
-    last_day = today - timedelta(days=5)
-    for i in range(5):
-        date = last_day - timedelta(days=i)
-        object_key = f"electricity/{data_item_name}_{data_item_no}_{date.day:02}_{date.month:02}_{date.year}/{data_item_name}_{data_item_no}.parquet"
-        yield object_key,date
 
-def create_s3_keys_historical_weather(weather_param,station_code):
+    The function calculates dates from 5 days ago up to today and generates five S3 keys, one for each day starting from
+    '5 days ago' to '1 day ago'. Each key includes the date (day, month, year).
+
+    The generated keys follow the format:
+    electricity/generation_DD_MM_YYYY
+    where DD is the day, MM is the month, YYYY is the year.
     """
-    Generate S3 object keys with embedded dates for the same day and month for the last 5 years, 
+    today = datetime.datetime.now()
+    start_date = today - datetime.timedelta(days=5)
+    for i in range(5):
+        date = start_date + datetime.timedelta(days=i)
+        object_key = f"electricity/generation_{date.day:02}_{date.month:02}_{date.year}"
+        yield object_key, date
+
+
+def create_s3_keys_historical_weather(weather_param, station_code):
+    """
+    Generate S3 object keys with embedded dates for the same day and month for the last 5 years,
     formatted specifically for use as filenames.
 
-    Parameters:
-        weather_param (WeatherParameter): The weather parameter used to categorize the folder structure.
-        station_code
+    :param weather_param: The weather parameter used to categorize the folder structure.
+    :type weather_param: WeatherParameter
+    :param station_code: The station code for categorizing the folder structure.
+    :type station_code: str
+    :yield: A tuple containing the S3 object key and the corresponding date object for each key.
+    :rtype: tuple
 
-    Yields:
-        tuple: A tuple containing the S3 object key and the corresponding date object for each key.
-    
     The function calculates dates for the same day and month from the current year and for the four preceding years.
     Each key includes the category, day, month, the weather parameter, and is stored in a .csv file format in respective date folders.
     """
-    today = datetime.now()
+    today = datetime.datetime.now()
     for i in range(5):  # Last 5 years including the current year
-        date = datetime(today.year - i, today.month, today.day)
+        date = datetime.datetime(today.year - i, today.month, today.day)
         object_key = f"historical_weather/{WeatherParameter[weather_param].category}/{station_code}/{today.day}_{today.month}/{weather_param}_{today.day}_{today.month}_{date.year}.csv"
-        yield object_key, date  
+        yield object_key, date
 
-def create_s3_keys_weather_forecast(n_day,station_name):
+
+def create_s3_keys_weather_forecast(n_day, station_name):
     """
     Generate S3 object keys with embedded dates and a random string, formatted specifically for use as filenames.
-    
-    Yields:
-        tuple: A tuple containing the S3 object key and the corresponding date object for each key.
-    
-    The function calculates dates for next n_day days and generates n_day S3 keys, one for each day starting from
-    today. Each key includes the, the date (day, month, year), and a random string suffix, stored in a .parquet file 
+
+    :param n_day: The number of days to forecast.
+    :type n_day: int
+    :param station_name: The name of the weather station.
+    :type station_name: str
+    :yield: A tuple containing the S3 object key and the corresponding date object for each key.
+    :rtype: tuple
+
+    The function calculates dates for the next n_day days and generates n_day S3 keys, one for each day starting from
+    today. Each key includes the date (day, month, year), and a random string suffix, stored in a .parquet file 
     format in respective date folders.
     """
-    today = datetime.now()
-    last_day = today + timedelta(days = n_day)
+    today = datetime.datetime.now()
+    last_day = today + datetime.timedelta(days=n_day)
     for i in range(n_day):
-        date = last_day - timedelta(days=i)
+        date = last_day - datetime.timedelta(days=i)
         object_key = f"weather_forcast/{station_name}/{date.day:02}_{date.month:02}_{date.year}/{generate_random_string(10)}.parquet"
-        yield object_key,date
+        yield object_key, date
 
-def create_s3_keys_dates_actual_load(data_item_name,data_item_no,date_to_read):
+
+def create_s3_keys_dates_actual_load(data_item_name, data_item_no, date_to_read):
     """
     Generate S3 object keys with embedded dates and a random string, formatted specifically for use as filenames.
-    
-    Parameters:
-        data_item_name (str): Base name of the data item to include in the key.
-        data_item_no (int): Data item number to include in the key.
 
-    Yields:
-        tuple: A tuple containing the S3 object key and the corresponding date object for each key.
-    
+    :param data_item_name: Base name of the data item to include in the key.
+    :type data_item_name: str
+    :param data_item_no: Data item number to include in the key.
+    :type data_item_no: int
+    :param date_to_read: The date string in 'YYYY-MM-DD' format.
+    :type date_to_read: str
+    :yield: A tuple containing the S3 object key and the corresponding date object for each key.
+    :rtype: tuple
+
     The function calculates dates from 5 days ago and generates five S3 keys, one for each day starting from
     'last_day' (5 days ago) to 'last_day-4' (9 days ago). Each key includes the `data_item_name`, `data_item_no`,
     the date (day, month, year), and a random string suffix, stored in a .parquet file format in respective date folders.
     """
-    
-    date = datetime.strptime(date_to_read,'%Y-%m-%d')
+    date = datetime.datetime.strptime(date_to_read, '%Y-%m-%d')
     date_to_read = date_to_read.split('-')
     for i in range(24):
         object_key = f"electricity/{data_item_name}_{data_item_no}_{date_to_read[-1]}_{date_to_read[-2]}_{date_to_read[0]}/{i}/{generate_random_string(10)}.parquet"
-        yield object_key,date
+        yield object_key, date
 
-# https://www.scrapingbee.com/blog/python-wget/
-def runcmd(cmd, verbose = False, *args, **kwargs):
 
+def runcmd(cmd, verbose=False, *args, **kwargs):
+    """
+    Run a shell command.
+
+    :param cmd: The command to run.
+    :type cmd: str
+    :param verbose: If True, logs the standard output and error. Default is False.
+    :type verbose: bool
+    :param args: Variable length argument list.
+    :param kwargs: Arbitrary keyword arguments.
+    """
     process = subprocess.Popen(
         cmd,
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE,
-        text = True,
-        shell = True
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        shell=True
     )
     std_out, std_err = process.communicate()
     if verbose:
         logging.info(std_out.strip(), std_err)
-    pass
 
 
 def download_kmz_file(url: str, save_dir: Path, filename: str) -> Path:
     """
-    Downloads a KMZ file from the specified URL and saves it to the specified directory with the given filename.
+    Download a KMZ file from the specified URL and save it to the specified directory with the given filename.
 
-    Parameters:
-    - url: The URL of the KMZ file to download.
-    - save_dir: The directory where the KMZ file should be saved.
-    - filename: The name to save the KMZ file as.
-
-    Returns:
-    - The full path to the saved KMZ file.
+    :param url: The URL of the KMZ file to download.
+    :type url: str
+    :param save_dir: The directory where the KMZ file should be saved.
+    :type save_dir: Path
+    :param filename: The name to save the KMZ file as.
+    :type filename: str
+    :return: The full path to the saved KMZ file.
+    :rtype: Path
     """
-    runcmd(f"wget --directory-prefix={save_dir} {url}", verbose = False)
-
-    
+    runcmd(f"wget --directory-prefix={save_dir} {url}", verbose=False)
     logging.info(f"KMZ file downloaded and saved to {save_dir}")
-    
-    save_dir = save_dir + filename
-    save_dir = Path(save_dir)
-    
-    return save_dir
+    save_path = save_dir / filename
+    return save_path
 
+
+def check_s3_key_exists(bucket_name, object_key):
+    """
+    Check if a specific key already exists in an S3 bucket.
+
+    :param bucket_name: The name of the S3 bucket.
+    :type bucket_name: str
+    :param object_key: The key of the S3 object to check.
+    :type object_key: str
+    :return: True if the key exists, False otherwise.
+    :rtype: bool
+    """
+    try:
+        s3 = boto3.client('s3', aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
+                          aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY)
+        result = s3.list_objects_v2(
+            Bucket=bucket_name, Prefix=object_key, Delimiter='/')
+        return 'CommonPrefixes' in result
+    except s3.exceptions.NoSuchKey:
+        return False
+    except (NoCredentialsError, PartialCredentialsError) as e:
+        print(f"Credentials error: {e}")
+        return False
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False

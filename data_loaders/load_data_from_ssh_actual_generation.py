@@ -3,16 +3,19 @@ Data Loader Module
 
 This module provides a function to load data from the ENTSO-E API.
 """
+import os
+import sys
+import datetime
+import pandas as pd
 
+if '/home/src/RenewableInsight' not in sys.path:
+    sys.path.append('/home/src/RenewableInsight')
+
+from src.config import Config
+
+from src.api.entsoe_api import ENTSOEAPI
 if 'data_loader' not in globals():
     from mage_ai.data_preparation.decorators import data_loader
-
-
-from RenewableInsight.src.api.entsoe import ENTSOEAPI
-from RenewableInsight.src.config import Config
-import logging
-import pandas as pd
-import os
 
 
 @data_loader
@@ -25,31 +28,15 @@ def load_data(**kwargs):
 
             month (int): The month of the data.
             year (int): The year of the data.
+            data_type (str): The data_type name.
             
     Returns:
         DataFrame: The loaded DataFrame.
     """
-    setup_logging(kwargs['LOG_DIR'])
-    logger = logging.getLogger(__name__)
-    
-    # Using snake_case for variable names
-    month = kwargs['month']
-    year = kwargs['year']
-    data_type = kwargs['generation']
-   
+    data_type = kwargs['data_type']
 
-    if not api_key:
-        logger.error("First, please set environment variable ENTSOE_API_KEY and try again.")
-        exit(0)
+    data_downloader = ENTSOEAPI(year=datetime.datetime.now().year,month=datetime.datetime.now().month,country_code=Config.COUNTRY_CODE,api_key=Config.ENTSOE_API_KEY)
+    data_downloader.fetch_data(data_type=data_type)
+    data = data_downloader.data
 
-    data_downloader = ENTSOEAPI(year=year,month=month,country_code=Config.COUNTRY_CODE,api_key=Config.ENTSOE_API_KEY)
-    
-
-    try:
-        data_downloader.fetch_data(data_type=data_type)
-        data = data_downloader.data
-        logger.info(f"{filename} has been successfully downloaded.")
-        return data
-    except Exception as e:
-        logger.error(f"Error fetching data from ENTSO-E API: {e}")
-        return pd.DataFrame()  # Return an empty DataFrame in case of error
+    return data

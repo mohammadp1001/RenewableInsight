@@ -1,6 +1,7 @@
+import os
 import logging
 import logging.config
-import os
+
 from datetime import datetime
 from dotenv import find_dotenv, load_dotenv
 from functools import wraps
@@ -19,6 +20,7 @@ class SetupLogging:
         @wraps(cls)
         def wrapper(*args, **kwargs):
             try:
+                print(self.config_path)
                 logging.config.fileConfig(
                     self.config_path,
                     disable_existing_loggers=False,

@@ -3,52 +3,18 @@ blocks:
   color: null
   configuration: {}
   downstream_blocks:
-  - remove_columns
+  - transform_datetime_actual_generation
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
   name: load_data_from_ssh_actual_generation
   retry_config: null
-  status: failed
+  status: updated
   timeout: null
   type: data_loader
   upstream_blocks: []
   uuid: load_data_from_ssh_actual_generation
-- all_upstream_blocks_executed: false
-  color: null
-  configuration: {}
-  downstream_blocks:
-  - filter_de_actual_generation
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: remove_columns
-  retry_config: null
-  status: failed
-  timeout: null
-  type: transformer
-  upstream_blocks:
-  - load_data_from_ssh_actual_generation
-  uuid: remove_columns
-- all_upstream_blocks_executed: false
-  color: null
-  configuration: {}
-  downstream_blocks:
-  - transform_datetime_actual_generation
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: filter_de_actual_generation
-  retry_config: null
-  status: executed
-  timeout: null
-  type: transformer
-  upstream_blocks:
-  - remove_columns
-  uuid: filter_de_actual_generation
 - all_upstream_blocks_executed: false
   color: null
   configuration: {}
@@ -64,7 +30,7 @@ blocks:
   timeout: null
   type: transformer
   upstream_blocks:
-  - filter_de_actual_generation
+  - load_data_from_ssh_actual_generation
   uuid: transform_datetime_actual_generation
 - all_upstream_blocks_executed: false
   color: null
@@ -77,7 +43,7 @@ blocks:
   language: python
   name: data_type_convert_actual_generation
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: transformer
   upstream_blocks:
@@ -93,7 +59,7 @@ blocks:
   language: python
   name: to_aws_s3_actual_generation
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: data_exporter
   upstream_blocks:
@@ -122,12 +88,8 @@ tags: []
 type: python
 uuid: actual_generation_etl_aws_s3
 variables:
-  LOG_DIR: /home/src/RenewableInsight/logs
   bucket_name: renewableinsightbucket
-  columns_list_rm:
-  - UpdateTime
-  - ActualConsumption
-  export_mode: daily
+  data_type: generation
   month: '05'
   year: 2024
 variables_dir: /home/src/mage_data/RenewableInsight

@@ -1,17 +1,19 @@
+import re
 import logging
+import pandas as pd
+import lxml.etree as ET
+
 from datetime import datetime, timezone
 from typing import IO, Iterator, Dict, ClassVar, Optional, Tuple, Any, List, Set, Generator
 from xml.etree.ElementTree import Element
-import lxml.etree as ET
-import pandas as pd
 from contextlib import contextmanager
 from zipfile import ZipFile, BadZipFile
 from io import BytesIO
-import re
 from pathlib import Path
-from RenewableInsight.src.config import Config
-from RenewableInsight.src.setup_logging import SetupLogging
-from RenewableInsight.src.api.base_parser import BaseParser
+
+from src.config import Config
+from src.setup_logging import SetupLogging
+from src.api.base_parser import BaseParser
 
 @SetupLogging(log_dir=Config.LOG_DIR)
 class DwdMosmixParser(BaseParser):

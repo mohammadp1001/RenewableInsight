@@ -1,11 +1,12 @@
 import yfinance as yf
 import pandas as pd
 import pytz
-from RenewableInsight.src.api.base import BaseAPI
-from RenewableInsight.src.config import Config
-from RenewableInsight.src.setup_logging import SetupLogging
 
-@SetupLogging(log_dir=Config.LOG_DIR)
+from src.api.base import BaseAPI
+from src.config import Config
+from src.setup_logging import SetupLogging
+
+#@SetupLogging(log_dir=Config.LOG_DIR)
 class YahooAPI(BaseAPI):
     """
     API interface for Yahoo Finance data.

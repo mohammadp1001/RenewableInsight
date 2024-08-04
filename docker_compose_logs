@@ -1,0 +1,1075 @@
+#0 building with "default" instance using docker driver
+
+#1 [kafka_producer_load internal] load build definition from kafka_producer_load.Dockerfile
+#1 DONE 0.0s
+
+#2 [kafka_producer_gas internal] load build definition from kafka_producer_gas.Dockerfile
+#2 transferring dockerfile: 661B done
+#2 DONE 0.0s
+
+#1 [kafka_producer_load internal] load build definition from kafka_producer_load.Dockerfile
+#1 transferring dockerfile: 663B 0.0s done
+#1 DONE 0.1s
+
+#3 [magic internal] load build definition from mage.Dockerfile
+#3 transferring dockerfile: 713B done
+#3 DONE 0.1s
+
+#4 [kafka_producer_load internal] load metadata for docker.io/library/ubuntu:20.04
+#4 DONE 0.6s
+
+#5 [kafka_producer_gas internal] load .dockerignore
+#5 transferring context: 2B done
+#5 DONE 0.0s
+
+#6 [kafka_producer_load internal] load .dockerignore
+#6 transferring context: 2B done
+#6 DONE 0.0s
+
+#7 [kafka_producer_gas 1/6] FROM docker.io/library/ubuntu:20.04@sha256:0b897358ff6624825fb50d20ffb605ab0eaea77ced0adb8c6a4b756513dec6fc
+#7 DONE 0.0s
+
+#8 [kafka_producer_load internal] load build context
+#8 transferring context: 178B done
+#8 DONE 0.0s
+
+#9 [kafka_producer_gas internal] load build context
+#9 transferring context: 178B done
+#9 DONE 0.0s
+
+#10 [kafka_producer_load 2/6] RUN apt-get update &&     apt-get install -y python3 python3-pip &&     apt-get clean
+#10 CACHED
+
+#11 [kafka_producer_load 3/6] RUN apt-get update && apt-get install -y     git     && rm -rf /var/lib/apt/lists/*
+#11 CACHED
+
+#12 [kafka_producer_load 4/6] WORKDIR /app
+#12 CACHED
+
+#13 [kafka_producer_load 5/6] COPY /docker_compose/requirements.txt .
+#13 CACHED
+
+#14 [kafka_producer_gas 6/6] RUN pip install --no-cache-dir -r requirements.txt
+#14 CACHED
+
+#15 [kafka_producer_load] exporting to image
+#15 exporting layers done
+#15 writing image sha256:651dbe3c1da4c8f4272be2396eb7a558d5871b95e3d3732ab015d7e39d35a2aa
+#15 writing image sha256:651dbe3c1da4c8f4272be2396eb7a558d5871b95e3d3732ab015d7e39d35a2aa done
+#15 naming to docker.io/library/renewableinsight-kafka_producer_load done
+#15 DONE 0.0s
+
+#16 [kafka_producer_gas] exporting to image
+#16 exporting layers done
+#16 writing image sha256:fba835ac85d6933a64464ade69cf409254a1423f9c48692630b3034fdc335ab0 done
+#16 naming to docker.io/library/renewableinsight-kafka_producer_gas 0.0s done
+#16 DONE 0.0s
+
+#17 [magic internal] load metadata for docker.io/mageai/mageai:latest
+#17 DONE 1.0s
+
+#18 [magic internal] load .dockerignore
+#18 transferring context: 2B done
+#18 DONE 0.0s
+
+#19 [magic internal] load build context
+#19 transferring context: 86B done
+#19 DONE 0.0s
+
+#20 [magic 1/7] FROM docker.io/mageai/mageai:latest@sha256:30eba417064f2af23edf86919ad51edcfa748fb7ead4e4241e3aa7023b1f0442
+#20 resolve docker.io/mageai/mageai:latest@sha256:30eba417064f2af23edf86919ad51edcfa748fb7ead4e4241e3aa7023b1f0442 0.0s done
+#20 sha256:24f5d4a1a2c2f79394fa5e36e31dbe107c8c78db389a1a76b5702a72a1df868a 13.76kB / 13.76kB done
+#20 sha256:ca4e5d6727252f0dbc207fbf283cb95e278bf562bda42d35ce6c919583a110a0 0B / 49.55MB 0.1s
+#20 sha256:ca4e5d6727252f0dbc207fbf283cb95e278bf562bda42d35ce6c919583a110a0 5.21MB / 49.55MB 0.2s
+#20 sha256:30eba417064f2af23edf86919ad51edcfa748fb7ead4e4241e3aa7023b1f0442 1.61kB / 1.61kB done
+#20 sha256:30b93c12a9c9326732b35d9e3ebe57148abe33f8fa6e25ab76867410b0ccf876 0B / 24.05MB 0.2s
+#20 sha256:10d643a5fa823cd013a108b2076f4d2edf1b2a921f863b533e83ea5ed8d09bd4 0B / 64.14MB 0.2s
+#20 sha256:8a03a4058620d47ad1eb709da2d96b1efd7fc88596ad9d6b83a7b716c74f83bc 3.36kB / 3.36kB done
+#20 sha256:ca4e5d6727252f0dbc207fbf283cb95e278bf562bda42d35ce6c919583a110a0 16.78MB / 49.55MB 0.3s
+#20 sha256:30b93c12a9c9326732b35d9e3ebe57148abe33f8fa6e25ab76867410b0ccf876 3.76MB / 24.05MB 0.3s
+#20 sha256:ca4e5d6727252f0dbc207fbf283cb95e278bf562bda42d35ce6c919583a110a0 36.70MB / 49.55MB 0.5s
+#20 sha256:30b93c12a9c9326732b35d9e3ebe57148abe33f8fa6e25ab76867410b0ccf876 23.52MB / 24.05MB 0.5s
+#20 sha256:10d643a5fa823cd013a108b2076f4d2edf1b2a921f863b533e83ea5ed8d09bd4 13.63MB / 64.14MB 0.5s
+#20 sha256:ca4e5d6727252f0dbc207fbf283cb95e278bf562bda42d35ce6c919583a110a0 49.55MB / 49.55MB 0.7s
+#20 sha256:30b93c12a9c9326732b35d9e3ebe57148abe33f8fa6e25ab76867410b0ccf876 24.05MB / 24.05MB 0.5s done
+#20 sha256:10d643a5fa823cd013a108b2076f4d2edf1b2a921f863b533e83ea5ed8d09bd4 32.51MB / 64.14MB 0.7s
+#20 sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 3.15MB / 211.24MB 0.7s
+#20 sha256:ca4e5d6727252f0dbc207fbf283cb95e278bf562bda42d35ce6c919583a110a0 49.55MB / 49.55MB 0.8s done
+#20 sha256:10d643a5fa823cd013a108b2076f4d2edf1b2a921f863b533e83ea5ed8d09bd4 53.48MB / 64.14MB 0.9s
+#20 sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 24.12MB / 211.24MB 0.9s
+#20 sha256:7af072e87958b10d0eb4129bc89165296c5bb212b06c0be6d085f4eb0611807f 0B / 6.16MB 0.9s
+#20 sha256:10d643a5fa823cd013a108b2076f4d2edf1b2a921f863b533e83ea5ed8d09bd4 61.87MB / 64.14MB 1.0s
+#20 sha256:7af072e87958b10d0eb4129bc89165296c5bb212b06c0be6d085f4eb0611807f 2.10MB / 6.16MB 1.0s
+#20 extracting sha256:ca4e5d6727252f0dbc207fbf283cb95e278bf562bda42d35ce6c919583a110a0 0.1s
+#20 sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 41.94MB / 211.24MB 1.1s
+#20 sha256:7af072e87958b10d0eb4129bc89165296c5bb212b06c0be6d085f4eb0611807f 6.16MB / 6.16MB 1.1s
+#20 sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 60.82MB / 211.24MB 1.3s
+#20 sha256:10d643a5fa823cd013a108b2076f4d2edf1b2a921f863b533e83ea5ed8d09bd4 64.14MB / 64.14MB 1.3s done
+#20 sha256:7af072e87958b10d0eb4129bc89165296c5bb212b06c0be6d085f4eb0611807f 6.16MB / 6.16MB 1.4s done
+#20 sha256:16a54ae0623da104f900c6497b71dba83deb4a616b2f99f1e14e7b24568411cd 0B / 230B 1.4s
+#20 sha256:12887c53cd8229a7015012494d18691a9aaa887d412776bada7485c36ca6a4e3 0B / 17.15MB 1.4s
+#20 sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 79.06MB / 211.24MB 1.5s
+#20 sha256:16a54ae0623da104f900c6497b71dba83deb4a616b2f99f1e14e7b24568411cd 230B / 230B 1.5s done
+#20 sha256:12887c53cd8229a7015012494d18691a9aaa887d412776bada7485c36ca6a4e3 5.24MB / 17.15MB 1.5s
+#20 sha256:9b6892e7b73b1070bbcbf52f4b208d1f5f4b42d5280fee489d34b434af89f891 0B / 3.08MB 1.5s
+#20 sha256:12887c53cd8229a7015012494d18691a9aaa887d412776bada7485c36ca6a4e3 15.59MB / 17.15MB 1.6s
+#20 sha256:9b6892e7b73b1070bbcbf52f4b208d1f5f4b42d5280fee489d34b434af89f891 1.45MB / 3.08MB 1.6s
+#20 sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 94.37MB / 211.24MB 1.7s
+#20 sha256:12887c53cd8229a7015012494d18691a9aaa887d412776bada7485c36ca6a4e3 17.15MB / 17.15MB 1.7s done
+#20 sha256:9b6892e7b73b1070bbcbf52f4b208d1f5f4b42d5280fee489d34b434af89f891 3.08MB / 3.08MB 1.6s done
+#20 sha256:6b47a1c915d188f6cf589b541945a1750bdb344b2949895e1cd226b3fbf8da4f 0B / 70.36MB 1.7s
+#20 sha256:be93a5bca8764c8e83327457edc1f67193521eef7c3f2dfaabbaba2f549852c4 0B / 2.92MB 1.7s
+#20 sha256:6b47a1c915d188f6cf589b541945a1750bdb344b2949895e1cd226b3fbf8da4f 4.19MB / 70.36MB 1.8s
+#20 sha256:be93a5bca8764c8e83327457edc1f67193521eef7c3f2dfaabbaba2f549852c4 1.05MB / 2.92MB 1.8s
+#20 sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 113.25MB / 211.24MB 1.9s
+#20 sha256:6b47a1c915d188f6cf589b541945a1750bdb344b2949895e1cd226b3fbf8da4f 11.53MB / 70.36MB 1.9s
+#20 sha256:be93a5bca8764c8e83327457edc1f67193521eef7c3f2dfaabbaba2f549852c4 2.92MB / 2.92MB 1.8s done
+#20 sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 0B / 134.08MB 1.9s
+#20 sha256:6b47a1c915d188f6cf589b541945a1750bdb344b2949895e1cd226b3fbf8da4f 18.05MB / 70.36MB 2.0s
+#20 sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 124.78MB / 211.24MB 2.1s
+#20 sha256:6b47a1c915d188f6cf589b541945a1750bdb344b2949895e1cd226b3fbf8da4f 27.26MB / 70.36MB 2.1s
+#20 sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 9.02MB / 134.08MB 2.1s
+#20 sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 140.51MB / 211.24MB 2.3s
+#20 sha256:6b47a1c915d188f6cf589b541945a1750bdb344b2949895e1cd226b3fbf8da4f 39.48MB / 70.36MB 2.3s
+#20 sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 24.35MB / 134.08MB 2.3s
+#20 sha256:6b47a1c915d188f6cf589b541945a1750bdb344b2949895e1cd226b3fbf8da4f 46.14MB / 70.36MB 2.4s
+#20 sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 32.51MB / 134.08MB 2.4s
+#20 sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 153.34MB / 211.24MB 2.5s
+#20 sha256:6b47a1c915d188f6cf589b541945a1750bdb344b2949895e1cd226b3fbf8da4f 56.62MB / 70.36MB 2.5s
+#20 sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 40.89MB / 134.08MB 2.5s
+#20 sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 166.72MB / 211.24MB 2.7s
+#20 sha256:6b47a1c915d188f6cf589b541945a1750bdb344b2949895e1cd226b3fbf8da4f 70.36MB / 70.36MB 2.7s
+#20 sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 55.57MB / 134.08MB 2.7s
+#20 sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 63.96MB / 134.08MB 2.8s
+#20 sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 195.87MB / 211.24MB 3.0s
+#20 sha256:6b47a1c915d188f6cf589b541945a1750bdb344b2949895e1cd226b3fbf8da4f 70.36MB / 70.36MB 3.0s done
+#20 sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 79.71MB / 134.08MB 3.0s
+#20 sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 88.08MB / 134.08MB 3.1s
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 0B / 362.98MB 3.1s
+#20 sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 211.24MB / 211.24MB 3.3s
+#20 sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 102.76MB / 134.08MB 3.3s
+#20 sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 110.75MB / 134.08MB 3.4s
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 22.02MB / 362.98MB 3.4s
+#20 sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 119.54MB / 134.08MB 3.5s
+#20 sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 130.02MB / 134.08MB 3.6s
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 42.60MB / 362.98MB 3.6s
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 71.47MB / 362.98MB 3.9s
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 92.27MB / 362.98MB 4.1s
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 123.73MB / 362.98MB 4.4s
+#20 sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 211.24MB / 211.24MB 4.4s done
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 144.70MB / 362.98MB 4.6s
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 164.63MB / 362.98MB 4.8s
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 201.33MB / 362.98MB 5.2s
+#20 sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 134.08MB / 134.08MB 5.3s done
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 220.91MB / 362.98MB 5.4s
+#20 sha256:f4523db4dce8942ef4a7779e95ea96a0958c2f48400829ec5e835e3e18b23072 0B / 409B 5.4s
+#20 sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 0B / 214.89MB 5.4s
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 240.99MB / 362.98MB 5.6s
+#20 sha256:f4523db4dce8942ef4a7779e95ea96a0958c2f48400829ec5e835e3e18b23072 409B / 409B 5.4s done
+#20 sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 14.68MB / 214.89MB 5.6s
+#20 sha256:188e23fed066fd1399fab8eceb05e19c2808e8387121c8fcabdb24f2e25123d5 1.05kB / 1.05kB 5.6s done
+#20 sha256:4c37c878ded43e916351a9c27833cef2866a45d55442b584865c038ade32ab96 0B / 113B 5.6s
+#20 sha256:4c37c878ded43e916351a9c27833cef2866a45d55442b584865c038ade32ab96 113B / 113B 5.7s done
+#20 sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 33.98MB / 214.89MB 5.8s
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 274.73MB / 362.98MB 6.0s
+#20 sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 53.48MB / 214.89MB 6.0s
+#20 extracting sha256:ca4e5d6727252f0dbc207fbf283cb95e278bf562bda42d35ce6c919583a110a0 5.1s done
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 294.34MB / 362.98MB 6.2s
+#20 sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 72.35MB / 214.89MB 6.2s
+#20 extracting sha256:30b93c12a9c9326732b35d9e3ebe57148abe33f8fa6e25ab76867410b0ccf876
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 315.62MB / 362.98MB 6.4s
+#20 sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 90.72MB / 214.89MB 6.4s
+#20 sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 106.95MB / 214.89MB 6.6s
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 340.50MB / 362.98MB 6.7s
+#20 sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 124.20MB / 214.89MB 6.8s
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 362.98MB / 362.98MB 7.0s
+#20 sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 139.46MB / 214.89MB 7.0s
+#20 sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 159.38MB / 214.89MB 7.2s
+#20 sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 179.31MB / 214.89MB 7.4s
+#20 sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 209.72MB / 214.89MB 7.7s
+#20 extracting sha256:30b93c12a9c9326732b35d9e3ebe57148abe33f8fa6e25ab76867410b0ccf876 1.3s done
+#20 sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 362.98MB / 362.98MB 9.1s done
+#20 extracting sha256:10d643a5fa823cd013a108b2076f4d2edf1b2a921f863b533e83ea5ed8d09bd4
+#20 sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 214.89MB / 214.89MB 10.5s done
+#20 extracting sha256:10d643a5fa823cd013a108b2076f4d2edf1b2a921f863b533e83ea5ed8d09bd4 4.6s done
+#20 extracting sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05
+#20 extracting sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 5.1s
+#20 extracting sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 10.1s
+#20 extracting sha256:d6dc1019d7935fe82827434da11bf96cf14e24979f8155e73b794286f10b7f05 11.8s done
+#20 extracting sha256:7af072e87958b10d0eb4129bc89165296c5bb212b06c0be6d085f4eb0611807f
+#20 extracting sha256:7af072e87958b10d0eb4129bc89165296c5bb212b06c0be6d085f4eb0611807f 0.5s done
+#20 extracting sha256:12887c53cd8229a7015012494d18691a9aaa887d412776bada7485c36ca6a4e3
+#20 extracting sha256:12887c53cd8229a7015012494d18691a9aaa887d412776bada7485c36ca6a4e3 1.0s done
+#20 extracting sha256:16a54ae0623da104f900c6497b71dba83deb4a616b2f99f1e14e7b24568411cd
+#20 extracting sha256:16a54ae0623da104f900c6497b71dba83deb4a616b2f99f1e14e7b24568411cd done
+#20 extracting sha256:9b6892e7b73b1070bbcbf52f4b208d1f5f4b42d5280fee489d34b434af89f891
+#20 extracting sha256:9b6892e7b73b1070bbcbf52f4b208d1f5f4b42d5280fee489d34b434af89f891 0.5s done
+#20 extracting sha256:6b47a1c915d188f6cf589b541945a1750bdb344b2949895e1cd226b3fbf8da4f
+#20 extracting sha256:6b47a1c915d188f6cf589b541945a1750bdb344b2949895e1cd226b3fbf8da4f 2.5s done
+#20 extracting sha256:be93a5bca8764c8e83327457edc1f67193521eef7c3f2dfaabbaba2f549852c4
+#20 extracting sha256:be93a5bca8764c8e83327457edc1f67193521eef7c3f2dfaabbaba2f549852c4 0.1s done
+#20 extracting sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 0.1s
+#20 extracting sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 5.4s
+#20 extracting sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 10.5s
+#20 extracting sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 17.0s
+#20 extracting sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 23.7s
+#20 extracting sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 29.6s
+#20 extracting sha256:8fffce042355952542cf5bd069e804085ff6b9138747cdbdf919ab91e5f7660a 34.0s done
+#20 extracting sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25
+#20 extracting sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 5.0s
+#20 extracting sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 10.1s
+#20 extracting sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 15.3s
+#20 extracting sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 20.3s
+#20 extracting sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 25.4s
+#20 extracting sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 30.4s
+#20 extracting sha256:ae56e156b9235c58e2e2aeaab678c56fabbcf1ba1a23735dd55022962f040f25 32.5s done
+#20 extracting sha256:f4523db4dce8942ef4a7779e95ea96a0958c2f48400829ec5e835e3e18b23072
+#20 extracting sha256:f4523db4dce8942ef4a7779e95ea96a0958c2f48400829ec5e835e3e18b23072 done
+#20 extracting sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461
+#20 extracting sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 5.0s
+#20 extracting sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 10.3s
+#20 extracting sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 15.4s
+#20 extracting sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 20.4s
+#20 extracting sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 25.5s
+#20 extracting sha256:a53a90959d803a7c2c6ac4933f18d17b461ab458cdf55a00e4f414a980521461 26.3s done
+#20 extracting sha256:188e23fed066fd1399fab8eceb05e19c2808e8387121c8fcabdb24f2e25123d5
+#20 extracting sha256:188e23fed066fd1399fab8eceb05e19c2808e8387121c8fcabdb24f2e25123d5 done
+#20 extracting sha256:4c37c878ded43e916351a9c27833cef2866a45d55442b584865c038ade32ab96 done
+#20 DONE 129.8s
+
+#21 [magic 2/7] RUN echo 'deb http://deb.debian.org/debian bullseye main' > /etc/apt/sources.list.d/bullseye.list
+#21 DONE 3.7s
+
+#22 [magic 3/7] RUN apt-get update -y &&     apt-get install -y openjdk-11-jdk
+#22 0.503 Get:1 http://deb.debian.org/debian bullseye InRelease [116 kB]
+#22 0.527 Get:2 http://deb.debian.org/debian bookworm InRelease [151 kB]
+#22 0.542 Get:3 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+#22 0.552 Get:4 http://deb.debian.org/debian-security bookworm-security InRelease [48.0 kB]
+#22 0.610 Get:5 https://packages.microsoft.com/debian/11/prod bullseye InRelease [3650 B]
+#22 0.753 Get:6 http://deb.debian.org/debian bullseye/main amd64 Packages [8067 kB]
+#22 0.863 Get:7 http://deb.debian.org/debian bookworm/main amd64 Packages [8788 kB]
+#22 0.974 Get:8 http://deb.debian.org/debian bookworm-updates/main amd64 Packages [13.8 kB]
+#22 1.055 Get:9 http://deb.debian.org/debian-security bookworm-security/main amd64 Packages [169 kB]
+#22 1.263 Get:10 https://packages.microsoft.com/debian/11/prod bullseye/main amd64 Packages [172 kB]
+#22 1.299 Get:11 https://packages.microsoft.com/debian/11/prod bullseye/main all Packages [1212 B]
+#22 1.309 Get:12 https://packages.microsoft.com/debian/11/prod bullseye/main arm64 Packages [36.2 kB]
+#22 1.312 Get:13 https://packages.microsoft.com/debian/11/prod bullseye/main armhf Packages [30.6 kB]
+#22 3.784 Fetched 17.7 MB in 3s (5310 kB/s)
+#22 3.784 Reading package lists...
+#22 5.279 W: https://packages.microsoft.com/debian/11/prod/dists/bullseye/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.
+#22 5.294 Reading package lists...
+#22 6.818 Building dependency tree...
+#22 7.149 Reading state information...
+#22 7.486 The following additional packages will be installed:
+#22 7.486   alsa-topology-conf alsa-ucm-conf at-spi2-common at-spi2-core
+#22 7.486   ca-certificates-java dbus dbus-bin dbus-daemon dbus-session-bus-common
+#22 7.486   dbus-system-bus-common dbus-user-session dconf-gsettings-backend
+#22 7.487   dconf-service fonts-dejavu-extra gsettings-desktop-schemas java-common
+#22 7.487   libapparmor1 libargon2-1 libasound2 libasound2-data libatk-bridge2.0-0
+#22 7.487   libatk-wrapper-java libatk-wrapper-java-jni libatk1.0-0 libatspi2.0-0
+#22 7.487   libavahi-client3 libavahi-common-data libavahi-common3 libcryptsetup12
+#22 7.487   libcups2 libdbus-1-3 libdconf1 libdrm-amdgpu1 libdrm-common libdrm-intel1
+#22 7.491   libdrm-nouveau2 libdrm-radeon1 libdrm2 libfdisk1 libfontenc1 libgif7 libgl1
+#22 7.491   libgl1-mesa-dri libglapi-mesa libglvnd0 libglx-mesa0 libglx0 libip4tc2
+#22 7.491   libjson-c5 libkmod2 libllvm15 libnspr4 libnss-systemd libnss3 libpam-systemd
+#22 7.491   libpciaccess0 libpcsclite1 libsensors-config libsensors5 libsystemd-shared
+#22 7.491   libx11-xcb1 libxcb-dri2-0 libxcb-dri3-0 libxcb-glx0 libxcb-present0
+#22 7.491   libxcb-randr0 libxcb-shape0 libxcb-sync1 libxcb-xfixes0 libxcomposite1
+#22 7.491   libxfixes3 libxi6 libxinerama1 libxkbfile1 libxmuu1 libxrandr2 libxshmfence1
+#22 7.491   libxtst6 libxv1 libxxf86dga1 libxxf86vm1 libz3-4 openjdk-11-jdk-headless
+#22 7.491   openjdk-11-jre openjdk-11-jre-headless systemd systemd-sysv
+#22 7.491   systemd-timesyncd x11-utils
+#22 7.493 Suggested packages:
+#22 7.493   default-jre libasound2-plugins alsa-utils cups-common pciutils pcscd
+#22 7.493   lm-sensors openjdk-11-demo openjdk-11-source visualvm libnss-mdns
+#22 7.493   fonts-ipafont-gothic fonts-ipafont-mincho fonts-wqy-microhei
+#22 7.493   | fonts-wqy-zenhei fonts-indic systemd-container systemd-homed
+#22 7.493   systemd-userdbd systemd-boot systemd-resolved libqrencode4
+#22 7.493   libtss2-esys-3.0.2-0 libtss2-mu0 libtss2-rc0 polkitd | policykit-1
+#22 7.493   mesa-utils
+#22 8.050 The following NEW packages will be installed:
+#22 8.050   alsa-topology-conf alsa-ucm-conf at-spi2-common at-spi2-core
+#22 8.050   ca-certificates-java dbus dbus-bin dbus-daemon dbus-session-bus-common
+#22 8.050   dbus-system-bus-common dbus-user-session dconf-gsettings-backend
+#22 8.051   dconf-service fonts-dejavu-extra gsettings-desktop-schemas java-common
+#22 8.051   libapparmor1 libargon2-1 libasound2 libasound2-data libatk-bridge2.0-0
+#22 8.051   libatk-wrapper-java libatk-wrapper-java-jni libatk1.0-0 libatspi2.0-0
+#22 8.051   libavahi-client3 libavahi-common-data libavahi-common3 libcryptsetup12
+#22 8.051   libcups2 libdbus-1-3 libdconf1 libdrm-amdgpu1 libdrm-common libdrm-intel1
+#22 8.052   libdrm-nouveau2 libdrm-radeon1 libdrm2 libfdisk1 libfontenc1 libgif7 libgl1
+#22 8.052   libgl1-mesa-dri libglapi-mesa libglvnd0 libglx-mesa0 libglx0 libip4tc2
+#22 8.055   libjson-c5 libkmod2 libllvm15 libnspr4 libnss-systemd libnss3 libpam-systemd
+#22 8.055   libpciaccess0 libpcsclite1 libsensors-config libsensors5 libsystemd-shared
+#22 8.055   libx11-xcb1 libxcb-dri2-0 libxcb-dri3-0 libxcb-glx0 libxcb-present0
+#22 8.055   libxcb-randr0 libxcb-shape0 libxcb-sync1 libxcb-xfixes0 libxcomposite1
+#22 8.055   libxfixes3 libxi6 libxinerama1 libxkbfile1 libxmuu1 libxrandr2 libxshmfence1
+#22 8.055   libxtst6 libxv1 libxxf86dga1 libxxf86vm1 libz3-4 openjdk-11-jdk
+#22 8.055   openjdk-11-jdk-headless openjdk-11-jre openjdk-11-jre-headless systemd
+#22 8.055   systemd-sysv systemd-timesyncd x11-utils
+#22 8.109 0 upgraded, 90 newly installed, 0 to remove and 0 not upgraded.
+#22 8.109 Need to get 164 MB of archives.
+#22 8.109 After this operation, 475 MB of additional disk space will be used.
+#22 8.109 Get:1 http://deb.debian.org/debian bookworm/main amd64 libargon2-1 amd64 0~20171227-0.3+deb12u1 [19.4 kB]
+#22 8.119 Get:2 http://deb.debian.org/debian bookworm/main amd64 libjson-c5 amd64 0.16-2 [44.1 kB]
+#22 8.128 Get:3 http://deb.debian.org/debian bookworm/main amd64 libcryptsetup12 amd64 2:2.6.1-4~deb12u2 [223 kB]
+#22 8.143 Get:4 http://deb.debian.org/debian bookworm/main amd64 libfdisk1 amd64 2.38.1-5+deb12u1 [193 kB]
+#22 8.146 Get:5 http://deb.debian.org/debian bookworm/main amd64 libkmod2 amd64 30+20221128-1 [57.9 kB]
+#22 8.150 Get:6 http://deb.debian.org/debian bookworm/main amd64 libapparmor1 amd64 3.0.8-3 [41.2 kB]
+#22 8.151 Get:7 http://deb.debian.org/debian bookworm/main amd64 libip4tc2 amd64 1.8.9-2 [19.0 kB]
+#22 8.152 Get:8 http://deb.debian.org/debian bookworm/main amd64 libsystemd-shared amd64 252.26-1~deb12u2 [1692 kB]
+#22 8.171 Get:9 http://deb.debian.org/debian bookworm/main amd64 systemd amd64 252.26-1~deb12u2 [3035 kB]
+#22 8.200 Get:10 http://deb.debian.org/debian bookworm/main amd64 systemd-sysv amd64 252.26-1~deb12u2 [42.3 kB]
+#22 8.201 Get:11 http://deb.debian.org/debian bookworm/main amd64 libdbus-1-3 amd64 1.14.10-1~deb12u1 [201 kB]
+#22 8.203 Get:12 http://deb.debian.org/debian bookworm/main amd64 dbus-bin amd64 1.14.10-1~deb12u1 [105 kB]
+#22 8.204 Get:13 http://deb.debian.org/debian bookworm/main amd64 dbus-session-bus-common all 1.14.10-1~deb12u1 [78.2 kB]
+#22 8.205 Get:14 http://deb.debian.org/debian bookworm/main amd64 dbus-daemon amd64 1.14.10-1~deb12u1 [184 kB]
+#22 8.208 Get:15 http://deb.debian.org/debian bookworm/main amd64 dbus-system-bus-common all 1.14.10-1~deb12u1 [79.3 kB]
+#22 8.209 Get:16 http://deb.debian.org/debian bookworm/main amd64 dbus amd64 1.14.10-1~deb12u1 [97.4 kB]
+#22 8.210 Get:17 http://deb.debian.org/debian bookworm/main amd64 libnss-systemd amd64 252.26-1~deb12u2 [163 kB]
+#22 8.212 Get:18 http://deb.debian.org/debian bookworm/main amd64 libpam-systemd amd64 252.26-1~deb12u2 [225 kB]
+#22 8.214 Get:19 http://deb.debian.org/debian bookworm/main amd64 systemd-timesyncd amd64 252.26-1~deb12u2 [63.4 kB]
+#22 8.218 Get:20 http://deb.debian.org/debian bookworm/main amd64 alsa-topology-conf all 1.2.5.1-2 [15.2 kB]
+#22 8.219 Get:21 http://deb.debian.org/debian bookworm/main amd64 libasound2-data all 1.2.8-1 [20.5 kB]
+#22 8.220 Get:22 http://deb.debian.org/debian bookworm/main amd64 libasound2 amd64 1.2.8-1+b1 [362 kB]
+#22 8.223 Get:23 http://deb.debian.org/debian bookworm/main amd64 alsa-ucm-conf all 1.2.8-1 [51.7 kB]
+#22 8.225 Get:24 http://deb.debian.org/debian bookworm/main amd64 at-spi2-common all 2.46.0-5 [162 kB]
+#22 8.227 Get:25 http://deb.debian.org/debian bookworm/main amd64 libxi6 amd64 2:1.8-1+b1 [84.2 kB]
+#22 8.228 Get:26 http://deb.debian.org/debian bookworm/main amd64 libatspi2.0-0 amd64 2.46.0-5 [75.4 kB]
+#22 8.229 Get:27 http://deb.debian.org/debian bookworm/main amd64 libxtst6 amd64 2:1.2.3-1.1 [28.0 kB]
+#22 8.230 Get:28 http://deb.debian.org/debian bookworm/main amd64 dbus-user-session amd64 1.14.10-1~deb12u1 [78.1 kB]
+#22 8.231 Get:29 http://deb.debian.org/debian bookworm/main amd64 libdconf1 amd64 0.40.0-4 [40.9 kB]
+#22 8.232 Get:30 http://deb.debian.org/debian bookworm/main amd64 dconf-service amd64 0.40.0-4 [31.6 kB]
+#22 8.233 Get:31 http://deb.debian.org/debian bookworm/main amd64 dconf-gsettings-backend amd64 0.40.0-4 [27.8 kB]
+#22 8.233 Get:32 http://deb.debian.org/debian bookworm/main amd64 gsettings-desktop-schemas all 43.0-1 [643 kB]
+#22 8.240 Get:33 http://deb.debian.org/debian bookworm/main amd64 at-spi2-core amd64 2.46.0-5 [57.3 kB]
+#22 8.241 Get:34 http://deb.debian.org/debian bookworm/main amd64 ca-certificates-java all 20230710~deb12u1 [11.9 kB]
+#22 8.241 Get:35 http://deb.debian.org/debian bookworm/main amd64 fonts-dejavu-extra all 2.37-6 [1985 kB]
+#22 8.256 Get:36 http://deb.debian.org/debian bookworm/main amd64 java-common all 0.74 [6388 B]
+#22 8.257 Get:37 http://deb.debian.org/debian bookworm/main amd64 libatk1.0-0 amd64 2.46.0-5 [49.6 kB]
+#22 8.258 Get:38 http://deb.debian.org/debian bookworm/main amd64 libatk-bridge2.0-0 amd64 2.46.0-5 [64.6 kB]
+#22 8.258 Get:39 http://deb.debian.org/debian bullseye/main amd64 libfontenc1 amd64 1:1.1.4-1 [24.3 kB]
+#22 8.259 Get:40 http://deb.debian.org/debian bookworm/main amd64 libglvnd0 amd64 1.6.0-1 [51.8 kB]
+#22 8.263 Get:41 http://deb.debian.org/debian bookworm/main amd64 libdrm-common all 2.4.114-1 [7112 B]
+#22 8.264 Get:42 http://deb.debian.org/debian bookworm/main amd64 libdrm2 amd64 2.4.114-1+b1 [37.5 kB]
+#22 8.264 Get:43 http://deb.debian.org/debian bookworm/main amd64 libglapi-mesa amd64 22.3.6-1+deb12u1 [35.7 kB]
+#22 8.264 Get:44 http://deb.debian.org/debian bookworm/main amd64 libx11-xcb1 amd64 2:1.8.4-2+deb12u2 [192 kB]
+#22 8.267 Get:45 http://deb.debian.org/debian bookworm/main amd64 libxcb-dri2-0 amd64 1.15-1 [107 kB]
+#22 8.268 Get:46 http://deb.debian.org/debian bookworm/main amd64 libxcb-dri3-0 amd64 1.15-1 [107 kB]
+#22 8.274 Get:47 http://deb.debian.org/debian bookworm/main amd64 libxcb-glx0 amd64 1.15-1 [122 kB]
+#22 8.276 Get:48 http://deb.debian.org/debian bookworm/main amd64 libxcb-present0 amd64 1.15-1 [105 kB]
+#22 8.277 Get:49 http://deb.debian.org/debian bookworm/main amd64 libxcb-randr0 amd64 1.15-1 [117 kB]
+#22 8.279 Get:50 http://deb.debian.org/debian bookworm/main amd64 libxcb-sync1 amd64 1.15-1 [109 kB]
+#22 8.281 Get:51 http://deb.debian.org/debian bookworm/main amd64 libxcb-xfixes0 amd64 1.15-1 [109 kB]
+#22 8.282 Get:52 http://deb.debian.org/debian bookworm/main amd64 libxfixes3 amd64 1:6.0.0-2 [22.7 kB]
+#22 8.283 Get:53 http://deb.debian.org/debian bullseye/main amd64 libxshmfence1 amd64 1.3-1 [8820 B]
+#22 8.283 Get:54 http://deb.debian.org/debian bullseye/main amd64 libxxf86vm1 amd64 1:1.1.4-1+b2 [20.8 kB]
+#22 8.284 Get:55 http://deb.debian.org/debian bookworm/main amd64 libdrm-amdgpu1 amd64 2.4.114-1+b1 [20.9 kB]
+#22 8.285 Get:56 http://deb.debian.org/debian bookworm/main amd64 libpciaccess0 amd64 0.17-2 [51.4 kB]
+#22 8.288 Get:57 http://deb.debian.org/debian bookworm/main amd64 libdrm-intel1 amd64 2.4.114-1+b1 [64.0 kB]
+#22 8.298 Get:58 http://deb.debian.org/debian bookworm/main amd64 libdrm-nouveau2 amd64 2.4.114-1+b1 [19.1 kB]
+#22 8.299 Get:59 http://deb.debian.org/debian bookworm/main amd64 libdrm-radeon1 amd64 2.4.114-1+b1 [21.8 kB]
+#22 8.300 Get:60 http://deb.debian.org/debian bookworm/main amd64 libz3-4 amd64 4.8.12-3.1 [7216 kB]
+#22 8.359 Get:61 http://deb.debian.org/debian bookworm/main amd64 libllvm15 amd64 1:15.0.6-4+b1 [23.1 MB]
+#22 8.531 Get:62 http://deb.debian.org/debian bookworm/main amd64 libsensors-config all 1:3.6.0-7.1 [14.3 kB]
+#22 8.532 Get:63 http://deb.debian.org/debian bookworm/main amd64 libsensors5 amd64 1:3.6.0-7.1 [34.2 kB]
+#22 8.532 Get:64 http://deb.debian.org/debian bookworm/main amd64 libgl1-mesa-dri amd64 22.3.6-1+deb12u1 [7239 kB]
+#22 8.586 Get:65 http://deb.debian.org/debian bookworm/main amd64 libglx-mesa0 amd64 22.3.6-1+deb12u1 [147 kB]
+#22 8.588 Get:66 http://deb.debian.org/debian bookworm/main amd64 libglx0 amd64 1.6.0-1 [34.4 kB]
+#22 8.588 Get:67 http://deb.debian.org/debian bookworm/main amd64 libgl1 amd64 1.6.0-1 [88.4 kB]
+#22 8.589 Get:68 http://deb.debian.org/debian bookworm/main amd64 libxcb-shape0 amd64 1.15-1 [106 kB]
+#22 8.591 Get:69 http://deb.debian.org/debian bullseye/main amd64 libxcomposite1 amd64 1:0.4.5-1 [16.6 kB]
+#22 8.592 Get:70 http://deb.debian.org/debian bookworm/main amd64 libxinerama1 amd64 2:1.1.4-3 [17.8 kB]
+#22 8.592 Get:71 http://deb.debian.org/debian bullseye/main amd64 libxkbfile1 amd64 1:1.1.0-1 [75.2 kB]
+#22 8.593 Get:72 http://deb.debian.org/debian bookworm/main amd64 libxmuu1 amd64 2:1.1.3-3 [23.9 kB]
+#22 8.594 Get:73 http://deb.debian.org/debian bookworm/main amd64 libxrandr2 amd64 2:1.5.2-2+b1 [39.2 kB]
+#22 8.596 Get:74 http://deb.debian.org/debian bookworm/main amd64 libxv1 amd64 2:1.0.11-1.1 [24.8 kB]
+#22 8.604 Get:75 http://deb.debian.org/debian bookworm/main amd64 libxxf86dga1 amd64 2:1.1.5-1 [22.1 kB]
+#22 8.604 Get:76 http://deb.debian.org/debian bullseye/main amd64 x11-utils amd64 7.7+5 [202 kB]
+#22 8.606 Get:77 http://deb.debian.org/debian bookworm/main amd64 libatk-wrapper-java all 0.40.0-3 [63.4 kB]
+#22 8.607 Get:78 http://deb.debian.org/debian bookworm/main amd64 libatk-wrapper-java-jni amd64 0.40.0-3 [54.6 kB]
+#22 8.608 Get:79 http://deb.debian.org/debian bookworm/main amd64 libavahi-common-data amd64 0.8-10 [107 kB]
+#22 8.610 Get:80 http://deb.debian.org/debian bookworm/main amd64 libavahi-common3 amd64 0.8-10 [41.6 kB]
+#22 8.612 Get:81 http://deb.debian.org/debian bookworm/main amd64 libavahi-client3 amd64 0.8-10 [45.5 kB]
+#22 8.612 Get:82 http://deb.debian.org/debian bookworm/main amd64 libcups2 amd64 2.4.2-3+deb12u5 [245 kB]
+#22 8.614 Get:83 http://deb.debian.org/debian bookworm/main amd64 libgif7 amd64 5.2.1-2.5 [46.9 kB]
+#22 8.615 Get:84 http://deb.debian.org/debian bookworm/main amd64 libnspr4 amd64 2:4.35-1 [113 kB]
+#22 8.618 Get:85 http://deb.debian.org/debian bookworm/main amd64 libnss3 amd64 2:3.87.1-1 [1331 kB]
+#22 8.628 Get:86 http://deb.debian.org/debian bookworm/main amd64 libpcsclite1 amd64 1.9.9-2 [49.7 kB]
+#22 8.629 Get:87 http://deb.debian.org/debian bullseye/main amd64 openjdk-11-jre-headless amd64 11.0.23+9-1~deb11u1 [38.2 MB]
+#22 8.939 Get:88 http://deb.debian.org/debian bullseye/main amd64 openjdk-11-jre amd64 11.0.23+9-1~deb11u1 [194 kB]
+#22 8.942 Get:89 http://deb.debian.org/debian bullseye/main amd64 openjdk-11-jdk-headless amd64 11.0.23+9-1~deb11u1 [73.6 MB]
+#22 9.706 Get:90 http://deb.debian.org/debian bullseye/main amd64 openjdk-11-jdk amd64 11.0.23+9-1~deb11u1 [13.5 kB]
+#22 10.08 debconf: delaying package configuration, since apt-utils is not installed
+#22 10.15 Fetched 164 MB in 2s (101 MB/s)
+#22 10.21 Selecting previously unselected package libargon2-1:amd64.
+#22 10.21 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 26836 files and directories currently installed.)
+#22 10.29 Preparing to unpack .../0-libargon2-1_0~20171227-0.3+deb12u1_amd64.deb ...
+#22 10.30 Unpacking libargon2-1:amd64 (0~20171227-0.3+deb12u1) ...
+#22 10.35 Selecting previously unselected package libjson-c5:amd64.
+#22 10.36 Preparing to unpack .../1-libjson-c5_0.16-2_amd64.deb ...
+#22 10.36 Unpacking libjson-c5:amd64 (0.16-2) ...
+#22 10.42 Selecting previously unselected package libcryptsetup12:amd64.
+#22 10.42 Preparing to unpack .../2-libcryptsetup12_2%3a2.6.1-4~deb12u2_amd64.deb ...
+#22 10.43 Unpacking libcryptsetup12:amd64 (2:2.6.1-4~deb12u2) ...
+#22 10.50 Selecting previously unselected package libfdisk1:amd64.
+#22 10.50 Preparing to unpack .../3-libfdisk1_2.38.1-5+deb12u1_amd64.deb ...
+#22 10.51 Unpacking libfdisk1:amd64 (2.38.1-5+deb12u1) ...
+#22 10.58 Selecting previously unselected package libkmod2:amd64.
+#22 10.58 Preparing to unpack .../4-libkmod2_30+20221128-1_amd64.deb ...
+#22 10.59 Unpacking libkmod2:amd64 (30+20221128-1) ...
+#22 10.65 Selecting previously unselected package libapparmor1:amd64.
+#22 10.65 Preparing to unpack .../5-libapparmor1_3.0.8-3_amd64.deb ...
+#22 10.65 Unpacking libapparmor1:amd64 (3.0.8-3) ...
+#22 10.71 Selecting previously unselected package libip4tc2:amd64.
+#22 10.71 Preparing to unpack .../6-libip4tc2_1.8.9-2_amd64.deb ...
+#22 10.72 Unpacking libip4tc2:amd64 (1.8.9-2) ...
+#22 10.76 Selecting previously unselected package libsystemd-shared:amd64.
+#22 10.77 Preparing to unpack .../7-libsystemd-shared_252.26-1~deb12u2_amd64.deb ...
+#22 10.77 Unpacking libsystemd-shared:amd64 (252.26-1~deb12u2) ...
+#22 11.00 Selecting previously unselected package systemd.
+#22 11.00 Preparing to unpack .../8-systemd_252.26-1~deb12u2_amd64.deb ...
+#22 11.03 Unpacking systemd (252.26-1~deb12u2) ...
+#22 11.46 Setting up libargon2-1:amd64 (0~20171227-0.3+deb12u1) ...
+#22 11.47 Setting up libjson-c5:amd64 (0.16-2) ...
+#22 11.49 Setting up libcryptsetup12:amd64 (2:2.6.1-4~deb12u2) ...
+#22 11.50 Setting up libfdisk1:amd64 (2.38.1-5+deb12u1) ...
+#22 11.51 Setting up libkmod2:amd64 (30+20221128-1) ...
+#22 11.52 Setting up libapparmor1:amd64 (3.0.8-3) ...
+#22 11.54 Setting up libip4tc2:amd64 (1.8.9-2) ...
+#22 11.55 Setting up libsystemd-shared:amd64 (252.26-1~deb12u2) ...
+#22 11.56 Setting up systemd (252.26-1~deb12u2) ...
+#22 11.62 Created symlink /etc/systemd/system/getty.target.wants/getty@tty1.service → /lib/systemd/system/getty@.service.
+#22 11.63 Created symlink /etc/systemd/system/multi-user.target.wants/remote-fs.target → /lib/systemd/system/remote-fs.target.
+#22 11.64 Created symlink /etc/systemd/system/sysinit.target.wants/systemd-pstore.service → /lib/systemd/system/systemd-pstore.service.
+#22 11.66 Initializing machine ID from random generator.
+#22 11.70 Creating group 'systemd-journal' with GID 999.
+#22 11.70 Creating group 'systemd-network' with GID 998.
+#22 11.70 Creating user 'systemd-network' (systemd Network Management) with UID 998 and GID 998.
+#22 11.83 Selecting previously unselected package systemd-sysv.
+#22 11.83 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 27726 files and directories currently installed.)
+#22 11.86 Preparing to unpack .../00-systemd-sysv_252.26-1~deb12u2_amd64.deb ...
+#22 11.86 Unpacking systemd-sysv (252.26-1~deb12u2) ...
+#22 11.92 Selecting previously unselected package libdbus-1-3:amd64.
+#22 11.92 Preparing to unpack .../01-libdbus-1-3_1.14.10-1~deb12u1_amd64.deb ...
+#22 11.93 Unpacking libdbus-1-3:amd64 (1.14.10-1~deb12u1) ...
+#22 11.99 Selecting previously unselected package dbus-bin.
+#22 11.99 Preparing to unpack .../02-dbus-bin_1.14.10-1~deb12u1_amd64.deb ...
+#22 12.00 Unpacking dbus-bin (1.14.10-1~deb12u1) ...
+#22 12.05 Selecting previously unselected package dbus-session-bus-common.
+#22 12.06 Preparing to unpack .../03-dbus-session-bus-common_1.14.10-1~deb12u1_all.deb ...
+#22 12.06 Unpacking dbus-session-bus-common (1.14.10-1~deb12u1) ...
+#22 12.12 Selecting previously unselected package dbus-daemon.
+#22 12.12 Preparing to unpack .../04-dbus-daemon_1.14.10-1~deb12u1_amd64.deb ...
+#22 12.13 Unpacking dbus-daemon (1.14.10-1~deb12u1) ...
+#22 12.19 Selecting previously unselected package dbus-system-bus-common.
+#22 12.20 Preparing to unpack .../05-dbus-system-bus-common_1.14.10-1~deb12u1_all.deb ...
+#22 12.20 Unpacking dbus-system-bus-common (1.14.10-1~deb12u1) ...
+#22 12.26 Selecting previously unselected package dbus.
+#22 12.27 Preparing to unpack .../06-dbus_1.14.10-1~deb12u1_amd64.deb ...
+#22 12.27 Unpacking dbus (1.14.10-1~deb12u1) ...
+#22 12.34 Selecting previously unselected package libnss-systemd:amd64.
+#22 12.34 Preparing to unpack .../07-libnss-systemd_252.26-1~deb12u2_amd64.deb ...
+#22 12.35 Unpacking libnss-systemd:amd64 (252.26-1~deb12u2) ...
+#22 12.41 Selecting previously unselected package libpam-systemd:amd64.
+#22 12.42 Preparing to unpack .../08-libpam-systemd_252.26-1~deb12u2_amd64.deb ...
+#22 12.42 Unpacking libpam-systemd:amd64 (252.26-1~deb12u2) ...
+#22 12.49 Selecting previously unselected package systemd-timesyncd.
+#22 12.50 Preparing to unpack .../09-systemd-timesyncd_252.26-1~deb12u2_amd64.deb ...
+#22 12.50 Unpacking systemd-timesyncd (252.26-1~deb12u2) ...
+#22 12.55 Selecting previously unselected package alsa-topology-conf.
+#22 12.56 Preparing to unpack .../10-alsa-topology-conf_1.2.5.1-2_all.deb ...
+#22 12.56 Unpacking alsa-topology-conf (1.2.5.1-2) ...
+#22 12.61 Selecting previously unselected package libasound2-data.
+#22 12.61 Preparing to unpack .../11-libasound2-data_1.2.8-1_all.deb ...
+#22 12.61 Unpacking libasound2-data (1.2.8-1) ...
+#22 12.68 Selecting previously unselected package libasound2:amd64.
+#22 12.68 Preparing to unpack .../12-libasound2_1.2.8-1+b1_amd64.deb ...
+#22 12.69 Unpacking libasound2:amd64 (1.2.8-1+b1) ...
+#22 12.77 Selecting previously unselected package alsa-ucm-conf.
+#22 12.77 Preparing to unpack .../13-alsa-ucm-conf_1.2.8-1_all.deb ...
+#22 12.78 Unpacking alsa-ucm-conf (1.2.8-1) ...
+#22 12.92 Selecting previously unselected package at-spi2-common.
+#22 12.93 Preparing to unpack .../14-at-spi2-common_2.46.0-5_all.deb ...
+#22 12.93 Unpacking at-spi2-common (2.46.0-5) ...
+#22 13.04 Selecting previously unselected package libxi6:amd64.
+#22 13.05 Preparing to unpack .../15-libxi6_2%3a1.8-1+b1_amd64.deb ...
+#22 13.05 Unpacking libxi6:amd64 (2:1.8-1+b1) ...
+#22 13.11 Selecting previously unselected package libatspi2.0-0:amd64.
+#22 13.11 Preparing to unpack .../16-libatspi2.0-0_2.46.0-5_amd64.deb ...
+#22 13.12 Unpacking libatspi2.0-0:amd64 (2.46.0-5) ...
+#22 13.17 Selecting previously unselected package libxtst6:amd64.
+#22 13.18 Preparing to unpack .../17-libxtst6_2%3a1.2.3-1.1_amd64.deb ...
+#22 13.18 Unpacking libxtst6:amd64 (2:1.2.3-1.1) ...
+#22 13.23 Selecting previously unselected package dbus-user-session.
+#22 13.24 Preparing to unpack .../18-dbus-user-session_1.14.10-1~deb12u1_amd64.deb ...
+#22 13.24 Unpacking dbus-user-session (1.14.10-1~deb12u1) ...
+#22 13.30 Selecting previously unselected package libdconf1:amd64.
+#22 13.31 Preparing to unpack .../19-libdconf1_0.40.0-4_amd64.deb ...
+#22 13.31 Unpacking libdconf1:amd64 (0.40.0-4) ...
+#22 13.36 Selecting previously unselected package dconf-service.
+#22 13.37 Preparing to unpack .../20-dconf-service_0.40.0-4_amd64.deb ...
+#22 13.37 Unpacking dconf-service (0.40.0-4) ...
+#22 13.42 Selecting previously unselected package dconf-gsettings-backend:amd64.
+#22 13.42 Preparing to unpack .../21-dconf-gsettings-backend_0.40.0-4_amd64.deb ...
+#22 13.43 Unpacking dconf-gsettings-backend:amd64 (0.40.0-4) ...
+#22 13.48 Selecting previously unselected package gsettings-desktop-schemas.
+#22 13.49 Preparing to unpack .../22-gsettings-desktop-schemas_43.0-1_all.deb ...
+#22 13.49 Unpacking gsettings-desktop-schemas (43.0-1) ...
+#22 13.63 Selecting previously unselected package at-spi2-core.
+#22 13.63 Preparing to unpack .../23-at-spi2-core_2.46.0-5_amd64.deb ...
+#22 13.64 Unpacking at-spi2-core (2.46.0-5) ...
+#22 13.71 Selecting previously unselected package ca-certificates-java.
+#22 13.71 Preparing to unpack .../24-ca-certificates-java_20230710~deb12u1_all.deb ...
+#22 13.72 Unpacking ca-certificates-java (20230710~deb12u1) ...
+#22 13.79 Selecting previously unselected package fonts-dejavu-extra.
+#22 13.80 Preparing to unpack .../25-fonts-dejavu-extra_2.37-6_all.deb ...
+#22 13.80 Unpacking fonts-dejavu-extra (2.37-6) ...
+#22 14.11 Selecting previously unselected package java-common.
+#22 14.11 Preparing to unpack .../26-java-common_0.74_all.deb ...
+#22 14.11 Unpacking java-common (0.74) ...
+#22 14.17 Selecting previously unselected package libatk1.0-0:amd64.
+#22 14.17 Preparing to unpack .../27-libatk1.0-0_2.46.0-5_amd64.deb ...
+#22 14.18 Unpacking libatk1.0-0:amd64 (2.46.0-5) ...
+#22 14.23 Selecting previously unselected package libatk-bridge2.0-0:amd64.
+#22 14.24 Preparing to unpack .../28-libatk-bridge2.0-0_2.46.0-5_amd64.deb ...
+#22 14.24 Unpacking libatk-bridge2.0-0:amd64 (2.46.0-5) ...
+#22 14.30 Selecting previously unselected package libfontenc1:amd64.
+#22 14.30 Preparing to unpack .../29-libfontenc1_1%3a1.1.4-1_amd64.deb ...
+#22 14.31 Unpacking libfontenc1:amd64 (1:1.1.4-1) ...
+#22 14.36 Selecting previously unselected package libglvnd0:amd64.
+#22 14.37 Preparing to unpack .../30-libglvnd0_1.6.0-1_amd64.deb ...
+#22 14.37 Unpacking libglvnd0:amd64 (1.6.0-1) ...
+#22 14.43 Selecting previously unselected package libdrm-common.
+#22 14.43 Preparing to unpack .../31-libdrm-common_2.4.114-1_all.deb ...
+#22 14.44 Unpacking libdrm-common (2.4.114-1) ...
+#22 14.49 Selecting previously unselected package libdrm2:amd64.
+#22 14.50 Preparing to unpack .../32-libdrm2_2.4.114-1+b1_amd64.deb ...
+#22 14.50 Unpacking libdrm2:amd64 (2.4.114-1+b1) ...
+#22 14.55 Selecting previously unselected package libglapi-mesa:amd64.
+#22 14.56 Preparing to unpack .../33-libglapi-mesa_22.3.6-1+deb12u1_amd64.deb ...
+#22 14.56 Unpacking libglapi-mesa:amd64 (22.3.6-1+deb12u1) ...
+#22 14.62 Selecting previously unselected package libx11-xcb1:amd64.
+#22 14.62 Preparing to unpack .../34-libx11-xcb1_2%3a1.8.4-2+deb12u2_amd64.deb ...
+#22 14.63 Unpacking libx11-xcb1:amd64 (2:1.8.4-2+deb12u2) ...
+#22 14.68 Selecting previously unselected package libxcb-dri2-0:amd64.
+#22 14.69 Preparing to unpack .../35-libxcb-dri2-0_1.15-1_amd64.deb ...
+#22 14.69 Unpacking libxcb-dri2-0:amd64 (1.15-1) ...
+#22 14.76 Selecting previously unselected package libxcb-dri3-0:amd64.
+#22 14.76 Preparing to unpack .../36-libxcb-dri3-0_1.15-1_amd64.deb ...
+#22 14.77 Unpacking libxcb-dri3-0:amd64 (1.15-1) ...
+#22 14.82 Selecting previously unselected package libxcb-glx0:amd64.
+#22 14.83 Preparing to unpack .../37-libxcb-glx0_1.15-1_amd64.deb ...
+#22 14.84 Unpacking libxcb-glx0:amd64 (1.15-1) ...
+#22 14.90 Selecting previously unselected package libxcb-present0:amd64.
+#22 14.90 Preparing to unpack .../38-libxcb-present0_1.15-1_amd64.deb ...
+#22 14.91 Unpacking libxcb-present0:amd64 (1.15-1) ...
+#22 14.96 Selecting previously unselected package libxcb-randr0:amd64.
+#22 14.97 Preparing to unpack .../39-libxcb-randr0_1.15-1_amd64.deb ...
+#22 14.97 Unpacking libxcb-randr0:amd64 (1.15-1) ...
+#22 15.03 Selecting previously unselected package libxcb-sync1:amd64.
+#22 15.04 Preparing to unpack .../40-libxcb-sync1_1.15-1_amd64.deb ...
+#22 15.04 Unpacking libxcb-sync1:amd64 (1.15-1) ...
+#22 15.11 Selecting previously unselected package libxcb-xfixes0:amd64.
+#22 15.11 Preparing to unpack .../41-libxcb-xfixes0_1.15-1_amd64.deb ...
+#22 15.12 Unpacking libxcb-xfixes0:amd64 (1.15-1) ...
+#22 15.19 Selecting previously unselected package libxfixes3:amd64.
+#22 15.19 Preparing to unpack .../42-libxfixes3_1%3a6.0.0-2_amd64.deb ...
+#22 15.20 Unpacking libxfixes3:amd64 (1:6.0.0-2) ...
+#22 15.26 Selecting previously unselected package libxshmfence1:amd64.
+#22 15.26 Preparing to unpack .../43-libxshmfence1_1.3-1_amd64.deb ...
+#22 15.27 Unpacking libxshmfence1:amd64 (1.3-1) ...
+#22 15.31 Selecting previously unselected package libxxf86vm1:amd64.
+#22 15.32 Preparing to unpack .../44-libxxf86vm1_1%3a1.1.4-1+b2_amd64.deb ...
+#22 15.32 Unpacking libxxf86vm1:amd64 (1:1.1.4-1+b2) ...
+#22 15.37 Selecting previously unselected package libdrm-amdgpu1:amd64.
+#22 15.38 Preparing to unpack .../45-libdrm-amdgpu1_2.4.114-1+b1_amd64.deb ...
+#22 15.38 Unpacking libdrm-amdgpu1:amd64 (2.4.114-1+b1) ...
+#22 15.44 Selecting previously unselected package libpciaccess0:amd64.
+#22 15.44 Preparing to unpack .../46-libpciaccess0_0.17-2_amd64.deb ...
+#22 15.45 Unpacking libpciaccess0:amd64 (0.17-2) ...
+#22 15.51 Selecting previously unselected package libdrm-intel1:amd64.
+#22 15.51 Preparing to unpack .../47-libdrm-intel1_2.4.114-1+b1_amd64.deb ...
+#22 15.52 Unpacking libdrm-intel1:amd64 (2.4.114-1+b1) ...
+#22 15.58 Selecting previously unselected package libdrm-nouveau2:amd64.
+#22 15.58 Preparing to unpack .../48-libdrm-nouveau2_2.4.114-1+b1_amd64.deb ...
+#22 15.59 Unpacking libdrm-nouveau2:amd64 (2.4.114-1+b1) ...
+#22 15.64 Selecting previously unselected package libdrm-radeon1:amd64.
+#22 15.65 Preparing to unpack .../49-libdrm-radeon1_2.4.114-1+b1_amd64.deb ...
+#22 15.65 Unpacking libdrm-radeon1:amd64 (2.4.114-1+b1) ...
+#22 15.71 Selecting previously unselected package libz3-4:amd64.
+#22 15.71 Preparing to unpack .../50-libz3-4_4.8.12-3.1_amd64.deb ...
+#22 15.72 Unpacking libz3-4:amd64 (4.8.12-3.1) ...
+#22 16.54 Selecting previously unselected package libllvm15:amd64.
+#22 16.55 Preparing to unpack .../51-libllvm15_1%3a15.0.6-4+b1_amd64.deb ...
+#22 16.55 Unpacking libllvm15:amd64 (1:15.0.6-4+b1) ...
+#22 18.02 Selecting previously unselected package libsensors-config.
+#22 18.03 Preparing to unpack .../52-libsensors-config_1%3a3.6.0-7.1_all.deb ...
+#22 18.03 Unpacking libsensors-config (1:3.6.0-7.1) ...
+#22 18.08 Selecting previously unselected package libsensors5:amd64.
+#22 18.09 Preparing to unpack .../53-libsensors5_1%3a3.6.0-7.1_amd64.deb ...
+#22 18.16 Unpacking libsensors5:amd64 (1:3.6.0-7.1) ...
+#22 18.22 Selecting previously unselected package libgl1-mesa-dri:amd64.
+#22 18.22 Preparing to unpack .../54-libgl1-mesa-dri_22.3.6-1+deb12u1_amd64.deb ...
+#22 18.24 Unpacking libgl1-mesa-dri:amd64 (22.3.6-1+deb12u1) ...
+#22 19.00 Selecting previously unselected package libglx-mesa0:amd64.
+#22 19.01 Preparing to unpack .../55-libglx-mesa0_22.3.6-1+deb12u1_amd64.deb ...
+#22 19.01 Unpacking libglx-mesa0:amd64 (22.3.6-1+deb12u1) ...
+#22 19.08 Selecting previously unselected package libglx0:amd64.
+#22 19.08 Preparing to unpack .../56-libglx0_1.6.0-1_amd64.deb ...
+#22 19.09 Unpacking libglx0:amd64 (1.6.0-1) ...
+#22 19.14 Selecting previously unselected package libgl1:amd64.
+#22 19.15 Preparing to unpack .../57-libgl1_1.6.0-1_amd64.deb ...
+#22 19.15 Unpacking libgl1:amd64 (1.6.0-1) ...
+#22 19.21 Selecting previously unselected package libxcb-shape0:amd64.
+#22 19.21 Preparing to unpack .../58-libxcb-shape0_1.15-1_amd64.deb ...
+#22 19.22 Unpacking libxcb-shape0:amd64 (1.15-1) ...
+#22 19.28 Selecting previously unselected package libxcomposite1:amd64.
+#22 19.28 Preparing to unpack .../59-libxcomposite1_1%3a0.4.5-1_amd64.deb ...
+#22 19.29 Unpacking libxcomposite1:amd64 (1:0.4.5-1) ...
+#22 19.33 Selecting previously unselected package libxinerama1:amd64.
+#22 19.34 Preparing to unpack .../60-libxinerama1_2%3a1.1.4-3_amd64.deb ...
+#22 19.34 Unpacking libxinerama1:amd64 (2:1.1.4-3) ...
+#22 19.39 Selecting previously unselected package libxkbfile1:amd64.
+#22 19.39 Preparing to unpack .../61-libxkbfile1_1%3a1.1.0-1_amd64.deb ...
+#22 19.40 Unpacking libxkbfile1:amd64 (1:1.1.0-1) ...
+#22 19.45 Selecting previously unselected package libxmuu1:amd64.
+#22 19.46 Preparing to unpack .../62-libxmuu1_2%3a1.1.3-3_amd64.deb ...
+#22 19.46 Unpacking libxmuu1:amd64 (2:1.1.3-3) ...
+#22 19.52 Selecting previously unselected package libxrandr2:amd64.
+#22 19.52 Preparing to unpack .../63-libxrandr2_2%3a1.5.2-2+b1_amd64.deb ...
+#22 19.53 Unpacking libxrandr2:amd64 (2:1.5.2-2+b1) ...
+#22 19.58 Selecting previously unselected package libxv1:amd64.
+#22 19.58 Preparing to unpack .../64-libxv1_2%3a1.0.11-1.1_amd64.deb ...
+#22 19.59 Unpacking libxv1:amd64 (2:1.0.11-1.1) ...
+#22 19.64 Selecting previously unselected package libxxf86dga1:amd64.
+#22 19.64 Preparing to unpack .../65-libxxf86dga1_2%3a1.1.5-1_amd64.deb ...
+#22 19.65 Unpacking libxxf86dga1:amd64 (2:1.1.5-1) ...
+#22 19.70 Selecting previously unselected package x11-utils.
+#22 19.70 Preparing to unpack .../66-x11-utils_7.7+5_amd64.deb ...
+#22 19.71 Unpacking x11-utils (7.7+5) ...
+#22 19.78 Selecting previously unselected package libatk-wrapper-java.
+#22 19.78 Preparing to unpack .../67-libatk-wrapper-java_0.40.0-3_all.deb ...
+#22 19.79 Unpacking libatk-wrapper-java (0.40.0-3) ...
+#22 19.84 Selecting previously unselected package libatk-wrapper-java-jni:amd64.
+#22 19.84 Preparing to unpack .../68-libatk-wrapper-java-jni_0.40.0-3_amd64.deb ...
+#22 19.85 Unpacking libatk-wrapper-java-jni:amd64 (0.40.0-3) ...
+#22 19.90 Selecting previously unselected package libavahi-common-data:amd64.
+#22 19.90 Preparing to unpack .../69-libavahi-common-data_0.8-10_amd64.deb ...
+#22 19.91 Unpacking libavahi-common-data:amd64 (0.8-10) ...
+#22 19.98 Selecting previously unselected package libavahi-common3:amd64.
+#22 19.99 Preparing to unpack .../70-libavahi-common3_0.8-10_amd64.deb ...
+#22 19.99 Unpacking libavahi-common3:amd64 (0.8-10) ...
+#22 20.05 Selecting previously unselected package libavahi-client3:amd64.
+#22 20.05 Preparing to unpack .../71-libavahi-client3_0.8-10_amd64.deb ...
+#22 20.06 Unpacking libavahi-client3:amd64 (0.8-10) ...
+#22 20.11 Selecting previously unselected package libcups2:amd64.
+#22 20.11 Preparing to unpack .../72-libcups2_2.4.2-3+deb12u5_amd64.deb ...
+#22 20.12 Unpacking libcups2:amd64 (2.4.2-3+deb12u5) ...
+#22 20.19 Selecting previously unselected package libgif7:amd64.
+#22 20.20 Preparing to unpack .../73-libgif7_5.2.1-2.5_amd64.deb ...
+#22 20.20 Unpacking libgif7:amd64 (5.2.1-2.5) ...
+#22 20.26 Selecting previously unselected package libnspr4:amd64.
+#22 20.26 Preparing to unpack .../74-libnspr4_2%3a4.35-1_amd64.deb ...
+#22 20.27 Unpacking libnspr4:amd64 (2:4.35-1) ...
+#22 20.33 Selecting previously unselected package libnss3:amd64.
+#22 20.33 Preparing to unpack .../75-libnss3_2%3a3.87.1-1_amd64.deb ...
+#22 20.34 Unpacking libnss3:amd64 (2:3.87.1-1) ...
+#22 20.53 Selecting previously unselected package libpcsclite1:amd64.
+#22 20.53 Preparing to unpack .../76-libpcsclite1_1.9.9-2_amd64.deb ...
+#22 20.54 Unpacking libpcsclite1:amd64 (1.9.9-2) ...
+#22 20.60 Selecting previously unselected package openjdk-11-jre-headless:amd64.
+#22 20.60 Preparing to unpack .../77-openjdk-11-jre-headless_11.0.23+9-1~deb11u1_amd64.deb ...
+#22 20.61 Unpacking openjdk-11-jre-headless:amd64 (11.0.23+9-1~deb11u1) ...
+#22 22.76 Selecting previously unselected package openjdk-11-jre:amd64.
+#22 22.77 Preparing to unpack .../78-openjdk-11-jre_11.0.23+9-1~deb11u1_amd64.deb ...
+#22 22.77 Unpacking openjdk-11-jre:amd64 (11.0.23+9-1~deb11u1) ...
+#22 22.85 Selecting previously unselected package openjdk-11-jdk-headless:amd64.
+#22 22.86 Preparing to unpack .../79-openjdk-11-jdk-headless_11.0.23+9-1~deb11u1_amd64.deb ...
+#22 22.87 Unpacking openjdk-11-jdk-headless:amd64 (11.0.23+9-1~deb11u1) ...
+#22 25.53 Selecting previously unselected package openjdk-11-jdk:amd64.
+#22 25.54 Preparing to unpack .../80-openjdk-11-jdk_11.0.23+9-1~deb11u1_amd64.deb ...
+#22 25.54 Unpacking openjdk-11-jdk:amd64 (11.0.23+9-1~deb11u1) ...
+#22 25.61 Setting up libxcb-dri3-0:amd64 (1.15-1) ...
+#22 25.63 Setting up libx11-xcb1:amd64 (2:1.8.4-2+deb12u2) ...
+#22 25.64 Setting up libpciaccess0:amd64 (0.17-2) ...
+#22 25.66 Setting up systemd-sysv (252.26-1~deb12u2) ...
+#22 25.67 Setting up libxcb-xfixes0:amd64 (1.15-1) ...
+#22 25.69 Setting up libxi6:amd64 (2:1.8-1+b1) ...
+#22 25.70 Setting up java-common (0.74) ...
+#22 25.73 Setting up libglvnd0:amd64 (1.6.0-1) ...
+#22 25.74 Setting up libxtst6:amd64 (2:1.2.3-1.1) ...
+#22 25.76 Setting up libxcb-glx0:amd64 (1.15-1) ...
+#22 25.77 Setting up libxcb-shape0:amd64 (1.15-1) ...
+#22 25.79 Setting up libsensors-config (1:3.6.0-7.1) ...
+#22 25.81 Setting up libxxf86dga1:amd64 (2:1.1.5-1) ...
+#22 25.83 Setting up libnss-systemd:amd64 (252.26-1~deb12u2) ...
+#22 25.85 Setting up libxxf86vm1:amd64 (1:1.1.4-1+b2) ...
+#22 25.86 Setting up libxcb-present0:amd64 (1.15-1) ...
+#22 25.88 Setting up libdconf1:amd64 (0.40.0-4) ...
+#22 25.89 Setting up libasound2-data (1.2.8-1) ...
+#22 25.91 Setting up libfontenc1:amd64 (1:1.1.4-1) ...
+#22 25.92 Setting up libz3-4:amd64 (4.8.12-3.1) ...
+#22 25.94 Setting up libnspr4:amd64 (2:4.35-1) ...
+#22 25.95 Setting up libxfixes3:amd64 (1:6.0.0-2) ...
+#22 25.97 Setting up libxcb-sync1:amd64 (1.15-1) ...
+#22 25.98 Setting up libavahi-common-data:amd64 (0.8-10) ...
+#22 26.00 Setting up libdbus-1-3:amd64 (1.14.10-1~deb12u1) ...
+#22 26.01 Setting up libxinerama1:amd64 (2:1.1.4-3) ...
+#22 26.02 Setting up libxv1:amd64 (2:1.0.11-1.1) ...
+#22 26.04 Setting up systemd-timesyncd (252.26-1~deb12u2) ...
+#22 26.06 Creating group 'systemd-timesync' with GID 997.
+#22 26.06 Creating user 'systemd-timesync' (systemd Time Synchronization) with UID 997 and GID 997.
+#22 26.28 Created symlink /etc/systemd/system/dbus-org.freedesktop.timesync1.service → /lib/systemd/system/systemd-timesyncd.service.
+#22 26.28 Created symlink /etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service → /lib/systemd/system/systemd-timesyncd.service.
+#22 26.29 Setting up libxrandr2:amd64 (2:1.5.2-2+b1) ...
+#22 26.30 Setting up libpcsclite1:amd64 (1.9.9-2) ...
+#22 26.32 Setting up libsensors5:amd64 (1:3.6.0-7.1) ...
+#22 26.33 Setting up libglapi-mesa:amd64 (22.3.6-1+deb12u1) ...
+#22 26.35 Setting up libxcb-dri2-0:amd64 (1.15-1) ...
+#22 26.36 Setting up libgif7:amd64 (5.2.1-2.5) ...
+#22 26.37 Setting up fonts-dejavu-extra (2.37-6) ...
+#22 26.39 Setting up alsa-topology-conf (1.2.5.1-2) ...
+#22 26.40 Setting up libxshmfence1:amd64 (1.3-1) ...
+#22 26.42 Setting up at-spi2-common (2.46.0-5) ...
+#22 26.43 Setting up libxcb-randr0:amd64 (1.15-1) ...
+#22 26.45 Setting up dbus-session-bus-common (1.14.10-1~deb12u1) ...
+#22 26.46 Setting up libllvm15:amd64 (1:15.0.6-4+b1) ...
+#22 26.48 Setting up libasound2:amd64 (1.2.8-1+b1) ...
+#22 26.49 Setting up libatk1.0-0:amd64 (2.46.0-5) ...
+#22 26.51 Setting up libxkbfile1:amd64 (1:1.1.0-1) ...
+#22 26.52 Setting up ca-certificates-java (20230710~deb12u1) ...
+#22 26.55 No JRE found. Skipping Java certificates setup.
+#22 26.56 Setting up dbus-system-bus-common (1.14.10-1~deb12u1) ...
+#22 26.71 Setting up libdrm-common (2.4.114-1) ...
+#22 26.73 Setting up libxcomposite1:amd64 (1:0.4.5-1) ...
+#22 26.75 Setting up libxmuu1:amd64 (2:1.1.3-3) ...
+#22 26.76 Setting up dbus-bin (1.14.10-1~deb12u1) ...
+#22 26.78 Setting up alsa-ucm-conf (1.2.8-1) ...
+#22 26.79 Setting up libavahi-common3:amd64 (0.8-10) ...
+#22 26.80 Setting up libnss3:amd64 (2:3.87.1-1) ...
+#22 26.82 Setting up dbus-daemon (1.14.10-1~deb12u1) ...
+#22 26.85 Setting up libatspi2.0-0:amd64 (2.46.0-5) ...
+#22 26.86 Setting up libatk-bridge2.0-0:amd64 (2.46.0-5) ...
+#22 26.88 Setting up dbus (1.14.10-1~deb12u1) ...
+#22 26.93 invoke-rc.d: could not determine current runlevel
+#22 26.94 invoke-rc.d: policy-rc.d denied execution of start.
+#22 26.94 Setting up libdrm2:amd64 (2.4.114-1+b1) ...
+#22 26.96 Setting up libpam-systemd:amd64 (252.26-1~deb12u2) ...
+#22 27.08 debconf: unable to initialize frontend: Dialog
+#22 27.08 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#22 27.08 debconf: falling back to frontend: Readline
+#22 27.10 debconf: unable to initialize frontend: Readline
+#22 27.10 debconf: (This frontend requires a controlling tty.)
+#22 27.10 debconf: falling back to frontend: Teletype
+#22 27.22 Setting up libavahi-client3:amd64 (0.8-10) ...
+#22 27.23 Setting up libdrm-amdgpu1:amd64 (2.4.114-1+b1) ...
+#22 27.24 Setting up libdrm-nouveau2:amd64 (2.4.114-1+b1) ...
+#22 27.26 Setting up libdrm-radeon1:amd64 (2.4.114-1+b1) ...
+#22 27.27 Setting up libdrm-intel1:amd64 (2.4.114-1+b1) ...
+#22 27.29 Setting up libgl1-mesa-dri:amd64 (22.3.6-1+deb12u1) ...
+#22 27.31 Setting up dbus-user-session (1.14.10-1~deb12u1) ...
+#22 27.33 Setting up libcups2:amd64 (2.4.2-3+deb12u5) ...
+#22 27.35 Setting up libglx-mesa0:amd64 (22.3.6-1+deb12u1) ...
+#22 27.36 Setting up libglx0:amd64 (1.6.0-1) ...
+#22 27.37 Setting up openjdk-11-jre-headless:amd64 (11.0.23+9-1~deb11u1) ...
+#22 27.55 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/java to provide /usr/bin/java (java) in auto mode
+#22 27.55 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jjs to provide /usr/bin/jjs (jjs) in auto mode
+#22 27.56 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/keytool to provide /usr/bin/keytool (keytool) in auto mode
+#22 27.57 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/rmid to provide /usr/bin/rmid (rmid) in auto mode
+#22 27.58 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/rmiregistry to provide /usr/bin/rmiregistry (rmiregistry) in auto mode
+#22 27.58 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/pack200 to provide /usr/bin/pack200 (pack200) in auto mode
+#22 27.59 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/unpack200 to provide /usr/bin/unpack200 (unpack200) in auto mode
+#22 27.60 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/lib/jexec to provide /usr/bin/jexec (jexec) in auto mode
+#22 28.34 Setting up dconf-service (0.40.0-4) ...
+#22 28.35 Setting up libgl1:amd64 (1.6.0-1) ...
+#22 28.39 Setting up x11-utils (7.7+5) ...
+#22 28.44 Setting up libatk-wrapper-java (0.40.0-3) ...
+#22 28.45 Setting up dconf-gsettings-backend:amd64 (0.40.0-4) ...
+#22 28.47 Setting up libatk-wrapper-java-jni:amd64 (0.40.0-3) ...
+#22 28.48 Setting up gsettings-desktop-schemas (43.0-1) ...
+#22 28.50 Processing triggers for fontconfig (2.14.1-4) ...
+#22 28.55 Processing triggers for hicolor-icon-theme (0.17-2) ...
+#22 28.57 Processing triggers for libglib2.0-0:amd64 (2.74.6-2+deb12u3) ...
+#22 28.60 Processing triggers for libc-bin (2.36-9+deb12u7) ...
+#22 28.70 Setting up at-spi2-core (2.46.0-5) ...
+#22 28.74 Processing triggers for ca-certificates-java (20230710~deb12u1) ...
+#22 29.10 Adding debian:ACCVRAIZ1.pem
+#22 29.11 Adding debian:AC_RAIZ_FNMT-RCM.pem
+#22 29.14 Adding debian:AC_RAIZ_FNMT-RCM_SERVIDORES_SEGUROS.pem
+#22 29.15 Adding debian:ANF_Secure_Server_Root_CA.pem
+#22 29.15 Adding debian:Actalis_Authentication_Root_CA.pem
+#22 29.16 Adding debian:AffirmTrust_Commercial.pem
+#22 29.16 Adding debian:AffirmTrust_Networking.pem
+#22 29.16 Adding debian:AffirmTrust_Premium.pem
+#22 29.17 Adding debian:AffirmTrust_Premium_ECC.pem
+#22 29.17 Adding debian:Amazon_Root_CA_1.pem
+#22 29.18 Adding debian:Amazon_Root_CA_2.pem
+#22 29.18 Adding debian:Amazon_Root_CA_3.pem
+#22 29.18 Adding debian:Amazon_Root_CA_4.pem
+#22 29.18 Adding debian:Atos_TrustedRoot_2011.pem
+#22 29.19 Adding debian:Autoridad_de_Certificacion_Firmaprofesional_CIF_A62634068.pem
+#22 29.20 Adding debian:Autoridad_de_Certificacion_Firmaprofesional_CIF_A62634068_2.pem
+#22 29.20 Adding debian:Baltimore_CyberTrust_Root.pem
+#22 29.21 Adding debian:Buypass_Class_2_Root_CA.pem
+#22 29.21 Adding debian:Buypass_Class_3_Root_CA.pem
+#22 29.22 Adding debian:CA_Disig_Root_R2.pem
+#22 29.22 Adding debian:CFCA_EV_ROOT.pem
+#22 29.22 Adding debian:COMODO_Certification_Authority.pem
+#22 29.23 Adding debian:COMODO_ECC_Certification_Authority.pem
+#22 29.23 Adding debian:COMODO_RSA_Certification_Authority.pem
+#22 29.23 Adding debian:Certainly_Root_E1.pem
+#22 29.24 Adding debian:Certainly_Root_R1.pem
+#22 29.24 Adding debian:Certigna.pem
+#22 29.25 Adding debian:Certigna_Root_CA.pem
+#22 29.25 Adding debian:Certum_EC-384_CA.pem
+#22 29.25 Adding debian:Certum_Trusted_Network_CA.pem
+#22 29.26 Adding debian:Certum_Trusted_Network_CA_2.pem
+#22 29.26 Adding debian:Certum_Trusted_Root_CA.pem
+#22 29.27 Adding debian:Comodo_AAA_Services_root.pem
+#22 29.27 Adding debian:D-TRUST_BR_Root_CA_1_2020.pem
+#22 29.28 Adding debian:D-TRUST_EV_Root_CA_1_2020.pem
+#22 29.28 Adding debian:D-TRUST_Root_Class_3_CA_2_2009.pem
+#22 29.28 Adding debian:D-TRUST_Root_Class_3_CA_2_EV_2009.pem
+#22 29.29 Adding debian:DigiCert_Assured_ID_Root_CA.pem
+#22 29.29 Adding debian:DigiCert_Assured_ID_Root_G2.pem
+#22 29.29 Adding debian:DigiCert_Assured_ID_Root_G3.pem
+#22 29.30 Adding debian:DigiCert_Global_Root_CA.pem
+#22 29.30 Adding debian:DigiCert_Global_Root_G2.pem
+#22 29.30 Adding debian:DigiCert_Global_Root_G3.pem
+#22 29.31 Adding debian:DigiCert_High_Assurance_EV_Root_CA.pem
+#22 29.31 Adding debian:DigiCert_TLS_ECC_P384_Root_G5.pem
+#22 29.31 Adding debian:DigiCert_TLS_RSA4096_Root_G5.pem
+#22 29.32 Adding debian:DigiCert_Trusted_Root_G4.pem
+#22 29.32 Adding debian:E-Tugra_Certification_Authority.pem
+#22 29.32 Adding debian:E-Tugra_Global_Root_CA_ECC_v3.pem
+#22 29.33 Adding debian:E-Tugra_Global_Root_CA_RSA_v3.pem
+#22 29.33 Adding debian:Entrust.net_Premium_2048_Secure_Server_CA.pem
+#22 29.33 Adding debian:Entrust_Root_Certification_Authority.pem
+#22 29.34 Adding debian:Entrust_Root_Certification_Authority_-_EC1.pem
+#22 29.34 Adding debian:Entrust_Root_Certification_Authority_-_G2.pem
+#22 29.35 Adding debian:Entrust_Root_Certification_Authority_-_G4.pem
+#22 29.35 Adding debian:GDCA_TrustAUTH_R5_ROOT.pem
+#22 29.35 Adding debian:GLOBALTRUST_2020.pem
+#22 29.36 Adding debian:GTS_Root_R1.pem
+#22 29.36 Adding debian:GTS_Root_R2.pem
+#22 29.36 Adding debian:GTS_Root_R3.pem
+#22 29.37 Adding debian:GTS_Root_R4.pem
+#22 29.37 Adding debian:GlobalSign_ECC_Root_CA_-_R4.pem
+#22 29.37 Adding debian:GlobalSign_ECC_Root_CA_-_R5.pem
+#22 29.38 Adding debian:GlobalSign_Root_CA.pem
+#22 29.38 Adding debian:GlobalSign_Root_CA_-_R3.pem
+#22 29.39 Adding debian:GlobalSign_Root_CA_-_R6.pem
+#22 29.39 Adding debian:GlobalSign_Root_E46.pem
+#22 29.39 Adding debian:GlobalSign_Root_R46.pem
+#22 29.40 Adding debian:Go_Daddy_Class_2_CA.pem
+#22 29.40 Adding debian:Go_Daddy_Root_Certificate_Authority_-_G2.pem
+#22 29.40 Adding debian:HARICA_TLS_ECC_Root_CA_2021.pem
+#22 29.41 Adding debian:HARICA_TLS_RSA_Root_CA_2021.pem
+#22 29.41 Adding debian:Hellenic_Academic_and_Research_Institutions_ECC_RootCA_2015.pem
+#22 29.42 Adding debian:Hellenic_Academic_and_Research_Institutions_RootCA_2015.pem
+#22 29.42 Adding debian:HiPKI_Root_CA_-_G1.pem
+#22 29.43 Adding debian:Hongkong_Post_Root_CA_1.pem
+#22 29.43 Adding debian:Hongkong_Post_Root_CA_3.pem
+#22 29.44 Adding debian:ISRG_Root_X1.pem
+#22 29.44 Adding debian:ISRG_Root_X2.pem
+#22 29.44 Adding debian:IdenTrust_Commercial_Root_CA_1.pem
+#22 29.45 Adding debian:IdenTrust_Public_Sector_Root_CA_1.pem
+#22 29.46 Adding debian:Izenpe.com.pem
+#22 29.46 Adding debian:Microsec_e-Szigno_Root_CA_2009.pem
+#22 29.46 Adding debian:Microsoft_ECC_Root_Certificate_Authority_2017.pem
+#22 29.47 Adding debian:Microsoft_RSA_Root_Certificate_Authority_2017.pem
+#22 29.47 Adding debian:NAVER_Global_Root_Certification_Authority.pem
+#22 29.48 Adding debian:NetLock_Arany_=Class_Gold=_Főtanúsítvány.pem
+#22 29.49 Adding debian:OISTE_WISeKey_Global_Root_GB_CA.pem
+#22 29.49 Adding debian:OISTE_WISeKey_Global_Root_GC_CA.pem
+#22 29.49 Adding debian:QuoVadis_Root_CA_1_G3.pem
+#22 29.50 Adding debian:QuoVadis_Root_CA_2.pem
+#22 29.50 Adding debian:QuoVadis_Root_CA_2_G3.pem
+#22 29.51 Adding debian:QuoVadis_Root_CA_3.pem
+#22 29.52 Adding debian:QuoVadis_Root_CA_3_G3.pem
+#22 29.52 Adding debian:SSL.com_EV_Root_Certification_Authority_ECC.pem
+#22 29.52 Adding debian:SSL.com_EV_Root_Certification_Authority_RSA_R2.pem
+#22 29.53 Adding debian:SSL.com_Root_Certification_Authority_ECC.pem
+#22 29.53 Adding debian:SSL.com_Root_Certification_Authority_RSA.pem
+#22 29.54 Adding debian:SZAFIR_ROOT_CA2.pem
+#22 29.54 Adding debian:SecureSign_RootCA11.pem
+#22 29.54 Adding debian:SecureTrust_CA.pem
+#22 29.55 Adding debian:Secure_Global_CA.pem
+#22 29.55 Adding debian:Security_Communication_ECC_RootCA1.pem
+#22 29.55 Adding debian:Security_Communication_RootCA2.pem
+#22 29.56 Adding debian:Security_Communication_RootCA3.pem
+#22 29.56 Adding debian:Security_Communication_Root_CA.pem
+#22 29.56 Adding debian:Starfield_Class_2_CA.pem
+#22 29.57 Adding debian:Starfield_Root_Certificate_Authority_-_G2.pem
+#22 29.57 Adding debian:Starfield_Services_Root_Certificate_Authority_-_G2.pem
+#22 29.58 Adding debian:SwissSign_Gold_CA_-_G2.pem
+#22 29.58 Adding debian:SwissSign_Silver_CA_-_G2.pem
+#22 29.59 Adding debian:T-TeleSec_GlobalRoot_Class_2.pem
+#22 29.59 Adding debian:T-TeleSec_GlobalRoot_Class_3.pem
+#22 29.59 Adding debian:TUBITAK_Kamu_SM_SSL_Kok_Sertifikasi_-_Surum_1.pem
+#22 29.60 Adding debian:TWCA_Global_Root_CA.pem
+#22 29.60 Adding debian:TWCA_Root_Certification_Authority.pem
+#22 29.61 Adding debian:TeliaSonera_Root_CA_v1.pem
+#22 29.61 Adding debian:Telia_Root_CA_v2.pem
+#22 29.62 Adding debian:TrustCor_ECA-1.pem
+#22 29.62 Adding debian:TrustCor_RootCert_CA-1.pem
+#22 29.63 Adding debian:TrustCor_RootCert_CA-2.pem
+#22 29.63 Adding debian:Trustwave_Global_Certification_Authority.pem
+#22 29.64 Adding debian:Trustwave_Global_ECC_P256_Certification_Authority.pem
+#22 29.64 Adding debian:Trustwave_Global_ECC_P384_Certification_Authority.pem
+#22 29.64 Adding debian:TunTrust_Root_CA.pem
+#22 29.65 Adding debian:UCA_Extended_Validation_Root.pem
+#22 29.66 Adding debian:UCA_Global_G2_Root.pem
+#22 29.66 Adding debian:USERTrust_ECC_Certification_Authority.pem
+#22 29.66 Adding debian:USERTrust_RSA_Certification_Authority.pem
+#22 29.67 Adding debian:XRamp_Global_CA_Root.pem
+#22 29.67 Adding debian:certSIGN_ROOT_CA.pem
+#22 29.67 Adding debian:certSIGN_Root_CA_G2.pem
+#22 29.67 Adding debian:e-Szigno_Root_CA_2017.pem
+#22 29.68 Adding debian:ePKI_Root_Certification_Authority.pem
+#22 29.68 Adding debian:emSign_ECC_Root_CA_-_C3.pem
+#22 29.68 Adding debian:emSign_ECC_Root_CA_-_G3.pem
+#22 29.68 Adding debian:emSign_Root_CA_-_C1.pem
+#22 29.69 Adding debian:emSign_Root_CA_-_G1.pem
+#22 29.69 Adding debian:vTrus_ECC_Root_CA.pem
+#22 29.69 Adding debian:vTrus_Root_CA.pem
+#22 29.73 done.
+#22 29.74 Setting up openjdk-11-jre:amd64 (11.0.23+9-1~deb11u1) ...
+#22 29.77 Setting up openjdk-11-jdk-headless:amd64 (11.0.23+9-1~deb11u1) ...
+#22 29.78 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jar to provide /usr/bin/jar (jar) in auto mode
+#22 29.79 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jarsigner to provide /usr/bin/jarsigner (jarsigner) in auto mode
+#22 29.80 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/javac to provide /usr/bin/javac (javac) in auto mode
+#22 29.80 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/javadoc to provide /usr/bin/javadoc (javadoc) in auto mode
+#22 29.81 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/javap to provide /usr/bin/javap (javap) in auto mode
+#22 29.82 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jcmd to provide /usr/bin/jcmd (jcmd) in auto mode
+#22 29.82 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jdb to provide /usr/bin/jdb (jdb) in auto mode
+#22 29.83 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jdeprscan to provide /usr/bin/jdeprscan (jdeprscan) in auto mode
+#22 29.84 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jdeps to provide /usr/bin/jdeps (jdeps) in auto mode
+#22 29.84 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jfr to provide /usr/bin/jfr (jfr) in auto mode
+#22 29.85 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jimage to provide /usr/bin/jimage (jimage) in auto mode
+#22 29.86 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jinfo to provide /usr/bin/jinfo (jinfo) in auto mode
+#22 29.87 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jlink to provide /usr/bin/jlink (jlink) in auto mode
+#22 29.87 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jmap to provide /usr/bin/jmap (jmap) in auto mode
+#22 29.88 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jmod to provide /usr/bin/jmod (jmod) in auto mode
+#22 29.89 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jps to provide /usr/bin/jps (jps) in auto mode
+#22 29.89 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jrunscript to provide /usr/bin/jrunscript (jrunscript) in auto mode
+#22 29.90 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jshell to provide /usr/bin/jshell (jshell) in auto mode
+#22 29.91 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jstack to provide /usr/bin/jstack (jstack) in auto mode
+#22 29.92 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jstat to provide /usr/bin/jstat (jstat) in auto mode
+#22 29.92 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jstatd to provide /usr/bin/jstatd (jstatd) in auto mode
+#22 29.93 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/rmic to provide /usr/bin/rmic (rmic) in auto mode
+#22 29.94 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/serialver to provide /usr/bin/serialver (serialver) in auto mode
+#22 29.95 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jaotc to provide /usr/bin/jaotc (jaotc) in auto mode
+#22 29.96 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jhsdb to provide /usr/bin/jhsdb (jhsdb) in auto mode
+#22 29.97 Setting up openjdk-11-jdk:amd64 (11.0.23+9-1~deb11u1) ...
+#22 29.98 update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jconsole to provide /usr/bin/jconsole (jconsole) in auto mode
+#22 DONE 33.3s
+
+#23 [magic 4/7] RUN apt-get update && apt-get install -y     git     && rm -rf /var/lib/apt/lists/*
+#23 0.327 Hit:1 http://deb.debian.org/debian bullseye InRelease
+#23 0.328 Hit:2 http://deb.debian.org/debian bookworm InRelease
+#23 0.328 Hit:3 http://deb.debian.org/debian bookworm-updates InRelease
+#23 0.335 Hit:4 http://deb.debian.org/debian-security bookworm-security InRelease
+#23 0.427 Hit:5 https://packages.microsoft.com/debian/11/prod bullseye InRelease
+#23 1.010 Reading package lists...
+#23 2.524 W: https://packages.microsoft.com/debian/11/prod/dists/bullseye/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.
+#23 2.538 Reading package lists...
+#23 4.027 Building dependency tree...
+#23 4.392 Reading state information...
+#23 4.774 git is already the newest version (1:2.39.2-1.1).
+#23 4.774 0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+#23 DONE 4.8s
+
+#24 [magic 5/7] RUN rm /etc/apt/sources.list.d/bullseye.list
+#24 DONE 0.3s
+
+#25 [magic 6/7] COPY ./docker_compose/requirements.txt .
+#25 DONE 0.0s
+
+#26 [magic 7/7] RUN pip install -r requirements.txt
+#26 1.063 Requirement already satisfied: pandas in /usr/local/lib/python3.10/site-packages (from -r requirements.txt (line 1)) (1.5.3)
+#26 1.285 Collecting entsoe-py
+#26 1.361   Downloading entsoe_py-0.6.8-py3-none-any.whl (1.6 MB)
+#26 1.482      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.6/1.6 MB 13.8 MB/s eta 0:00:00
+#26 1.494 Requirement already satisfied: numpy in /usr/local/lib/python3.10/site-packages (from -r requirements.txt (line 3)) (1.26.4)
+#26 1.495 Requirement already satisfied: python-dotenv in /usr/local/lib/python3.10/site-packages (from -r requirements.txt (line 4)) (1.0.1)
+#26 1.533 Collecting pyspark==3.3.1
+#26 1.546   Downloading pyspark-3.3.1.tar.gz (281.4 MB)
+#26 7.268      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 281.4/281.4 MB 3.1 MB/s eta 0:00:00
+#26 12.68   Preparing metadata (setup.py): started
+#26 13.73   Preparing metadata (setup.py): finished with status 'done'
+#26 13.73 Requirement already satisfied: kafka-python in /usr/local/lib/python3.10/site-packages (from -r requirements.txt (line 6)) (2.0.2)
+#26 13.81 Collecting yfinance
+#26 13.82   Downloading yfinance-0.2.41-py2.py3-none-any.whl (73 kB)
+#26 13.84      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 73.5/73.5 kB 10.0 MB/s eta 0:00:00
+#26 13.84 Requirement already satisfied: tenacity in /usr/local/lib/python3.10/site-packages (from -r requirements.txt (line 8)) (8.5.0)
+#26 13.89 Collecting py4j==0.10.9.5
+#26 13.90   Downloading py4j-0.10.9.5-py2.py3-none-any.whl (199 kB)
+#26 13.91      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 199.7/199.7 kB 28.4 MB/s eta 0:00:00
+#26 13.93 Requirement already satisfied: python-dateutil>=2.8.1 in /usr/local/lib/python3.10/site-packages (from pandas->-r requirements.txt (line 1)) (2.8.2)
+#26 13.93 Requirement already satisfied: pytz>=2020.1 in /usr/local/lib/python3.10/site-packages (from pandas->-r requirements.txt (line 1)) (2024.1)
+#26 13.94 Requirement already satisfied: beautifulsoup4>=4.11.1 in /usr/local/lib/python3.10/site-packages (from entsoe-py->-r requirements.txt (line 2)) (4.12.3)
+#26 13.94 Requirement already satisfied: requests in /usr/local/lib/python3.10/site-packages (from entsoe-py->-r requirements.txt (line 2)) (2.31.0)
+#26 14.38 Collecting pandas
+#26 14.39   Downloading pandas-2.2.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (13.0 MB)
+#26 14.56      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 13.0/13.0 MB 73.3 MB/s eta 0:00:00
+#26 14.78 Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.10/site-packages (from pandas->-r requirements.txt (line 1)) (2024.1)
+#26 14.84 Collecting html5lib>=1.1
+#26 14.85   Downloading html5lib-1.1-py2.py3-none-any.whl (112 kB)
+#26 14.86      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 112.2/112.2 kB 16.6 MB/s eta 0:00:00
+#26 15.04 Collecting frozendict>=2.3.4
+#26 15.06   Downloading frozendict-2.4.4-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (117 kB)
+#26 15.07      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 117.3/117.3 kB 17.0 MB/s eta 0:00:00
+#26 15.07 Requirement already satisfied: platformdirs>=2.0.0 in /usr/local/lib/python3.10/site-packages (from yfinance->-r requirements.txt (line 7)) (3.11.0)
+#26 15.15 Collecting peewee>=3.16.2
+#26 15.16   Downloading peewee-3.17.6.tar.gz (3.0 MB)
+#26 15.20      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.0/3.0 MB 78.7 MB/s eta 0:00:00
+#26 15.44   Installing build dependencies: started
+#26 22.10   Installing build dependencies: finished with status 'done'
+#26 22.10   Getting requirements to build wheel: started
+#26 22.50   Getting requirements to build wheel: finished with status 'done'
+#26 22.51   Preparing metadata (pyproject.toml): started
+#26 22.92   Preparing metadata (pyproject.toml): finished with status 'done'
+#26 22.96 Collecting multitasking>=0.0.7
+#26 22.97   Downloading multitasking-0.0.11-py3-none-any.whl (8.5 kB)
+#26 22.98 Requirement already satisfied: lxml>=4.9.1 in /usr/local/lib/python3.10/site-packages (from yfinance->-r requirements.txt (line 7)) (4.9.4)
+#26 23.00 Requirement already satisfied: soupsieve>1.2 in /usr/local/lib/python3.10/site-packages (from beautifulsoup4>=4.11.1->entsoe-py->-r requirements.txt (line 2)) (2.5)
+#26 23.02 Requirement already satisfied: six>=1.9 in /usr/local/lib/python3.10/site-packages (from html5lib>=1.1->yfinance->-r requirements.txt (line 7)) (1.16.0)
+#26 23.02 Requirement already satisfied: webencodings in /usr/local/lib/python3.10/site-packages (from html5lib>=1.1->yfinance->-r requirements.txt (line 7)) (0.5.1)
+#26 23.07 Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.10/site-packages (from requests->entsoe-py->-r requirements.txt (line 2)) (1.26.19)
+#26 23.07 Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.10/site-packages (from requests->entsoe-py->-r requirements.txt (line 2)) (3.7)
+#26 23.07 Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.10/site-packages (from requests->entsoe-py->-r requirements.txt (line 2)) (2024.7.4)
+#26 23.08 Requirement already satisfied: charset-normalizer<4,>=2 in /usr/local/lib/python3.10/site-packages (from requests->entsoe-py->-r requirements.txt (line 2)) (3.3.2)
+#26 23.13 Building wheels for collected packages: pyspark, peewee
+#26 23.13   Building wheel for pyspark (setup.py): started
+#26 41.71   Building wheel for pyspark (setup.py): finished with status 'done'
+#26 42.67   Created wheel for pyspark: filename=pyspark-3.3.1-py2.py3-none-any.whl size=281845493 sha256=5902180352a2a3fff0175912fa8775320852593d90979f0936ce942969194c33
+#26 42.67   Stored in directory: /root/.cache/pip/wheels/0f/f0/3d/517368b8ce80486e84f89f214e0a022554e4ee64969f46279b
+#26 42.68   Building wheel for peewee (pyproject.toml): started
+#26 55.55   Building wheel for peewee (pyproject.toml): finished with status 'done'
+#26 55.56   Created wheel for peewee: filename=peewee-3.17.6-cp310-cp310-linux_x86_64.whl size=851889 sha256=56f4dc3d35e205c75976b6bf96321f7ebe06d9bccf35b2cbfce73dc58c05de75
+#26 55.56   Stored in directory: /root/.cache/pip/wheels/4b/b9/b0/83d6e258e8f963f5ff111a2cd8c483ca59372a86e6a2535212
+#26 55.56 Successfully built pyspark peewee
+#26 59.50 Installing collected packages: py4j, peewee, multitasking, pyspark, html5lib, frozendict, pandas, yfinance, entsoe-py
+#26 63.02   Attempting uninstall: pandas
+#26 63.03     Found existing installation: pandas 1.5.3
+#26 63.78     Uninstalling pandas-1.5.3:
+#26 64.52       Successfully uninstalled pandas-1.5.3
+#26 71.17 ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+#26 71.17 sparkmagic 0.21.0 requires pandas<2.0.0,>=0.17.1, but you have pandas 2.2.2 which is incompatible.
+#26 71.17 hdijupyterutils 0.21.0 requires pandas<2.0.0,>=0.17.1, but you have pandas 2.2.2 which is incompatible.
+#26 71.17 db-dtypes 1.0.5 requires pandas<2.0dev,>=0.24.2, but you have pandas 2.2.2 which is incompatible.
+#26 71.17 autovizwidget 0.21.0 requires pandas<2.0.0,>=0.20.1, but you have pandas 2.2.2 which is incompatible.
+#26 71.17 Successfully installed entsoe-py-0.6.8 frozendict-2.4.4 html5lib-1.1 multitasking-0.0.11 pandas-2.2.2 peewee-3.17.6 py4j-0.10.9.5 pyspark-3.3.1 yfinance-0.2.41
+#26 71.17 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+#26 71.18 
+#26 71.18 [notice] A new release of pip is available: 23.0.1 -> 24.2
+#26 71.18 [notice] To update, run: pip install --upgrade pip
+#26 DONE 74.2s
+
+#27 [magic] exporting to image
+#27 exporting layers
+#27 exporting layers 7.2s done
+#27 writing image sha256:fae160bd4209f561723331ddf32dc20168c8b3b0a2e4d32fdde05feef83116b4 done
+#27 naming to docker.io/mageai/mageai:latest done
+#27 DONE 7.2s

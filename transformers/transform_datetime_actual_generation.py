@@ -21,13 +21,13 @@ def transform(df: DataFrame, *args, **kwargs) -> DataFrame:
         DataFrame: The transformed DataFrame with additional columns.
     """
     # Transform datetime
-    df['DateTime'] = pd.to_datetime(df['DateTime'], format='%Y-%m-%d %H:%M:%S.%f')
+    df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d %H:%M:%S.%f')
 
     # Extract date and time components
-    df['Day'] = df['DateTime'].dt.day
-    df['Month'] = df['DateTime'].dt.month
-    df['Year'] = df['DateTime'].dt.year
-    df['Hour'] = df['DateTime'].dt.hour
-    df['Minute'] = df['DateTime'].dt.minute
+    df['day'] = df['date'].dt.day
+    df['month'] = df['date'].dt.month
+    df['year'] = df['date'].dt.year
+    df['hour'] = df['date'].dt.hour
+    df['minute'] = df['date'].dt.minute
 
     return df

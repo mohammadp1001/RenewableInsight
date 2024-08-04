@@ -21,10 +21,10 @@ def transform(df: DataFrame, **kwargs) -> DataFrame:
     Returns:
         DataFrame: The converted DataFrame.
     """
-    df['Month'] = df['Month'].astype('int8')
-    df['Year'] = df['Year'].astype('int16')
-    df['Hour'] = df['Hour'].astype('int8')
-    df['Minute'] = df['Minute'].astype('int8')
-    df['Day'] = df['Day'].astype('int8')
+    df['month'] = df['month'].astype('int8')
+    df['year'] = df['year'].astype('int16')
+    df['hour'] = df['hour'].astype('int8')
+    df['minute'] = df['minute'].astype('int8')
+    df['day'] = df['day'].astype('int8')
 
     return df

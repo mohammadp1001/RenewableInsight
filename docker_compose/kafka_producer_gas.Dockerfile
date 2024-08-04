@@ -20,4 +20,4 @@ COPY /docker_compose/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Specify the command to run your Kafka producer script
-CMD ["python3", "/app/RenewableInsight/src/factory.py"]
+CMD ["python3", "/app/RenewableInsight/src/kafka_producer_gas.py"]

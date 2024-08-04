@@ -1,14 +1,15 @@
-from enum import Enum
-import pandas as pd
-import requests
-import zipfile
-from io import BytesIO
 import re
 import logging
-from parameters import WeatherParameter
-from config import Config
-from setup_logging import SetupLogging
-from api.base_downloader import BaseDownloader
+import requests
+import zipfile
+import pandas as pd
+
+from io import BytesIO
+
+from src.api.parameters import WeatherParameter
+from src.config import Config
+from src.setup_logging import SetupLogging
+from src.api.base_downloader import BaseDownloader
 
 @SetupLogging(log_dir=Config.LOG_DIR)
 class WeatherDataDownloader(BaseDownloader):
@@ -26,7 +27,6 @@ class WeatherDataDownloader(BaseDownloader):
             base_url (str, optional): The base URL for weather data. Defaults to the DWD open data URL.
         """
         super().__init__(base_url or "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/")
-
     def download_and_load_data(self, station_code: str, weather_param: WeatherParameter) -> pd.DataFrame:
         """
         Downloads and loads weather data for a given station and weather parameter.
@@ -49,7 +49,6 @@ class WeatherDataDownloader(BaseDownloader):
         df = self._extract_data(zip_content, station_code, weather_param)
         
         return df
-    
     def _validate_parameters(self, weather_param: WeatherParameter):
         """
         Validates that the provided weather parameter is an instance of WeatherParameter Enum.
@@ -62,7 +61,6 @@ class WeatherDataDownloader(BaseDownloader):
         """
         if not isinstance(weather_param, WeatherParameter):
             raise ValueError("weather_param must be an instance of WeatherParameter Enum.")
-    
     def _construct_url(self, station_code: str, weather_param: WeatherParameter) -> str:
         """
         Constructs the URL for downloading the weather data based on the station code and weather parameter.
@@ -82,7 +80,7 @@ class WeatherDataDownloader(BaseDownloader):
         else:
             url = f"{self.base_url}{category}/recent/stundenwerte_{weather_param.name}_{station_code}{suffix}.zip"
         
-        logger.info(f"Constructed URL: {url}")
+        logging.info(f"Constructed URL: {url}")
         return url
     
     def _download_content(self, url: str) -> bytes:
@@ -103,7 +101,7 @@ class WeatherDataDownloader(BaseDownloader):
             response.raise_for_status()
             return response.content
         except requests.RequestException as e:
-            logger.error(f"Failed to download data: {e}")
+            logging.error(f"Failed to download data: {e}")
             raise
     
     def _extract_data(self, zip_content: bytes, station_code: str, weather_param: WeatherParameter) -> pd.DataFrame:
@@ -129,5 +127,5 @@ class WeatherDataDownloader(BaseDownloader):
             with thezip.open(file_name) as file:
                 df = pd.read_csv(file, delimiter=';', encoding='latin1')
         
-        logger.info(f"Extracted file: {file_name}")
+        logging.info(f"Extracted file: {file_name}")
         return df
