@@ -138,7 +138,7 @@ def download_kmz_file(url: str, save_dir: Path, filename: str) -> Path:
     return save_path
 
 
-def check_s3_key_exists(bucket_name, object_key):
+def check_s3_key_exists(client,bucket_name,object_key):
     """
     Check if a specific key already exists in an S3 bucket.
 
@@ -150,12 +150,10 @@ def check_s3_key_exists(bucket_name, object_key):
     :rtype: bool
     """
     try:
-        s3 = boto3.client('s3', aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
-                          aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY)
-        result = s3.list_objects_v2(
+        result = client.list_objects_v2(
             Bucket=bucket_name, Prefix=object_key, Delimiter='/')
         return 'CommonPrefixes' in result
-    except s3.exceptions.NoSuchKey:
+    except client.exceptions.NoSuchKey:
         return False
     except (NoCredentialsError, PartialCredentialsError) as e:
         print(f"Credentials error: {e}")
