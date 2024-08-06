@@ -6,8 +6,6 @@ import pyarrow as pa
 import pandas as pd
 import pyarrow.parquet as pq
 
-print(sys.path)
-
 if '/home/mohammad/RenewableInsight' not in sys.path:
     sys.path.append('/home/mohammad/RenewableInsight')
 
@@ -86,12 +84,9 @@ def export_data_to_s3(data: DataFrame) -> None:
                 - export_mode (str): The export mode ('daily' or other).
                 - data_item_name (str): The name of the data item.
                 - data_item_no (int): The number of data items.
-
-    Docs: https://docs.mage.ai/design/data-loading#s3
     """
     parquet_buffer = BytesIO()
-    table = pa.Table.from_pandas(data)
-    pq.write_table(table, parquet_buffer)
+    
 
     bucket_name = Config.BUCKET_NAME
     
@@ -99,9 +94,11 @@ def export_data_to_s3(data: DataFrame) -> None:
                           aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY)
 
     for object_key, date in create_s3_keys_generation():
-        data_date = data[(data.day == date.day) & (data.month == date.month) & (data.year == date.year)]
+        data_ = data[(data.day == date.day) & (data.month == date.month) & (data.year == date.year)]
+        table = pa.Table.from_pandas(data_)
+        pq.write_table(table, parquet_buffer)
         filename = object_key + f"/{generate_random_string(10)}.parquet"
-        if not check_s3_key_exists(clinet=s3, bucket_name=bucket_name, object_key=object_key):
+        if not check_s3_key_exists(s3,bucket_name,object_key):
             s3.put_object(
                 Bucket=bucket_name,
                 Key=filename,

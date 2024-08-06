@@ -9,7 +9,7 @@ from src.api.base import BaseAPI
 from src.config import Config
 from src.setup_logging import SetupLogging
 
-@SetupLogging(log_dir=Config.LOG_DIR)
+@SetupLogging(log_dir=Config.LOG_DIR,config_dir=Config.CONFIG_DIR)
 class ENTSOEAPI(BaseAPI):
     """
     API interface for ENTSO-E Transparency Platform data.

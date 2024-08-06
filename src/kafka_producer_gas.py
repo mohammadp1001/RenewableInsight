@@ -8,7 +8,7 @@ import src.api.yahoo
 from src.config import Config
 
 def main():
-    src.setup_logging.SetupLogging(Config.LOG_DIR)
+    #src.setup_logging.SetupLogging(Config.LOG_DIR)
     
     kafka_props = {
         'bootstrap_servers': [Config.BOOTSTRAP_SERVERS]
