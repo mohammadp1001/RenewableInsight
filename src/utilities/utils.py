@@ -42,7 +42,7 @@ def create_s3_keys_generation():
     start_date = today - datetime.timedelta(days=5)
     for i in range(5):
         date = start_date + datetime.timedelta(days=i)
-        object_key = f"electricity/generation_{date.day:02}_{date.month:02}_{date.year}"
+        object_key = f"electricity/generation/generation_{date.day:02}_{date.month:02}_{date.year}"
         yield object_key, date
 
 
@@ -93,8 +93,14 @@ def create_s3_keys_weather_forecast(n_day, station_name):
 def create_s3_keys_load():
     date = datetime.datetime.today()
     for hour in range(24):
-        object_key = f"electricity/load_{date.year}_{date.month:02}_{date.day:02}_{hour:02}"
+        object_key = f"electricity/load/load_{date.year}_{date.month:02}_{date.day:02}_{hour:02}"
         yield object_key, date
+
+def create_s3_keys_gas():
+    date = datetime.datetime.today()
+    for hour in range(24):
+        object_key = f"others/gas/gas_price{date.year}_{date.month:02}_{date.day:02}_{hour:02}"
+        yield object_key, date        
 
 def runcmd(cmd, verbose=False, *args, **kwargs):
     """

@@ -16,9 +16,8 @@ from prefect import task, flow
 from pandas import DataFrame
 from confluent_kafka import Consumer, KafkaError
 
-from src.utilities.utils import create_s3_keys_load, check_s3_key_exists, generate_random_string
+from src.utilities.utils import create_s3_keys_gas, check_s3_key_exists, generate_random_string
 from src.config import Config
-from src.api.entsoe_api import ENTSOEAPI
 
 def create_dataframe(messages):
     df = pd.DataFrame(messages)
@@ -33,13 +32,13 @@ def consume_data():
     }
 
     consumer = Consumer(consumer_config)
-    consumer.subscribe([Config.PRODUCE_TOPIC_ACTUALLOAD_CSV])
+    consumer.subscribe([Config.PRODUCE_TOPIC_GAS_PRICE])
     
     messages = []
     start_time = datetime.datetime.now()
 
     try:
-        while datetime.datetime.now() - start_time < datetime.timedelta(minutes=20):
+        while datetime.datetime.now() - start_time < datetime.timedelta(seconds=10):
             logging.info("The consumer starts for 10 minutes.")
             msg = consumer.poll(timeout=1.0)
             if msg is None:
@@ -68,7 +67,8 @@ def consume_data():
 def transform(data):
 
     data['date'] = pd.to_datetime(data['date'])
-    data['load'] = data['load'].astype('float32')
+    data['open_price'] = data['open_price'].astype('float32')
+    data['close_price'] = data['close_price'].astype('float32')
     data = data.drop(columns=['key_id']) 
 
     # Extract date and time components
@@ -95,7 +95,7 @@ def export_data_to_s3(data):
     s3 = boto3.client('s3', aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
                           aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY)
 
-    for object_key, date in create_s3_keys_load():
+    for object_key, date in create_s3_keys_gas():
         data_ = data[(data.hour == date.hour) & (data.day == date.day) & (data.month == date.month) & (data.year == date.year)]
         table = pa.Table.from_pandas(data_)
         pq.write_table(table, parquet_buffer)

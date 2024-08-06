@@ -94,7 +94,7 @@ def export_data_to_s3(data: DataFrame) -> None:
                           aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY)
 
     for object_key, date in create_s3_keys_generation():
-        data_ = data[(data.day == date.day) & (data.month == date.month) & (data.year == date.year)]
+        data_ = data[(data.hour == date.hour) & (data.day == date.day) & (data.month == date.month) & (data.year == date.year)]
         table = pa.Table.from_pandas(data_)
         pq.write_table(table, parquet_buffer)
         filename = object_key + f"/{generate_random_string(10)}.parquet"

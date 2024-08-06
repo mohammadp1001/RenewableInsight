@@ -13,7 +13,7 @@ def main():
     #src.setup_logging.SetupLogging(Config.LOG_DIR)
     
     kafka_props = {
-        'bootstrap_servers': [Config.BOOTSTRAP_SERVERS]
+        'bootstrap_servers': [Config.BOOTSTRAP_SERVERS_PROD]
     }
 
     producer_service = src.kafka_class.producer.KafkaProducerService(props= kafka_props,field_name= 'date',last_published_field_value= Config.LAST_PUBLISHED_FIELD_VALUE_LOAD)
