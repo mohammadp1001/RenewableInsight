@@ -15,7 +15,6 @@ class SetupLogging:
         self.log_configs = {"dev": "logging.dev.ini", "prod": "logging.prod.ini"}
         self.config = self.log_configs.get(os.getenv("ENV", "dev"), "logging.dev.ini")
         self.config_path = os.path.join(self.config_dir, self.config)
-        print(self.config_path)
         self.timestamp = datetime.now().strftime("%Y%m%d-%H:%M:%S")
 
     def __call__(self, cls):

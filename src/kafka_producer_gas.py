@@ -15,7 +15,7 @@ def main():
     }
 
     producer_service = src.kafka_class.producer.KafkaProducerService(props=kafka_props, field_name='date', last_published_field_value=Config.LAST_PUBLISHED_FIELD_VALUE_GAS)
-    yahoo_finance_api = src.api.yahoo.YahooAPI(symbol=Config.TICKER_LABEL)
+    yahoo_finance_api = src.api.yahoo.YahooAPI(symbol=Config.TICKER_LABEL_GAS)
 
     while True:
         

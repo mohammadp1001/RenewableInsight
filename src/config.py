@@ -8,7 +8,8 @@ class Config:
     """class for config"""
     AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-    TICKER_LABEL = os.getenv('TICKER_LABEL')
+    TICKER_LABEL_GAS = os.getenv('TICKER_LABEL_GAS')
+    TICKER_LABEL_OIL = os.getenv('TICKER_LABEL_OIL')
     LOG_DIR = os.getenv('LOG_DIR')
     CONFIG_DIR = os.getenv('CONFIG_DIR')
     ENTSOE_API_KEY = os.getenv('ENTSOE_API_KEY')
@@ -28,6 +29,8 @@ class Config:
     LAST_PUBLISHED_FIELD_VALUE_GAS = os.getenv('LAST_PUBLISHED_FIELD_VALUE_GAS')
     FIELDS_LOAD = ['date', 'load']
     FIELDS_GAS = ['date', 'open_price', 'close_price']
+    STATION_NAME = os.getenv('STATION_NAME')
+    N_DAY = os.getenv('N_DAY')
 
     @staticmethod
     def set_env_variable(variable, value):

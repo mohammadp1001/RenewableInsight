@@ -87,7 +87,7 @@ def create_s3_keys_weather_forecast(n_day, station_name):
     last_day = today + datetime.timedelta(days=n_day)
     for i in range(n_day):
         date = last_day - datetime.timedelta(days=i)
-        object_key = f"weather_forcast/{station_name}/{date.day:02}_{date.month:02}_{date.year}/{generate_random_string(10)}.parquet"
+        object_key = f"weather_forcast/{station_name}/{date.day:02}_{date.month:02}_{date.year}"
         yield object_key, date
 
 def create_s3_keys_load():

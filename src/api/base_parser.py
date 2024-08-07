@@ -10,7 +10,7 @@ class BaseParser(abc.ABC):
     """
 
     @abc.abstractmethod
-    def parse_timestamps(self, fp: IO[bytes]) -> Iterator[datetime]:
+    def parse_timestamps(self, fp: IO[bytes]) -> Iterator:
         """
         Parses timestamps from the given file.
 
@@ -18,7 +18,7 @@ class BaseParser(abc.ABC):
             fp (IO[bytes]): The file-like object to parse.
 
         Returns:
-            Iterator[datetime]: An iterator over parsed timestamps.
+            Iterator: An iterator over parsed timestamps.
         """
         pass
 
