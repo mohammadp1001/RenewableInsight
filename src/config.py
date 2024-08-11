@@ -8,6 +8,10 @@ class Config:
     """class for config"""
     AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+    BIGQUERY_TABEL_ID = os.getenv('BIGQUERRY_TABEL_ID')
+    GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+    BIGQUERY_DATASET_ID = os.getenv('BIGQUERY_DATASET_ID')
+    PROJECT_ID = os.getenv('PROJECT_ID')
     TICKER_LABEL_GAS = os.getenv('TICKER_LABEL_GAS')
     TICKER_LABEL_OIL = os.getenv('TICKER_LABEL_OIL')
     LOG_DIR = os.getenv('LOG_DIR')
@@ -30,6 +34,8 @@ class Config:
     FIELDS_LOAD = ['date', 'load']
     FIELDS_GAS = ['date', 'open_price', 'close_price']
     STATION_NAME = os.getenv('STATION_NAME')
+    STATION_CODE = os.getenv('STATION_CODE')
+    WEATHER_PARAM = os.getenv('WEATHER_PARAM')
     N_DAY = os.getenv('N_DAY')
 
     @staticmethod

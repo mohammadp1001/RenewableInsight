@@ -9,3 +9,4 @@ confluent_kafka
 yfinance
 tenacity
 pydantic==2.8.2
+google-cloud-bigquery

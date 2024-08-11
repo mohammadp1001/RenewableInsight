@@ -22,9 +22,9 @@ class WeatherParameter(Enum):
     VN = ("total_cloud_cover", "Total Cloud Cover", ['QN_8', 'V_N_I'], '_akt')
     R1 = ("precipitation", "Precipitation in mm", ['QN_8', 'WRTR', 'RS_IND'], '_akt')
     
-    def __init__(self, category: str, description: str, columns_rm: list, url_suffix: str):
+    def __new__(cls, category: str, description: str, columns_rm: list, url_suffix: str):
         """
-        Initializes a WeatherParameter instance.
+        Creates a new instance of the WeatherParameter enum.
 
         Args:
             category (str): The category of the weather parameter.
@@ -32,10 +32,13 @@ class WeatherParameter(Enum):
             columns_rm (list): List of columns to be removed from the dataset.
             url_suffix (str): The URL suffix for the weather parameter data.
         """
-        self.category = category
-        self.description = description
-        self.columns_rm = columns_rm
-        self.url_suffix = url_suffix  
+        obj = object.__new__(cls)
+        obj._value_ = category
+        obj.category = category
+        obj.description = description
+        obj.columns_rm = columns_rm
+        obj.url_suffix = url_suffix
+        return obj
 
     def __str__(self) -> str:
         """
@@ -45,3 +48,19 @@ class WeatherParameter(Enum):
             str: A string describing the weather parameter, its description, and the columns to be removed.
         """
         return f"{self.name} ({self.description}) - Columns: {', '.join(self.columns_rm)}"
+
+    @classmethod
+    def from_name(cls, name: str):
+        """
+        Allows instantiation of a WeatherParameter instance by its name.
+
+        Args:
+            name (str): The name of the weather parameter.
+
+        Returns:
+            WeatherParameter: The corresponding WeatherParameter instance.
+        """
+        try:
+            return cls[name]
+        except KeyError:
+            raise ValueError(f"{name} is not a valid WeatherParameter name")

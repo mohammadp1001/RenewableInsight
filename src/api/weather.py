@@ -11,7 +11,7 @@ from src.config import Config
 from src.setup_logging import SetupLogging
 from src.api.base_downloader import BaseDownloader
 
-@SetupLogging(log_dir=Config.LOG_DIR)
+# @SetupLogging(log_dir=Config.LOG_DIR,config_dir=Config.CONFIG_DIR)
 class WeatherDataDownloader(BaseDownloader):
     """
     A class for downloading and loading weather data from the DWD open data platform.

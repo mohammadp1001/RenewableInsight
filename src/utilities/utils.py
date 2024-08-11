@@ -64,7 +64,7 @@ def create_s3_keys_historical_weather(weather_param, station_code):
     today = datetime.datetime.now()
     for i in range(5):  # Last 5 years including the current year
         date = datetime.datetime(today.year - i, today.month, today.day)
-        object_key = f"historical_weather/{WeatherParameter[weather_param].category}/{station_code}/{today.day}_{today.month}/{weather_param}_{today.day}_{today.month}_{date.year}.csv"
+        object_key = f"historical_weather/{WeatherParameter[weather_param].category}/{station_code}/{date.day:02}_{date.month:02}_{date.year}"
         yield object_key, date
 
 
