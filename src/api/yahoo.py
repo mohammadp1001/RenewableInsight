@@ -2,11 +2,9 @@ import yfinance as yf
 import pandas as pd
 import pytz
 
-from src.api.base import BaseAPI
 from src.config import Config
-from src.setup_logging import SetupLogging
+from src.api.base import BaseAPI
 
-@SetupLogging(log_dir=Config.LOG_DIR,config_dir=Config.CONFIG_DIR)
 class YahooAPI(BaseAPI):
     """
     API interface for Yahoo Finance data.

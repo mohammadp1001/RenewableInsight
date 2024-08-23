@@ -1,19 +1,16 @@
-import logging
 import time 
+import logging
 
-import src.setup_logging 
-import src.kafka_class.producer 
 import src.api.yahoo 
-
 from src.config import Config
+import src.kafka_class.producer 
 
 def main():
-    #src.setup_logging.SetupLogging(Config.LOG_DIR)
-    
+
     kafka_props = {
         'bootstrap_servers': [Config.BOOTSTRAP_SERVERS_PROD]
     }
-
+    logger = logging.getLogger(__name__)
     producer_service = src.kafka_class.producer.KafkaProducerService(props=kafka_props, field_name='date', last_published_field_value=Config.LAST_PUBLISHED_FIELD_VALUE_GAS)
     yahoo_finance_api = src.api.yahoo.YahooAPI(symbol=Config.TICKER_LABEL_GAS)
 
@@ -34,7 +31,7 @@ def main():
             # Update the last published field value in the environment
             Config.set_env_variable('LAST_PUBLISHED_FIELD_VALUE_GAS', producer_service.get_last_published_field_value())
         
-        logging.info(f"Producer will sleep for {Config.TIME_OF_SLEEP_PRODUCER_GAS} minutes.")
+        logger.info(f"Producer will sleep for {Config.TIME_OF_SLEEP_PRODUCER_GAS} minutes.")
         time.sleep(int(Config.TIME_OF_SLEEP_PRODUCER_GAS) * 60)
 
 if __name__ == '__main__':

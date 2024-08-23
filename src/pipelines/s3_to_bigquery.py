@@ -2,10 +2,11 @@ import sys
 import boto3
 import pandas as pd
 
+from io import BytesIO
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-from io import BytesIO
+
 
 if '/home/mohammad/RenewableInsight' not in sys.path:
     sys.path.append('/home/mohammad/RenewableInsight')
@@ -74,10 +75,3 @@ def read_s3_files(bucket_name, prefix=''):
     return list_files
 
 read_s3_files(Config.BUCKET_NAME, prefix='electricity/generation/')
-
-
-#for file in list_s3_files(Config.BUCKET_NAME, prefix='historical_weather/'):
-#    process_and_upload_parquet_to_bigquery( 
-#        s3_key=file,
-#        bigquery_table_id=Config.BIGQUERY_DATASET_ID+'.historical_weather'
-#    )

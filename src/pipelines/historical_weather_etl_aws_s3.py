@@ -11,8 +11,8 @@ if '/home/mohammad/RenewableInsight' not in sys.path:
     sys.path.append('/home/mohammad/RenewableInsight')
 
 from io import BytesIO
-from prefect import task, flow
 from pandas import DataFrame
+from prefect import task, flow
 
 from src.config import Config
 from src.api.parameters import WeatherParameter
@@ -79,6 +79,9 @@ def export_data_to_s3(data: DataFrame) -> None:
 
     for object_key, date in create_s3_keys_historical_weather(Config.WEATHER_PARAM,Config.STATION_CODE):
         data_ = data[(data.day == date.day) & (data.month == date.month) & (data.year == date.year)]
+        if data_.empty:
+            logger.info("The dataframe is empty.")
+            break
         table = pa.Table.from_pandas(data_)
         pq.write_table(table, parquet_buffer)
         filename = object_key + f"/{generate_random_string(10)}.parquet"

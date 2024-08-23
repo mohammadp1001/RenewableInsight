@@ -10,11 +10,11 @@ import pyarrow.parquet as pq
 if '/home/mohammad/RenewableInsight' not in sys.path:
     sys.path.append('/home/mohammad/RenewableInsight')
 
-from pathlib import Path
 from io import BytesIO
+from pathlib import Path
+from pandas import DataFrame
 from prefect import task, flow
 from prefect import get_run_logger
-from pandas import DataFrame
 from confluent_kafka import Consumer, KafkaError
 
 
@@ -35,7 +35,7 @@ def load_data():
     Returns:
     - A pandas DataFrame containing the forecast data for the specified station, or None if the station is not found.
     """
-                
+    logger = get_run_logger()            
     url = "https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_S/all_stations/kml/MOSMIX_S_LATEST_240.kmz" 
    
     save_dir = Path("/tmp") 
@@ -53,7 +53,7 @@ def load_data():
         forecasts = list(parser.parse_forecasts(fp, {station_name}))
 
     if not forecasts:
-        logging.warning(f"No data found for station: {station_name}")
+        logger.warning(f"No data found for station: {station_name}")
         
     data = parser.convert_to_dataframe(forecasts, station_name)
 
@@ -97,10 +97,8 @@ def transform(data):
 def export_data_to_s3(data: DataFrame) -> None:
 
     parquet_buffer = BytesIO()
-    
-
+    logger = get_run_logger()
     bucket_name = Config.BUCKET_NAME
-    
     s3 = boto3.client('s3', aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
                           aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY)
 
@@ -115,10 +113,10 @@ def export_data_to_s3(data: DataFrame) -> None:
                 Key=filename,
                 Body=parquet_buffer.getvalue()
                 )
-            logging.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
+            logger.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
         else:
 
-            logging.info(f"File {object_key} already exists.")
+            logger.info(f"File {object_key} already exists.")
 
 # Defining the flow
 @flow(log_prints=True)

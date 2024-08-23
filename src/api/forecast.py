@@ -17,7 +17,7 @@ from src.config import Config
 from src.setup_logging import SetupLogging
 from src.api.base_parser import BaseParser
 
-@SetupLogging(log_dir=Config.LOG_DIR,config_dir=Config.CONFIG_DIR)
+@SetupLogging()
 class DwdMosmixParser(BaseParser):
     """
     Parsing methods for DWD MOSMIX KML XML files.

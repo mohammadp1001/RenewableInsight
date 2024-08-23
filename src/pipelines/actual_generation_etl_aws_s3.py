@@ -10,8 +10,9 @@ if '/home/mohammad/RenewableInsight' not in sys.path:
     sys.path.append('/home/mohammad/RenewableInsight')
 
 from io import BytesIO
-from prefect import task, flow
 from pandas import DataFrame
+from prefect import task, flow
+from prefect import get_run_logger
 
 from src.utilities.utils import create_s3_keys_generation, check_s3_key_exists, generate_random_string
 from src.config import Config
@@ -32,10 +33,10 @@ def load_data() -> DataFrame:
     Returns:
         DataFrame: The loaded DataFrame.
     """
-    data_type = Config.DATA_TYPE
+ 
 
     data_downloader = ENTSOEAPI(year=datetime.datetime.now().year,month=datetime.datetime.now().month,country_code=Config.COUNTRY_CODE,api_key=Config.ENTSOE_API_KEY)
-    data_downloader.fetch_data(data_type=data_type)
+    data_downloader.fetch_data(data_type=Config.DATA_TYPE_GEN)
     data = data_downloader.data
 
     return data
@@ -86,10 +87,8 @@ def export_data_to_s3(data: DataFrame) -> None:
                 - data_item_no (int): The number of data items.
     """
     parquet_buffer = BytesIO()
-    
-
+    logger = get_run_logger()
     bucket_name = Config.BUCKET_NAME
-    
     s3 = boto3.client('s3', aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
                           aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY)
 
@@ -104,11 +103,9 @@ def export_data_to_s3(data: DataFrame) -> None:
                 Key=filename,
                 Body=parquet_buffer.getvalue()
                 )
-            logging.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
+            logger.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
         else:
-            logging.info(f"File {object_key} already exists.")
-
-
+            logger.info(f"File {object_key} already exists.")
 
 # Defining the flow
 @flow(log_prints=True)

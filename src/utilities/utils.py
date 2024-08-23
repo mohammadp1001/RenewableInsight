@@ -99,7 +99,7 @@ def create_s3_keys_load():
 def create_s3_keys_gas():
     date = datetime.datetime.today()
     for hour in range(24):
-        object_key = f"others/gas/gas_price{date.year}_{date.month:02}_{date.day:02}_{hour:02}"
+        object_key = f"others/gas/gas_price_{date.year}_{date.month:02}_{date.day:02}_{hour:02}"
         yield object_key, date        
 
 def runcmd(cmd, verbose=False, *args, **kwargs):

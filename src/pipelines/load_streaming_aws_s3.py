@@ -12,8 +12,9 @@ if '/home/mohammad/RenewableInsight' not in sys.path:
     sys.path.append('/home/mohammad/RenewableInsight')
 
 from io import BytesIO
-from prefect import task, flow
 from pandas import DataFrame
+from prefect import task, flow
+from prefect import get_run_logger
 from confluent_kafka import Consumer, KafkaError
 
 from src.utilities.utils import create_s3_keys_load, check_s3_key_exists, generate_random_string
@@ -26,6 +27,7 @@ def create_dataframe(messages):
 
 @task
 def consume_data():
+    logger = get_run_logger()
     consumer_config = {
         'bootstrap.servers': Config.BOOTSTRAP_SERVERS_CONS,
         'group.id': Config.GROUP_ID_LOAD,
@@ -39,8 +41,8 @@ def consume_data():
     start_time = datetime.datetime.now()
 
     try:
-        while datetime.datetime.now() - start_time < datetime.timedelta(minutes=20):
-            logging.info("The consumer starts for 10 minutes.")
+        logger.info("The consumer starts for 10 minutes.")
+        while datetime.datetime.now() - start_time < datetime.timedelta(minutes=10):
             msg = consumer.poll(timeout=1.0)
             if msg is None:
                 continue
@@ -48,30 +50,31 @@ def consume_data():
                 if msg.error().code() == KafkaError._PARTITION_EOF:
                     continue
                 else:
-                    logging.info(f"Consumer error: {msg.error()}")
+                    logger.info(f"Consumer error: {msg.error()}")
                     break
-            
             message_value = msg.value().decode('utf-8')
             message_dict = json.loads(message_value)
             messages.append(message_dict)
 
     except KeyboardInterrupt:
-        logging.info("Consumer interrupted.")
+        logger.info("Consumer interrupted.")
     finally:
         consumer.close()
 
-    # Create DataFrame from the accumulated messages
+    logger.info("Create DataFrame from the accumulated messages.")
     data = pd.DataFrame(messages,columns=['date', 'load','key_id'])
     return data
 
 @task
 def transform(data):
 
+    logger = get_run_logger()
     data['date'] = pd.to_datetime(data['date'])
     data['load'] = data['load'].astype('float32')
     data = data.drop(columns=['key_id']) 
 
-    # Extract date and time components
+    logger.info("Extract date and time components.")
+
     data['day'] = data['date'].dt.day
     data['month'] = data['date'].dt.month
     data['year'] = data['date'].dt.year
@@ -88,8 +91,7 @@ def transform(data):
 @task
 def export_data_to_s3(data):
     parquet_buffer = BytesIO()
-    
-
+    logger = get_run_logger()
     bucket_name = Config.BUCKET_NAME
     
     s3 = boto3.client('s3', aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
@@ -97,6 +99,7 @@ def export_data_to_s3(data):
 
     for object_key, date in create_s3_keys_load():
         data_ = data[(data.hour == date.hour) & (data.day == date.day) & (data.month == date.month) & (data.year == date.year)]
+        logger.info(data_.shape)
         table = pa.Table.from_pandas(data_)
         pq.write_table(table, parquet_buffer)
         filename = object_key + f"/{generate_random_string(10)}.parquet"
@@ -106,10 +109,10 @@ def export_data_to_s3(data):
                 Key=filename,
                 Body=parquet_buffer.getvalue()
                 )
-            logging.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
+            logger.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
         else:
 
-            logging.info(f"File {object_key} already exists.")
+            logger.info(f"File {object_key} already exists.")
 
 # Defining the flow
 @flow(log_prints=True)
@@ -122,3 +125,4 @@ def etl():
 # Run the flow
 if __name__ == "__main__":
     etl()
+    

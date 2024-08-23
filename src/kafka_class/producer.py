@@ -1,11 +1,13 @@
-import logging
 import json
+import logging
 import pandas as pd
-from datetime import datetime
+
 from time import sleep
+from datetime import datetime
 from typing import Dict, Generator, Any, List, Optional
 
 from kafka import KafkaProducer
+
 
 class KafkaProducerService:
     """
@@ -128,14 +130,15 @@ class KafkaProducerService:
             topic (str): The Kafka topic to publish to.
             batch (list): A list of records to publish.
         """
+        logger = logging.getLogger(__name__)
         for record in batch:
             try:
                 self.producer.send(topic=topic, value=record)
-                logging.info(f"Producing record for key_id: {record['key_id']}")
+                logger.info(f"Producing record for key_id: {record['key_id']}")
             except KeyboardInterrupt:
                 break
             except Exception as e:
-                logging.error(f"Exception while producing record - {record}: {e}", exc_info=True)
+                logger.error(f"Exception while producing record - {record}: {e}", exc_info=True)
         self.producer.flush()
         sleep(1)
 

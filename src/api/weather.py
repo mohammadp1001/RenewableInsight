@@ -11,7 +11,7 @@ from src.config import Config
 from src.setup_logging import SetupLogging
 from src.api.base_downloader import BaseDownloader
 
-# @SetupLogging(log_dir=Config.LOG_DIR,config_dir=Config.CONFIG_DIR)
+@SetupLogging()
 class WeatherDataDownloader(BaseDownloader):
     """
     A class for downloading and loading weather data from the DWD open data platform.
@@ -72,6 +72,7 @@ class WeatherDataDownloader(BaseDownloader):
         Returns:
             str: The constructed URL.
         """
+        logger = get_run_logger()
         category = weather_param.category
         suffix = weather_param.url_suffix
         
@@ -80,7 +81,7 @@ class WeatherDataDownloader(BaseDownloader):
         else:
             url = f"{self.base_url}{category}/recent/stundenwerte_{weather_param.name}_{station_code}{suffix}.zip"
         
-        logging.info(f"Constructed URL: {url}")
+        logger.info(f"Constructed URL: {url}")
         return url
     
     def _download_content(self, url: str) -> bytes:
@@ -96,12 +97,13 @@ class WeatherDataDownloader(BaseDownloader):
         Raises:
             requests.RequestException: If the request to download the ZIP file fails.
         """
+        logger = get_run_logger()
         try:
             response = requests.get(url)
             response.raise_for_status()
             return response.content
         except requests.RequestException as e:
-            logging.error(f"Failed to download data: {e}")
+            logger.error(f"Failed to download data: {e}")
             raise
     
     def _extract_data(self, zip_content: bytes, station_code: str, weather_param: WeatherParameter) -> pd.DataFrame:
@@ -119,6 +121,7 @@ class WeatherDataDownloader(BaseDownloader):
         Raises:
             FileNotFoundError: If no matching file is found in the ZIP archive.
         """
+        logger = get_run_logger()
         with zipfile.ZipFile(BytesIO(zip_content)) as thezip:
             pattern = re.compile(f"produkt_{weather_param.name.lower()}_stunde_.*_{station_code}.txt")
             file_name = next((s for s in thezip.namelist() if pattern.match(s)), None)
@@ -127,5 +130,5 @@ class WeatherDataDownloader(BaseDownloader):
             with thezip.open(file_name) as file:
                 df = pd.read_csv(file, delimiter=';', encoding='latin1')
         
-        logging.info(f"Extracted file: {file_name}")
+        logger.info(f"Extracted file: {file_name}")
         return df

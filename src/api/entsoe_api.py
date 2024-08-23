@@ -1,15 +1,11 @@
-
-import logging
 import pandas as pd
 
 from entsoe import EntsoePandasClient
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from src.api.base import BaseAPI
 from src.config import Config
-from src.setup_logging import SetupLogging
+from src.api.base import BaseAPI
 
-@SetupLogging(log_dir=Config.LOG_DIR,config_dir=Config.CONFIG_DIR)
 class ENTSOEAPI(BaseAPI):
     """
     API interface for ENTSO-E Transparency Platform data.
@@ -82,16 +78,13 @@ class ENTSOEAPI(BaseAPI):
         """
         start = pd.Timestamp(f'{self.year}-{self.month}-01', tz='Europe/Brussels')
         end = self.get_end_date(self.year, self.month)
-
         try:
             if data_type == 'load':
                 self._data = self.client.query_load(self.country_code, start=start, end=end)
                 self.transform_data(data_type=data_type)
-                logging.info(f"{data_type} data has been successfully downloaded.") 
             elif data_type == 'generation':
                 self._data = self.client.query_generation(self.country_code, start=start, end=end)
                 self.transform_data(data_type=data_type)
-                logging.info(f"{data_type} data has been successfully downloaded.") 
             else:
                 raise ValueError(f"Unsupported data type: {data_type}")
 
@@ -99,7 +92,7 @@ class ENTSOEAPI(BaseAPI):
                 raise ValueError("Invalid data received from the API")
             
         except Exception as e:
-            logging.error(f"Error fetching {data_type} data from ENTSO-E API: {e}")
+            raise Exception(f"Error fetching {data_type} data from ENTSO-E API: {e}")
 
     def save_data(self, filename: str) -> None:
         """
