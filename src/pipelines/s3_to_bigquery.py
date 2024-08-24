@@ -50,7 +50,7 @@ def list_s3_files(bucket_name, prefix=''):
 
     return list_files
 
-list_s3_files(Config.BUCKET_NAME, prefix='electricity/generation/')
+# list_s3_files(Config.BUCKET_NAME, prefix='others/gas/')
 
 def read_s3_files(bucket_name, prefix=''):
 
@@ -61,7 +61,7 @@ def read_s3_files(bucket_name, prefix=''):
     if 'Contents' in response:
         print(f"Files in {bucket_name}/{prefix}:")
         for obj in response['Contents']:
-            # print(obj['Key'])
+            print(obj['Key'])
             list_files.append(obj['Key'])
     else:
         print(f"No files found in {bucket_name}/{prefix}.")
@@ -74,4 +74,4 @@ def read_s3_files(bucket_name, prefix=''):
 
     return list_files
 
-read_s3_files(Config.BUCKET_NAME, prefix='electricity/generation/')
+read_s3_files(Config.BUCKET_NAME, prefix='others/gas/')

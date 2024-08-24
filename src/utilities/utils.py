@@ -1,4 +1,5 @@
 import secrets
+import pytz
 import string
 import datetime
 import logging
@@ -97,9 +98,18 @@ def create_s3_keys_load():
         yield object_key, date
 
 def create_s3_keys_gas():
-    date = datetime.datetime.today()
-    for hour in range(24):
-        object_key = f"others/gas/gas_price_{date.year}_{date.month:02}_{date.day:02}_{hour:02}"
+
+    date_to_read = datetime.datetime.now(pytz.timezone('Europe/Berlin'))
+    if date_to_read.weekday() == 5: 
+        date_to_read = date_to_read - datetime.timedelta(days=1)
+        date_to_read = date_to_read.replace(hour=23)
+    elif date.weekday() == 6:  
+        date_to_read = date_to_read - datetime.timedelta(days=2)
+        date_to_read = date_to_read.replace(hour=23)
+    
+    for hour in range(date_to_read.hour):
+        object_key = f"others/gas/gas_price_{date_to_read.year}_{date_to_read.month:02}_{date_to_read.day:02}_{hour:02}"
+        date = date_to_read.replace(hour=hour)
         yield object_key, date        
 
 def runcmd(cmd, verbose=False, *args, **kwargs):

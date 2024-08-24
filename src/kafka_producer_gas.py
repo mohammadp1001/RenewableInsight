@@ -16,19 +16,18 @@ def main():
 
     while True:
         
-        # Fetch the latest data
         yahoo_finance_api.fetch_data(period='5d',interval='5m')
         yahoo_finance_api.transform_data()
         data = yahoo_finance_api.data
         if not data.empty:
-            # Define filter functions if needed (e.g., filter by date)
+            
             filter_funcs = {}
             
-            # Read and publish the records
+           
             records = producer_service.read_records_from_dataframe(data, filter_funcs, Config.FIELDS_GAS)
             producer_service.publish(topic= Config.PRODUCE_TOPIC_GAS_PRICE, records=records)
             
-            # Update the last published field value in the environment
+            
             Config.set_env_variable('LAST_PUBLISHED_FIELD_VALUE_GAS', producer_service.get_last_published_field_value())
         
         logger.info(f"Producer will sleep for {Config.TIME_OF_SLEEP_PRODUCER_GAS} minutes.")
