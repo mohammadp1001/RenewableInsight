@@ -14,9 +14,9 @@ if '/home/mohammad/RenewableInsight' not in sys.path:
     sys.path.append('/home/mohammad/RenewableInsight')
 
 from src.config import Config
-from src.utilities.bigquery_schema import get_bq_schema_from_df
+from src.utilities.bigquery_schema import get_bq_schema_from_df, generate_task_name, generate_flow_name
 
-@task
+@task(task_run_name=generate_task_name())
 def upload_parquet_to_bigquery(
     s3_key: str, 
     bigquery_table_id: str,  
@@ -74,12 +74,12 @@ def upload_parquet_to_bigquery(
 
     logger(f"Data successfully uploaded to {bigquery_table_id}")
 
-@flow(log_prints=True)
-def etl():
+@flow(log_prints=True,name="s3_to_bigquery",flow_run_name=generate_flow_name())
+def etl(s3_key: str, bigquery_table_id: str, expiration_time: int) -> None:
     logger = get_run_logger()
     upload_parquet_to_bigquery(
-        "others/gas/gas_price_2024_08_23_15/8tzkv3hto4.parquet",
-        "renewableinsight_dataset.gas_price_2024_08_23_15",
+        s3_key,
+        bigquery_table_id,
         expiration_time=7
     )
 

@@ -16,24 +16,15 @@ from confluent_kafka import Consumer, KafkaError
 if '/home/mohammad/RenewableInsight' not in sys.path:
     sys.path.append('/home/mohammad/RenewableInsight')
 
-from src.utilities.utils import create_s3_keys_gas, check_s3_key_exists, generate_random_string
+from src.utilities.utils import create_s3_keys_gas, check_s3_key_exists, generate_random_string, generate_task_name, generate_flow_name
 from src.config import Config
 
-def create_dataframe(messages: list) -> pd.DataFrame:
-    """
-    Create a pandas DataFrame from a list of messages.
-
-    :param messages: List of message dictionaries.
-    :return: DataFrame created from the messages.
-    """
-    df = pd.DataFrame(messages)
-    return df
-
-@task
-def consume_data() -> pd.DataFrame:
+@task(task_run_name=generate_task_name())
+def consume_data(wait_time: int) -> pd.DataFrame:
     """
     Consumes messages from a Kafka topic for a specified duration and returns them as a DataFrame.
 
+    :param wait_time waiting time for consuming messages in minutes.
     :return: A pandas DataFrame containing the consumed messages.
     :rtype: pd.DataFrame
     """
@@ -51,8 +42,8 @@ def consume_data() -> pd.DataFrame:
     start_time = datetime.datetime.now()
 
     try:
-        logger.info("The consumer starts for 1 minute.")
-        while datetime.datetime.now() - start_time < datetime.timedelta(seconds=60):
+        logger.info(f"The consumer starts for {wait_time} minute.")
+        while datetime.datetime.now() - start_time < datetime.timedelta(minutes=wait_time):
             msg = consumer.poll(timeout=1.0)
             if msg is None:
                 continue
@@ -76,7 +67,7 @@ def consume_data() -> pd.DataFrame:
     data = pd.DataFrame(messages, columns=['date', 'open_price', 'close_price', 'key_id'])
     return data
 
-@task
+@task(task_run_name=generate_task_name())
 def transform(data: pd.DataFrame) -> pd.DataFrame:
     """
     Transforms the consumed data by parsing dates, converting data types, 
@@ -109,7 +100,7 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
 
     return data
 
-@task
+@task(task_run_name=generate_task_name())
 def export_data_to_s3(data: pd.DataFrame) -> None:
     """
     Exports the transformed data to an S3 bucket in Parquet format.
@@ -153,14 +144,15 @@ def export_data_to_s3(data: pd.DataFrame) -> None:
       
         parquet_buffer.close()
 
-@flow(log_prints=True)
-def etl() -> None:
+@flow(log_prints=True,name="gas_streaming_aws_s3",flow_run_name=generate_flow_name())
+def etl(wait_time: int) -> None:
     """
     The ETL flow that orchestrates the consuming, transforming, and exporting of gas price data.
 
+    :param wait_time waiting time for consuming messages in minutes.
     :return: None
     """
-    data = consume_data()
+    data = consume_data(wait_time)
     transformed_data = transform(data)
     export_data_to_s3(transformed_data)
 

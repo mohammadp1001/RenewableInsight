@@ -42,7 +42,7 @@ class Config:
     STATION_NAME = os.getenv('STATION_NAME')
     STATION_CODE = os.getenv('STATION_CODE')
     WEATHER_PARAM = os.getenv('WEATHER_PARAM')
-    N_DAY = os.getenv('N_DAY')
+    N_DAY = os.getenv('N_DAY') 
 
     @staticmethod
     def set_env_variable(variable, value):

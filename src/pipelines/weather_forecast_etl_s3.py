@@ -19,9 +19,9 @@ if '/home/mohammad/RenewableInsight' not in sys.path:
 
 from src.config import Config
 from src.api.forecast import DwdMosmixParser, kml_reader
-from src.utilities.utils import create_s3_keys_weather_forecast, check_s3_key_exists, generate_random_string, download_kmz_file
+from src.utilities.utils import create_s3_keys_weather_forecast, check_s3_key_exists, generate_random_string, download_kmz_file, generate_task_name, generate_flow_name
 
-@task
+@task(task_run_name=generate_task_name())
 def load_data() -> pd.DataFrame:
     """
     Extracts forecast data for a given station from a KMZ file and returns it as a pandas DataFrame.
@@ -52,7 +52,7 @@ def load_data() -> pd.DataFrame:
 
     return data
 
-@task
+@task(task_run_name=generate_task_name())
 def transform(data: pd.DataFrame) -> pd.DataFrame:
     """
     Transforms the forecast data by selecting specific columns, renaming them, 
@@ -87,7 +87,7 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
 
     return data
 
-@task
+@task(task_run_name=generate_task_name())
 def export_data_to_s3(data: DataFrame) -> None:
     """
     Exports the transformed forecast data to an S3 bucket in Parquet format.
@@ -119,7 +119,7 @@ def export_data_to_s3(data: DataFrame) -> None:
         else:
             logger.info(f"File {object_key} already exists.")
 
-@flow(log_prints=True)
+@flow(log_prints=True,name="weather_forecast_etl_s3",flow_run_name=generate_flow_name())
 def etl() -> None:
     """
     The ETL flow that orchestrates the loading, transforming, and exporting of weather forecast data.

@@ -14,11 +14,11 @@ from prefect import get_run_logger
 if '/home/mohammad/RenewableInsight' not in sys.path:
     sys.path.append('/home/mohammad/RenewableInsight')
 
-from src.utilities.utils import create_s3_keys_generation, check_s3_key_exists, generate_random_string
 from src.config import Config
 from src.api.entsoe_api import ENTSOEAPI
+from src.utilities.utils import create_s3_keys_generation, check_s3_key_exists, generate_random_string, generate_task_name, generate_flow_name
 
-@task
+@task(task_run_name=generate_task_name())
 def load_data() -> DataFrame:
     """
     Load data from the ENTSO-E API.
@@ -36,7 +36,7 @@ def load_data() -> DataFrame:
 
     return data
 
-@task
+@task(task_run_name=generate_task_name())
 def transform(data: DataFrame) -> DataFrame:
     """
     Transform the DataFrame by converting datetime columns and adding additional time-based columns.
@@ -62,7 +62,7 @@ def transform(data: DataFrame) -> DataFrame:
 
     return data
 
-@task
+@task(task_run_name=generate_task_name())
 def export_data_to_s3(data: DataFrame) -> None:
     """
     Export the transformed data to an S3 bucket in Parquet format.
@@ -100,7 +100,7 @@ def export_data_to_s3(data: DataFrame) -> None:
         else:
             logger.info("The dataframe is empty for the specified date.")
 
-@flow(log_prints=True)
+@flow(log_prints=True,name="actual_generation_etl_aws_s3",flow_run_name=generate_flow_name())
 def etl() -> None:
     """
     The ETL flow that orchestrates the loading, transforming, and exporting of generation data.

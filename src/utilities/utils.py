@@ -11,11 +11,14 @@ import pandas as pd
 from pathlib import Path
 from typing import List
 from google.cloud import bigquery
+from prefect.runtime import flow_run, task_run
 from typing import Generator, Tuple, List, Optional
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 
 from src.config import Config
 from src.api.parameters import WeatherParameter
+
+TIMEZONE = pytz.timezone('Europe/Berlin')
 
 def generate_random_string(n: int = 10) -> str:
     """
@@ -33,7 +36,7 @@ def create_s3_keys_generation() -> Generator[Tuple[str, datetime.datetime], None
 
     :yield: A tuple containing the S3 object key and the corresponding date object for each key.
     """
-    today = datetime.datetime.now()
+    today = datetime.datetime.now(TIMEZONE)
     start_date = today - datetime.timedelta(days=5)
     for i in range(5):
         date = start_date + datetime.timedelta(days=i)
@@ -53,7 +56,7 @@ def create_s3_keys_historical_weather(
     :param station_code: The station code for categorizing the folder structure.
     :yield: A tuple containing the S3 object key and the corresponding date object for each key.
     """
-    today = datetime.datetime.now()
+    today = datetime.datetime.now(TIMEZONE)
     for i in range(5):  
         date = datetime.datetime(today.year - i, today.month, today.day)
         object_key = f"historical_weather/{WeatherParameter[weather_param].category}/{station_code}/{date.day:02}_{date.month:02}_{date.year}"
@@ -71,7 +74,7 @@ def create_s3_keys_weather_forecast(
     :param station_name: The name of the weather station.
     :yield: A tuple containing the S3 object key and the corresponding date object for each key.
     """
-    today = datetime.datetime.now()
+    today = datetime.datetime.now(TIMEZONE)
     last_day = today + datetime.timedelta(days=n_day)
     for i in range(n_day):
         date = last_day - datetime.timedelta(days=i)
@@ -97,11 +100,11 @@ def create_s3_keys_gas() -> Generator[Tuple[str, datetime.datetime], None, None]
 
     :yield: A tuple containing the S3 object key and the corresponding date object for each key.
     """
-    date_to_read = datetime.datetime.now(pytz.timezone('Europe/Berlin'))
-    if date_to_read.weekday() == 5:  # Saturday
+    date_to_read = datetime.datetime.now(TIMEZONE)
+    if date_to_read.weekday() == 5:  
         date_to_read = date_to_read - datetime.timedelta(days=1)
         date_to_read = date_to_read.replace(hour=23)
-    elif date_to_read.weekday() == 6:  # Sunday
+    elif date_to_read.weekday() == 6:  
         date_to_read = date_to_read - datetime.timedelta(days=2)
         date_to_read = date_to_read.replace(hour=23)
     
@@ -251,3 +254,32 @@ def get_bq_schema_from_df(df: pd.DataFrame) -> List[bigquery.SchemaField]:
         schema.append(bigquery.SchemaField(column, field_type, mode='NULLABLE'))
     
     return schema
+
+def generate_task_name()-> str:
+    """
+    Generate task_run_name based on flow_name and task_run parameters.
+    
+    :return task_run_name
+    """
+    flow_name = flow_run.flow_name
+    task_name = task_run.task_name
+
+    # TODO use parameters
+    parameters = task_run.parameters
+    
+    
+    task_run_name = f"{flow_name}-{task_name}-{datetime.datetime.now(TIMEZONE).strftime('%Y-%m-%d %H:%M:%S')}"
+
+    return task_run_name
+
+def generate_flow_name()-> str:
+    """
+    Generate flow_run_name based on date.
+    
+    :return flow_run_name
+    """
+    flow_name = flow_run.flow_name
+
+    flow_run_name = f"{flow_name}-{datetime.datetime.now(TIMEZONE).strftime('%Y-%m-%d %H:%M:%S')}"
+
+    return flow_run_name

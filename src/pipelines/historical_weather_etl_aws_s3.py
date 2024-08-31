@@ -16,9 +16,9 @@ if '/home/mohammad/RenewableInsight' not in sys.path:
 from src.config import Config
 from src.api.parameters import WeatherParameter
 from src.api.weather import WeatherDataDownloader
-from src.utilities.utils import create_s3_keys_historical_weather, generate_random_string, check_s3_key_exists
+from src.utilities.utils import create_s3_keys_historical_weather, generate_random_string, check_s3_key_exists, generate_task_name, generate_flow_name
 
-@task
+@task(task_run_name=generate_task_name())
 def load_data() -> pd.DataFrame:
     """
     Load weather data for a given station and weather parameter.
@@ -32,7 +32,7 @@ def load_data() -> pd.DataFrame:
 
     return data
 
-@task
+@task(task_run_name=generate_task_name())
 def transform(data: pd.DataFrame) -> pd.DataFrame:
     """
     Transform the weather data by cleaning and processing it.
@@ -66,7 +66,7 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
 
     return data
 
-@task(log_prints=True)
+@task(task_run_name=generate_task_name())
 def export_data_to_s3(data: DataFrame) -> None:
     """
     Export the transformed weather data to an S3 bucket in Parquet format.
@@ -102,7 +102,7 @@ def export_data_to_s3(data: DataFrame) -> None:
             logging.info(f"File {object_key} already exists.")
             print(f"File {object_key} already exists.")
 
-@flow(log_prints=True)
+@flow(log_prints=True,name="historical_weather_etl_aws_s3",flow_run_name=generate_flow_name())
 def etl() -> None:
     """
     The ETL flow that orchestrates the loading, transforming, and exporting of historical weather data.
