@@ -1,4 +1,3 @@
-
 import sys
 import json
 import boto3
@@ -103,7 +102,6 @@ def export_data_to_s3(data):
                       aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY)
 
     for object_key, date in create_s3_keys_gas():
-        # Filter the data for the current hour, day, month, and year
         data_ = data[(data.hour == date.hour) & 
                      (data.day == date.day) & 
                      (data.month == date.month) & 
@@ -113,18 +111,14 @@ def export_data_to_s3(data):
             logger.info("The dataframe is empty possibly due to lack of messages.")
             continue
 
-        # Write the filtered data to a Parquet file in memory
         parquet_buffer = BytesIO()
         table = pa.Table.from_pandas(data_)
         pq.write_table(table, parquet_buffer)
 
-        # Reset the buffer position to the beginning
         parquet_buffer.seek(0)
 
-        # Generate a random filename for the parquet file
         filename = object_key + f"/{generate_random_string(10)}.parquet"
 
-        # Check if the S3 key already exists, and upload the file if it does not
         if not check_s3_key_exists(s3, bucket_name, object_key):
             s3.put_object(
                 Bucket=bucket_name,
@@ -134,8 +128,7 @@ def export_data_to_s3(data):
             logger.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
         else:
             logger.info(f"File {object_key} already exists.")
-        
-        # Close the buffer
+      
         parquet_buffer.close()
 
 # Defining the flow

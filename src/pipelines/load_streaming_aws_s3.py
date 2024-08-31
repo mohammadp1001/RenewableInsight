@@ -90,29 +90,41 @@ def transform(data):
 
 @task
 def export_data_to_s3(data):
-    parquet_buffer = BytesIO()
     logger = get_run_logger()
     bucket_name = Config.BUCKET_NAME
-    
-    s3 = boto3.client('s3', aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
-                          aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY)
+    s3 = boto3.client('s3', 
+                      aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
+                      aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY)
 
     for object_key, date in create_s3_keys_load():
-        data_ = data[(data.hour == date.hour) & (data.day == date.day) & (data.month == date.month) & (data.year == date.year)]
-        logger.info(data_.shape)
+        data_ = data[(data.hour == date.hour) & 
+                     (data.day == date.day) & 
+                     (data.month == date.month) & 
+                     (data.year == date.year)]
+
+        if data_.empty:
+            logger.info("The dataframe is empty possibly due to lack of messages.")
+            continue
+
+        parquet_buffer = BytesIO()
         table = pa.Table.from_pandas(data_)
         pq.write_table(table, parquet_buffer)
+
+        parquet_buffer.seek(0)
+
         filename = object_key + f"/{generate_random_string(10)}.parquet"
-        if not check_s3_key_exists(s3,bucket_name,object_key):
+
+        if not check_s3_key_exists(s3, bucket_name, object_key):
             s3.put_object(
                 Bucket=bucket_name,
                 Key=filename,
-                Body=parquet_buffer.getvalue()
-                )
+                Body=parquet_buffer
+            )
             logger.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
         else:
-
             logger.info(f"File {object_key} already exists.")
+      
+        parquet_buffer.close()
 
 # Defining the flow
 @flow(log_prints=True)
