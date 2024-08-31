@@ -22,27 +22,27 @@ def fetch_docker_stats():
         cpu_stats = stats['cpu_stats']
         pre_cpu_stats = stats['precpu_stats']
         
-        # Calculate CPU usage percentage
+        
         cpu_delta = cpu_stats['cpu_usage']['total_usage'] - pre_cpu_stats['cpu_usage']['total_usage']
         system_delta = cpu_stats['system_cpu_usage'] - pre_cpu_stats['system_cpu_usage']
         cpu_usage = (cpu_delta / system_delta) * len(cpu_stats['cpu_usage']['percpu_usage']) * 100.0
         
-        # Memory usage
+       
         memory_usage = memory_stats['usage']
         memory_limit = memory_stats['limit']
         memory_percentage = (memory_usage / memory_limit) * 100.0
         
-        # Network I/O
+   
         network_stats = stats.get('networks', {})
         network_input = sum(net['rx_bytes'] for net in network_stats.values())
         network_output = sum(net['tx_bytes'] for net in network_stats.values())
         
-        # Block I/O
+     
         block_io_stats = stats['blkio_stats']['io_service_bytes_recursive']
         block_input = sum(bio['value'] for bio in block_io_stats if bio['op'] == 'Read')
         block_output = sum(bio['value'] for bio in block_io_stats if bio['op'] == 'Write')
         
-        # PIDs
+        
         pids = stats['pids_stats']['current']
         
         data.append([

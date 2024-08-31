@@ -12,8 +12,7 @@ class BaseDownloader(abc.ABC):
         """
         Initializes the BaseDownloader with a base URL.
 
-        Args:
-            base_url (str): The base URL for data downloads.
+        :param base_url: The base URL for data downloads.
         """
         self.base_url = base_url
 
@@ -22,26 +21,20 @@ class BaseDownloader(abc.ABC):
         """
         Downloads and loads data.
 
-        Args:
-            args: Arguments specific to the data download.
-            kwargs: Keyword arguments specific to the data download.
-
-        Returns:
-            pd.DataFrame: The downloaded data as a pandas DataFrame.
+        :param args: Arguments specific to the data download.
+        :param kwargs: Keyword arguments specific to the data download.
+        :return: The downloaded data as a pandas DataFrame.
         """
         pass
 
     @abc.abstractmethod
-    def _validate_parameters(self, *args, **kwargs):
+    def _validate_parameters(self, *args, **kwargs) -> None:
         """
         Validates the parameters for the data download.
 
-        Args:
-            args: Arguments specific to the validation.
-            kwargs: Keyword arguments specific to the validation.
-
-        Raises:
-            ValueError: If parameters are not valid.
+        :param args: Arguments specific to the validation.
+        :param kwargs: Keyword arguments specific to the validation.
+        :raises ValueError: If parameters are not valid.
         """
         pass
 
@@ -50,12 +43,9 @@ class BaseDownloader(abc.ABC):
         """
         Constructs the URL for downloading the data.
 
-        Args:
-            args: Arguments specific to the URL construction.
-            kwargs: Keyword arguments specific to the URL construction.
-
-        Returns:
-            str: The constructed URL.
+        :param args: Arguments specific to the URL construction.
+        :param kwargs: Keyword arguments specific to the URL construction.
+        :return: The constructed URL.
         """
         pass
 
@@ -64,14 +54,9 @@ class BaseDownloader(abc.ABC):
         """
         Downloads the content from the provided URL.
 
-        Args:
-            url (str): The URL to download the content from.
-
-        Returns:
-            bytes: The content of the download.
-
-        Raises:
-            Exception: If the download fails.
+        :param url: The URL to download the content from.
+        :return: The content of the download as bytes.
+        :raises Exception: If the download fails.
         """
         pass
 
@@ -80,12 +65,9 @@ class BaseDownloader(abc.ABC):
         """
         Extracts data from the downloaded content.
 
-        Args:
-            content (bytes): The content to extract data from.
-            args: Arguments specific to the data extraction.
-            kwargs: Keyword arguments specific to the data extraction.
-
-        Returns:
-            pd.DataFrame: The extracted data as a pandas DataFrame.
+        :param content: The content to extract data from.
+        :param args: Arguments specific to the data extraction.
+        :param kwargs: Keyword arguments specific to the data extraction.
+        :return: The extracted data as a pandas DataFrame.
         """
         pass

@@ -10,15 +10,14 @@ class BaseParser(abc.ABC):
     """
 
     @abc.abstractmethod
-    def parse_timestamps(self, fp: IO[bytes]) -> Iterator:
+    def parse_timestamps(self, fp: IO[bytes]) -> Iterator[datetime]:
         """
         Parses timestamps from the given file.
 
-        Args:
-            fp (IO[bytes]): The file-like object to parse.
-
-        Returns:
-            Iterator: An iterator over parsed timestamps.
+        :param fp: The file-like object to parse.
+        :type fp: IO[bytes]
+        :return: An iterator over parsed timestamps.
+        :rtype: Iterator[datetime]
         """
         pass
 
@@ -27,12 +26,9 @@ class BaseParser(abc.ABC):
         """
         Parses forecast data from the given file.
 
-        Args:
-            fp (IO[bytes]): The file-like object to parse.
-            stations (Optional[Set[str]]): A set of station identifiers to filter the forecasts.
-
-        Returns:
-            Iterator[Tuple[str, Dict[str, List[Optional[float]]]]]: An iterator over parsed forecast data.
+        :param fp: The file-like object to parse.
+        :param stations: A set of station identifiers to filter the forecasts. If None, all stations are included.
+        :return: An iterator over parsed forecast data, where each item is a tuple containing the station name and a dictionary of forecast data.
         """
         pass
 
@@ -42,11 +38,8 @@ class BaseParser(abc.ABC):
         """
         Converts parsed forecast data to a pandas DataFrame.
 
-        Args:
-            forecasts (Iterator[Tuple[str, Dict[str, List[Optional[float]]]]]): The parsed forecast data.
-            station (str): The station identifier to extract data for.
-
-        Returns:
-            pd.DataFrame: The forecast data as a pandas DataFrame.
+        :param forecasts: The parsed forecast data.
+        :param station: The station identifier to extract data for.
+        :return: The forecast data as a pandas DataFrame.
         """
         pass

@@ -1,16 +1,21 @@
-import secrets
+
 import pytz
+import boto3
 import string
 import datetime
+import secrets
 import logging
 import subprocess
+import pandas as pd
+
 from pathlib import Path
+from typing import List
+from google.cloud import bigquery
 from typing import Generator, Tuple, List, Optional
-import boto3
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 
-from src.api.parameters import WeatherParameter
 from src.config import Config
+from src.api.parameters import WeatherParameter
 
 def generate_random_string(n: int = 10) -> str:
     """
@@ -49,7 +54,7 @@ def create_s3_keys_historical_weather(
     :yield: A tuple containing the S3 object key and the corresponding date object for each key.
     """
     today = datetime.datetime.now()
-    for i in range(5):  # Last 5 years including the current year
+    for i in range(5):  
         date = datetime.datetime(today.year - i, today.month, today.day)
         object_key = f"historical_weather/{WeatherParameter[weather_param].category}/{station_code}/{date.day:02}_{date.month:02}_{date.year}"
         yield object_key, date
@@ -203,7 +208,6 @@ def read_s3_file(bucket_name: str, s3_key: str) -> pd.DataFrame:
    
     :param bucket_name: The name of the S3 bucket.
     :param s3_key: The S3 key for the Parquet file.
-
     :return: A pandas DataFrame containing the data from the Parquet file.
     """
     logger = get_run_logger()
@@ -217,3 +221,33 @@ def read_s3_file(bucket_name: str, s3_key: str) -> pd.DataFrame:
     parquet_file = BytesIO(response['Body'].read())
     df = pd.read_parquet(parquet_file, engine='pyarrow')
     return df
+
+def get_bq_schema_from_df(df: pd.DataFrame) -> List[bigquery.SchemaField]:
+    """
+    Generate a BigQuery schema from a pandas DataFrame.
+
+    :param df: The pandas DataFrame from which to generate the schema.
+    :return: A list of BigQuery SchemaField objects representing the schema of the DataFrame.
+    """
+    schema = []
+    for column in df.columns:
+        dtype = df[column].dtype.name  
+        
+       
+        if dtype == 'object':
+            field_type = 'STRING'
+        elif dtype.startswith('int'):
+            field_type = 'INTEGER'
+        elif dtype.startswith('float'):
+            field_type = 'FLOAT'
+        elif dtype == 'bool':
+            field_type = 'BOOLEAN'
+        elif dtype.startswith('datetime'):
+            field_type = 'TIMESTAMP'
+        else:
+            field_type = 'STRING'  
+
+        
+        schema.append(bigquery.SchemaField(column, field_type, mode='NULLABLE'))
+    
+    return schema

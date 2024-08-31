@@ -1,17 +1,15 @@
-# original code from here https://www.hackitu.de/dwd_mosmix/parse_dwd_mosmix.py.html
-
 import re
 import logging
 import pandas as pd
 import lxml.etree as ET
 
-from datetime import datetime, timezone
-from typing import IO, Iterator, Dict, ClassVar, Optional, Tuple, Any, List, Set, Generator
-from xml.etree.ElementTree import Element
-from contextlib import contextmanager
-from zipfile import ZipFile, BadZipFile
 from io import BytesIO
 from pathlib import Path
+from contextlib import contextmanager
+from zipfile import ZipFile, BadZipFile
+from datetime import datetime, timezone
+from xml.etree.ElementTree import Element
+from typing import IO, Iterator, Dict, ClassVar, Optional, Tuple, Any, List, Set, Generator
 
 from src.config import Config
 from src.setup_logging import SetupLogging
@@ -32,6 +30,13 @@ class DwdMosmixParser(BaseParser):
 
     @classmethod
     def _iter_tag(cls, fp: IO[bytes], tag: str) -> Iterator[Element]:
+        """
+        Iterate over XML elements with the specified tag.
+
+        :param fp: The file-like object to parse.
+        :param tag: The tag to search for.
+        :yield: XML elements matching the specified tag.
+        """
         if ":" in tag:
             ns, tag = tag.split(":", maxsplit=1)
             tag = f"{{{cls._ns[ns]}}}{tag}"
@@ -42,6 +47,13 @@ class DwdMosmixParser(BaseParser):
 
     @classmethod
     def _parse_timestamp(cls, value: Optional[str]) -> datetime:
+        """
+        Parse a timestamp from a string value.
+
+        :param value: The timestamp string to parse.
+        :return: The parsed datetime object in UTC.
+        :raises ValueError: If the timestamp is undefined or cannot be parsed.
+        """
         if not value:
             raise ValueError("Undefined timestamp")
         try:
@@ -51,13 +63,10 @@ class DwdMosmixParser(BaseParser):
 
     def parse_timestamps(self, fp: IO[bytes]) -> Iterator[datetime]:
         """
-        Parses all ``ForecastTimeSteps`` as UTC timestamps.
+        Parse all `ForecastTimeSteps` as UTC timestamps.
 
-        Args:
-            fp (IO[bytes]): The file-like object to parse.
-
-        Returns:
-            Iterator[datetime]: An iterator over parsed timestamps.
+        :param fp: The file-like object to parse.
+        :yield: Parsed timestamps as datetime objects.
         """
         for elem in self._iter_tag(fp, "dwd:ForecastTimeSteps"):
             yield from (self._parse_timestamp(_.text) for _ in elem.iterfind("dwd:TimeStep", namespaces=self._ns))
@@ -65,6 +74,13 @@ class DwdMosmixParser(BaseParser):
 
     @classmethod
     def _parse_coordinates(cls, value: str) -> Tuple[float, float, float]:
+        """
+        Parse coordinates from a string value.
+
+        :param value: The string containing coordinates in "longitude,latitude,elevation" format.
+        :return: A tuple of parsed float values (longitude, latitude, elevation).
+        :raises ValueError: If the coordinates cannot be parsed.
+        """
         values: List[str] = value.split(",")
         if len(values) != 3:
             raise ValueError(f"Cannot parse coordinates '{value}'")
@@ -75,6 +91,13 @@ class DwdMosmixParser(BaseParser):
 
     @classmethod
     def _parse_description(cls, placemark: Element) -> str:
+        """
+        Parse the description from a KML Placemark element.
+
+        :param placemark: The KML Placemark element.
+        :return: The description text.
+        :raises ValueError: If the description is not found or empty.
+        """
         description: Optional[Element] = placemark.find("kml:description", namespaces=cls._ns)
         if description is None or not description.text:
             raise ValueError("No 'Placemark.description' found")
@@ -82,6 +105,13 @@ class DwdMosmixParser(BaseParser):
 
     @classmethod
     def _parse_placemark(cls, placemark: Element) -> Dict[str, Any]:
+        """
+        Parse information from a KML Placemark element.
+
+        :param placemark: The KML Placemark element.
+        :return: A dictionary containing the parsed information.
+        :raises ValueError: If required fields (name, coordinates) are not found.
+        """
         name: Optional[Element] = placemark.find("kml:name", namespaces=cls._ns)
         if name is None or not name.text:
             raise ValueError("No 'Placemark.name' found")
@@ -101,6 +131,13 @@ class DwdMosmixParser(BaseParser):
 
     @classmethod
     def _parse_values(cls, values: str) -> List[Optional[float]]:
+        """
+        Parse forecast values from a string.
+
+        :param values: The string containing forecast values.
+        :return: A list of parsed forecast values, with None for undefined values.
+        :raises ValueError: If the forecast values cannot be parsed.
+        """
         try:
             return [None if _ == cls._undef_sign else float(_) for _ in values.split()]
         except ValueError as e:
@@ -108,6 +145,13 @@ class DwdMosmixParser(BaseParser):
 
     @classmethod
     def _parse_forecast(cls, placemark: Element) -> Dict[str, List[Optional[float]]]:
+        """
+        Parse forecast data from a KML Placemark element.
+
+        :param placemark: The KML Placemark element.
+        :return: A dictionary containing the parsed forecast data.
+        :raises ValueError: If required forecast fields are not found.
+        """
         forecasts: Dict[str, List[Optional[float]]] = {}
         for forecast in placemark.iterfind("kml:ExtendedData/dwd:Forecast", namespaces=cls._ns):
             name = forecast.get(f"{{{cls._ns['dwd']}}}elementName")
@@ -120,17 +164,14 @@ class DwdMosmixParser(BaseParser):
 
             forecasts[name] = cls._parse_values(value.text)
         return forecasts
-    
+
     def parse_forecasts(self, fp: IO[bytes], stations: Optional[Set[str]] = None) -> Iterator[Tuple[str, Dict[str, List[Optional[float]]]]]:
         """
-        Parses all value series in ``Forecast``, optionally limited to certain stations.
+        Parse all value series in `Forecast`, optionally limited to certain stations.
 
-        Args:
-            fp (IO[bytes]): The file-like object to parse.
-            stations (Optional[Set[str]]): A set of station identifiers to filter the forecasts.
-
-        Returns:
-            Iterator[Tuple[str, Dict[str, List[Optional[float]]]]]: An iterator over parsed forecast data.
+        :param fp: The file-like object to parse.
+        :param stations: A set of station identifiers to filter the forecasts. If None, all stations are included.
+        :yield: Parsed forecast data for each station.
         """
         for elem in self._iter_tag(fp, "kml:Placemark"):
             placemark_desc = self._parse_description(elem)
@@ -140,27 +181,26 @@ class DwdMosmixParser(BaseParser):
     @staticmethod
     def convert_to_dataframe(forecasts: Iterator[Tuple[str, Dict[str, List[Optional[float]]]]], station: str) -> pd.DataFrame:
         """
-        Converts parsed forecast data to a pandas DataFrame.
+        Convert parsed forecast data to a pandas DataFrame.
 
-        Args:
-            forecasts (Iterator[Tuple[str, Dict[str, List[Optional[float]]]]]): The parsed forecast data.
-            station (str): The station identifier to extract data for.
-
-        Returns:
-            pd.DataFrame: The forecast data as a pandas DataFrame.
-        
-        Raises:
-            ValueError: If the station is not found in the forecast data.
+        :param forecasts: The parsed forecast data.
+        :param station: The station identifier to extract data for.
+        :return: The forecast data as a pandas DataFrame.
+        :raises ValueError: If the station is not found in the forecast data.
         """
         forecast_dict = dict(forecasts)
         if station not in forecast_dict:
             raise ValueError(f"Station '{station}' not found in forecasts")
         return pd.DataFrame.from_dict(forecast_dict[station])
-                    
+
 @contextmanager
 def kmz_reader(fp: IO[bytes]) -> Generator[IO[bytes], None, None]:
     """
     Wrap reading from *.kmz files, which are merely compressed *.kml (XML) files.
+
+    :param fp: The file-like object to read from.
+    :yield: A file-like object containing the uncompressed KML data.
+    :raises OSError: If the KMZ archive has unexpected contents or is invalid.
     """
     try:
         with ZipFile(fp) as zf:
@@ -175,6 +215,11 @@ def kmz_reader(fp: IO[bytes]) -> Generator[IO[bytes], None, None]:
 def kml_reader(filename: Path, compressed: Optional[bool] = None) -> Generator[IO[bytes], None, None]:
     """
     Read access for *.kml or compressed *.kmz files.
+
+    :param filename: The file path of the KML or KMZ file.
+    :param compressed: Whether the file is compressed as KMZ. If None, the file extension is used to determine this.
+    :yield: A file-like object containing the KML data.
+    :raises OSError: If the KMZ archive has unexpected contents or is invalid.
     """
     with open(filename, "rb") as fp:
         if compressed is True or (compressed is None and filename.suffix == ".kmz"):

@@ -45,6 +45,7 @@ class YahooAPI(BaseAPI):
         """
         self._data.reset_index(drop=False, inplace=True)
         self._data = self._data.rename(columns={'Datetime': 'date', 'Close': 'close_price', 'Open': 'open_price'})
+        
         berlin_tz = pytz.timezone('Europe/Berlin')
         self._data['date'] = self._data['date'].dt.tz_convert(berlin_tz)
 

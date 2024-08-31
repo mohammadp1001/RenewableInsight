@@ -6,54 +6,44 @@ import pyarrow as pa
 import pandas as pd
 import pyarrow.parquet as pq
 
-if '/home/mohammad/RenewableInsight' not in sys.path:
-    sys.path.append('/home/mohammad/RenewableInsight')
-
 from io import BytesIO
 from pandas import DataFrame
 from prefect import task, flow
 from prefect import get_run_logger
 
+if '/home/mohammad/RenewableInsight' not in sys.path:
+    sys.path.append('/home/mohammad/RenewableInsight')
+
 from src.utilities.utils import create_s3_keys_generation, check_s3_key_exists, generate_random_string
 from src.config import Config
 from src.api.entsoe_api import ENTSOEAPI
-
 
 @task
 def load_data() -> DataFrame:
     """
     Load data from the ENTSO-E API.
 
-    Args:
-
-            month (int): The month of the data.
-            year (int): The year of the data.
-            data_type (str): The data_type name.
-            
-    Returns:
-        DataFrame: The loaded DataFrame.
+    :return: A pandas DataFrame containing the loaded data.
     """
- 
-
-    data_downloader = ENTSOEAPI(year=datetime.datetime.now().year,month=datetime.datetime.now().month,country_code=Config.COUNTRY_CODE,api_key=Config.ENTSOE_API_KEY)
+    data_downloader = ENTSOEAPI(
+        year=datetime.datetime.now().year,
+        month=datetime.datetime.now().month,
+        country_code=Config.COUNTRY_CODE,
+        api_key=Config.ENTSOE_API_KEY
+    )
     data_downloader.fetch_data(data_type=Config.DATA_TYPE_GEN)
     data = data_downloader.data
 
     return data
 
-# Transform data
 @task
 def transform(data: DataFrame) -> DataFrame:
     """
-    Transform datetime and add additional columns.
+    Transform the DataFrame by converting datetime columns and adding additional time-based columns.
 
-    Args:
-        data (DataFrame): The input DataFrame.
-
-    Returns:
-        DataFrame: The transformed DataFrame with additional columns.
+    :param data: The input DataFrame to be transformed.
+    :return: The transformed DataFrame with additional columns.
     """
-    # Transform datetime
     data['date'] = pd.to_datetime(data['date'], format='%Y-%m-%d %H:%M:%S.%f')
 
     # Extract date and time components
@@ -62,58 +52,64 @@ def transform(data: DataFrame) -> DataFrame:
     data['year'] = data['date'].dt.year
     data['hour'] = data['date'].dt.hour
     data['minute'] = data['date'].dt.minute
+
+    # Convert to appropriate data types for efficiency
     data['month'] = data['month'].astype('int8')
     data['year'] = data['year'].astype('int16')
     data['hour'] = data['hour'].astype('int8')
     data['minute'] = data['minute'].astype('int8')
     data['day'] = data['day'].astype('int8')
 
-
     return data
 
-
-# Load data
 @task
 def export_data_to_s3(data: DataFrame) -> None:
     """
-    Export data to a S3 bucket.
+    Export the transformed data to an S3 bucket in Parquet format.
 
-    Args:
-        data (DataFrame): The DataFrame to be exported.
-            Required:
-                - bucket_name (str): The name of the S3 bucket.
-                - export_mode (str): The export mode ('daily' or other).
-                - data_item_name (str): The name of the data item.
-                - data_item_no (int): The number of data items.
+    :param data: The transformed DataFrame to be exported.
+    :return: None
     """
     parquet_buffer = BytesIO()
     logger = get_run_logger()
     bucket_name = Config.BUCKET_NAME
-    s3 = boto3.client('s3', aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
-                          aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY)
+    s3 = boto3.client(
+        's3', 
+        aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY
+    )
 
     for object_key, date in create_s3_keys_generation():
-        data_ = data[(data.hour == date.hour) & (data.day == date.day) & (data.month == date.month) & (data.year == date.year)]
-        table = pa.Table.from_pandas(data_)
-        pq.write_table(table, parquet_buffer)
-        filename = object_key + f"/{generate_random_string(10)}.parquet"
-        if not check_s3_key_exists(s3,bucket_name,object_key):
-            s3.put_object(
-                Bucket=bucket_name,
-                Key=filename,
-                Body=parquet_buffer.getvalue()
+        data_ = data[(data.hour == date.hour) & 
+                     (data.day == date.day) & 
+                     (data.month == date.month) & 
+                     (data.year == date.year)]
+        if not data_.empty:
+            table = pa.Table.from_pandas(data_)
+            pq.write_table(table, parquet_buffer)
+            filename = object_key + f"/{generate_random_string(10)}.parquet"
+            if not check_s3_key_exists(s3, bucket_name, object_key):
+                s3.put_object(
+                    Bucket=bucket_name,
+                    Key=filename,
+                    Body=parquet_buffer.getvalue()
                 )
-            logger.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
+                logger.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
+            else:
+                logger.info(f"File {object_key} already exists.")
         else:
-            logger.info(f"File {object_key} already exists.")
+            logger.info("The dataframe is empty for the specified date.")
 
-# Defining the flow
 @flow(log_prints=True)
-def etl():
+def etl() -> None:
+    """
+    The ETL flow that orchestrates the loading, transforming, and exporting of generation data.
+
+    :return: None
+    """
     raw_data = load_data()
     transformed_data = transform(raw_data)
     export_data_to_s3(transformed_data)
 
-# Running the flow
 if __name__ == "__main__":
     etl()

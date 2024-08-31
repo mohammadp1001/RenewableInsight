@@ -1,4 +1,3 @@
-
 import sys
 import json
 import boto3
@@ -8,25 +7,28 @@ import pyarrow as pa
 import pandas as pd
 import pyarrow.parquet as pq
 
-if '/home/mohammad/RenewableInsight' not in sys.path:
-    sys.path.append('/home/mohammad/RenewableInsight')
-
 from io import BytesIO
 from pandas import DataFrame
 from prefect import task, flow
 from prefect import get_run_logger
 from confluent_kafka import Consumer, KafkaError
 
-from src.utilities.utils import create_s3_keys_load, check_s3_key_exists, generate_random_string
+if '/home/mohammad/RenewableInsight' not in sys.path:
+    sys.path.append('/home/mohammad/RenewableInsight')
+
 from src.config import Config
 from src.api.entsoe_api import ENTSOEAPI
+from src.utilities.utils import create_s3_keys_load, check_s3_key_exists, generate_random_string
 
-def create_dataframe(messages):
-    df = pd.DataFrame(messages)
-    return df
+
 
 @task
-def consume_data():
+def consume_data() -> pd.DataFrame:
+    """
+    Consume messages from a Kafka topic for a specified duration and return them as a DataFrame.
+
+    :return: A pandas DataFrame containing the consumed messages.
+    """
     logger = get_run_logger()
     consumer_config = {
         'bootstrap.servers': Config.BOOTSTRAP_SERVERS_CONS,
@@ -50,7 +52,7 @@ def consume_data():
                 if msg.error().code() == KafkaError._PARTITION_EOF:
                     continue
                 else:
-                    logger.info(f"Consumer error: {msg.error()}")
+                    logger.error(f"Consumer error: {msg.error()}")
                     break
             message_value = msg.value().decode('utf-8')
             message_dict = json.loads(message_value)
@@ -62,16 +64,22 @@ def consume_data():
         consumer.close()
 
     logger.info("Create DataFrame from the accumulated messages.")
-    data = pd.DataFrame(messages,columns=['date', 'load','key_id'])
+    data = pd.DataFrame(messages, columns=['date', 'load', 'key_id'])
     return data
 
 @task
-def transform(data):
+def transform(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Transform the consumed data by parsing dates, converting data types, 
+    and extracting additional time-based features.
 
+    :param data: The consumed data as a pandas DataFrame.
+    :return: A transformed pandas DataFrame.
+    """
     logger = get_run_logger()
     data['date'] = pd.to_datetime(data['date'])
     data['load'] = data['load'].astype('float32')
-    data = data.drop(columns=['key_id']) 
+    data = data.drop(columns=['key_id'])
 
     logger.info("Extract date and time components.")
 
@@ -80,6 +88,8 @@ def transform(data):
     data['year'] = data['date'].dt.year
     data['hour'] = data['date'].dt.hour
     data['minute'] = data['date'].dt.minute
+
+    # Convert columns to more efficient data types
     data['month'] = data['month'].astype('int8')
     data['year'] = data['year'].astype('int16')
     data['hour'] = data['hour'].astype('int8')
@@ -89,12 +99,20 @@ def transform(data):
     return data
 
 @task
-def export_data_to_s3(data):
+def export_data_to_s3(data: pd.DataFrame) -> None:
+    """
+    Export the transformed data to an S3 bucket in Parquet format.
+
+    :param data: The transformed data as a pandas DataFrame.
+    :return: None
+    """
     logger = get_run_logger()
     bucket_name = Config.BUCKET_NAME
-    s3 = boto3.client('s3', 
-                      aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
-                      aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY)
+    s3 = boto3.client(
+        's3', 
+        aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY
+    )
 
     for object_key, date in create_s3_keys_load():
         data_ = data[(data.hour == date.hour) & 
@@ -103,7 +121,7 @@ def export_data_to_s3(data):
                      (data.year == date.year)]
 
         if data_.empty:
-            logger.info("The dataframe is empty possibly due to lack of messages.")
+            logger.info("The dataframe is empty, possibly due to lack of messages.")
             continue
 
         parquet_buffer = BytesIO()
@@ -118,7 +136,7 @@ def export_data_to_s3(data):
             s3.put_object(
                 Bucket=bucket_name,
                 Key=filename,
-                Body=parquet_buffer
+                Body=parquet_buffer.getvalue()
             )
             logger.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
         else:
@@ -126,15 +144,16 @@ def export_data_to_s3(data):
       
         parquet_buffer.close()
 
-# Defining the flow
 @flow(log_prints=True)
-def etl():
+def etl() -> None:
+    """
+    The ETL flow that orchestrates the consuming, transforming, and exporting of load data.
+
+    :return: None
+    """
     data = consume_data()
     transformed_data = transform(data)
     export_data_to_s3(transformed_data)
 
-
-# Run the flow
 if __name__ == "__main__":
     etl()
-    

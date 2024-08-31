@@ -1,8 +1,6 @@
 import pandas as pd
-
 from entsoe import EntsoePandasClient
 from tenacity import retry, stop_after_attempt, wait_exponential
-
 from src.config import Config
 from src.api.base import BaseAPI
 
@@ -17,14 +15,13 @@ class ENTSOEAPI(BaseAPI):
         """
         Initialize the ENTSOEAPI class.
 
-        Args:
-            year (int): The year of the data.
-            month (int): The month of the data.
-            country_code (str): The country code for the data.
-            api_key (str): The API key for the ENTSO-E API.
+        :param year: The year of the data.
+        :param month: The month of the data.
+        :param country_code: The country code for the data.
+        :param api_key: The API key for the ENTSO-E API.
         """
         super().__init__()
-        self._data = None
+        self._data: pd.DataFrame = None
         self.year = year
         self.month = month
         self.country_code = country_code
@@ -36,45 +33,35 @@ class ENTSOEAPI(BaseAPI):
         """
         Get the end date of the month.
 
-        Args:
-            year (int): The year.
-            month (int): The month.
-
-        Returns:
-            pd.Timestamp: The end date of the month.
+        :param year: The year.
+        :param month: The month.
+        :return: The end date of the month.
         """
         return pd.Timestamp(f'{year}-{month+1}-01', tz='Europe/Brussels') - pd.Timedelta(days=1)
 
-    def transform_data(self,data_type: str) -> None:
+    def transform_data(self, data_type: str) -> None:
         """
         Transform the fetched data if necessary.
 
-        Args:
-            data (pd.DataFrame): The data to transform.
-
-        Returns:
-            pd.DataFrame: The transformed data.
+        :param data_type: The type of data being transformed (e.g., 'load', 'generation').
         """
         self._data.reset_index(drop=False, inplace=True)
         if data_type == 'load': 
-            self._data.rename(columns={'index':'date','Actual Load': 'load'}, inplace=True)
+            self._data.rename(columns={'index': 'date', 'Actual Load': 'load'}, inplace=True)
             self._data.dropna(inplace=True)
-        if data_type == 'generation':
-            self._data.rename(columns={'index':'date'}, inplace=True)
+        elif data_type == 'generation':
+            self._data.rename(columns={'index': 'date'}, inplace=True)
             self._data.columns = ['_'.join(filter(None, col)).lower().replace(' ', '_').replace('/', '_') for col in self._data.columns]   
-        self._data.sort_values(by='date', inplace=True)  
-        
+        self._data.sort_values(by='date', inplace=True)
     
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     def fetch_data(self, data_type: str) -> None:
         """
         Download data from the ENTSO-E API based on the specified data type.
 
-        Args:
-            data_type (str): The type of data to download (e.g., 'load', 'generation').
-
-        Returns:
-            str: The filename of the downloaded data.
+        :param data_type: The type of data to download (e.g., 'load', 'generation').
+        :raises ValueError: If an unsupported data type is specified.
+        :raises Exception: If there is an error fetching data from the ENTSO-E API.
         """
         start = pd.Timestamp(f'{self.year}-{self.month}-01', tz='Europe/Brussels')
         end = self.get_end_date(self.year, self.month)

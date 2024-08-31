@@ -6,9 +6,9 @@ import pandas as pd
 
 from io import BytesIO
 
-from src.api.parameters import WeatherParameter
 from src.config import Config
 from src.setup_logging import SetupLogging
+from src.api.parameters import WeatherParameter
 from src.api.base_downloader import BaseDownloader
 
 @SetupLogging()
@@ -21,58 +21,47 @@ class WeatherDataDownloader(BaseDownloader):
 
     def __init__(self, base_url: str = None):
         """
-        Initializes the WeatherDataDownloader with a base URL for downloading weather data.
-        
-        Args:
-            base_url (str, optional): The base URL for weather data. Defaults to the DWD open data URL.
+        Initialize the WeatherDataDownloader with a base URL for downloading weather data.
+
+        :param base_url: The base URL for weather data. Defaults to the DWD open data URL if not provided.
         """
         super().__init__(base_url or "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/")
+
     def download_and_load_data(self, station_code: str, weather_param: WeatherParameter) -> pd.DataFrame:
         """
-        Downloads and loads weather data for a given station and weather parameter.
-        
-        Args:
-            station_code (str): The station code.
-            weather_param (WeatherParameter): The weather parameter enum.
+        Download and load weather data for a given station and weather parameter.
 
-        Returns:
-            pd.DataFrame: The weather data as a pandas DataFrame.
-        
-        Raises:
-            ValueError: If weather_param is not an instance of WeatherParameter Enum.
-            FileNotFoundError: If no matching file is found in the ZIP archive.
+        :param station_code: The station code.
+        :param weather_param: The weather parameter enum.
+        :return: The weather data as a pandas DataFrame.
+        :raises ValueError: If weather_param is not an instance of WeatherParameter Enum.
+        :raises FileNotFoundError: If no matching file is found in the ZIP archive.
         """
         self._validate_parameters(weather_param)
-        
         url = self._construct_url(station_code, weather_param)
         zip_content = self._download_content(url)
         df = self._extract_data(zip_content, station_code, weather_param)
-        
         return df
-    def _validate_parameters(self, weather_param: WeatherParameter):
+
+    def _validate_parameters(self, weather_param: WeatherParameter) -> None:
         """
-        Validates that the provided weather parameter is an instance of WeatherParameter Enum.
-        
-        Args:
-            weather_param (WeatherParameter): The weather parameter to validate.
-        
-        Raises:
-            ValueError: If weather_param is not an instance of WeatherParameter Enum.
+        Validate that the provided weather parameter is an instance of WeatherParameter Enum.
+
+        :param weather_param: The weather parameter to validate.
+        :raises ValueError: If weather_param is not an instance of WeatherParameter Enum.
         """
         if not isinstance(weather_param, WeatherParameter):
             raise ValueError("weather_param must be an instance of WeatherParameter Enum.")
+
     def _construct_url(self, station_code: str, weather_param: WeatherParameter) -> str:
         """
-        Constructs the URL for downloading the weather data based on the station code and weather parameter.
-        
-        Args:
-            station_code (str): The station code.
-            weather_param (WeatherParameter): The weather parameter enum.
+        Construct the URL for downloading the weather data based on the station code and weather parameter.
 
-        Returns:
-            str: The constructed URL.
+        :param station_code: The station code.
+        :param weather_param: The weather parameter enum.
+        :return: The constructed URL.
         """
-        logger = get_run_logger()
+        logger = logging.getLogger(__name__)
         category = weather_param.category
         suffix = weather_param.url_suffix
         
@@ -83,21 +72,16 @@ class WeatherDataDownloader(BaseDownloader):
         
         logger.info(f"Constructed URL: {url}")
         return url
-    
+
     def _download_content(self, url: str) -> bytes:
         """
-        Downloads the content of the ZIP file from the provided URL.
-        
-        Args:
-            url (str): The URL to download the ZIP file from.
+        Download the content of the ZIP file from the provided URL.
 
-        Returns:
-            bytes: The content of the downloaded ZIP file.
-        
-        Raises:
-            requests.RequestException: If the request to download the ZIP file fails.
+        :param url: The URL to download the ZIP file from.
+        :return: The content of the downloaded ZIP file.
+        :raises requests.RequestException: If the request to download the ZIP file fails.
         """
-        logger = get_run_logger()
+        logger = logging.getLogger(__name__)
         try:
             response = requests.get(url)
             response.raise_for_status()
@@ -105,23 +89,18 @@ class WeatherDataDownloader(BaseDownloader):
         except requests.RequestException as e:
             logger.error(f"Failed to download data: {e}")
             raise
-    
+
     def _extract_data(self, zip_content: bytes, station_code: str, weather_param: WeatherParameter) -> pd.DataFrame:
         """
-        Extracts data from the ZIP file content and loads it into a pandas DataFrame.
-        
-        Args:
-            zip_content (bytes): The content of the ZIP file.
-            station_code (str): The station code.
-            weather_param (WeatherParameter): The weather parameter enum.
+        Extract data from the ZIP file content and load it into a pandas DataFrame.
 
-        Returns:
-            pd.DataFrame: The extracted weather data as a pandas DataFrame.
-        
-        Raises:
-            FileNotFoundError: If no matching file is found in the ZIP archive.
+        :param zip_content: The content of the ZIP file.
+        :param station_code: The station code.
+        :param weather_param: The weather parameter enum.
+        :return: The extracted weather data as a pandas DataFrame.
+        :raises FileNotFoundError: If no matching file is found in the ZIP archive.
         """
-        logger = get_run_logger()
+        logger = logging.getLogger(__name__)
         with zipfile.ZipFile(BytesIO(zip_content)) as thezip:
             pattern = re.compile(f"produkt_{weather_param.name.lower()}_stunde_.*_{station_code}.txt")
             file_name = next((s for s in thezip.namelist() if pattern.match(s)), None)

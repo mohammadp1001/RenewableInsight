@@ -1,11 +1,16 @@
 import os
 from dotenv import load_dotenv, find_dotenv, set_key
 
-# Load .env file
+
 load_dotenv(find_dotenv())
 
 class Config:
-    """class for config"""
+    """
+    A class to represent and manage configuration settings for the application.
+
+    The configuration settings are loaded from environment variables, typically set in a .env file.
+    """
+
     AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
     BIGQUERY_TABEL_ID = os.getenv('BIGQUERRY_TABEL_ID')
@@ -41,6 +46,13 @@ class Config:
 
     @staticmethod
     def set_env_variable(variable, value):
+        """
+        Set an environment variable in the .env file.
+
+        :param variable: The name of the environment variable to set.
+        :param value: The value to set for the environment variable.
+        :return: True if the environment variable was successfully set, False otherwise.
+        """
         dotenv_path = find_dotenv()
         if dotenv_path:
             set_key(dotenv_path, variable, value)

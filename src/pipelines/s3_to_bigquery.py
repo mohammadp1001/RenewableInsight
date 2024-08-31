@@ -1,10 +1,11 @@
 import sys
-import datetime
-from io import BytesIO
-from typing import List, Optional
 import boto3
+import datetime
 import pandas as pd
+
+from io import BytesIO
 from prefect import task, flow
+from typing import List, Optional
 from prefect import get_run_logger
 from google.cloud import bigquery
 from google.oauth2 import service_account
