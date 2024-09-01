@@ -15,6 +15,9 @@ from prefect import get_run_logger
 from pydantic import ValidationError
 from confluent_kafka import Consumer, KafkaError
 
+if '/home/mohammad/RenewableInsight' not in sys.path:
+    sys.path.append('/home/mohammad/RenewableInsight')
+
 from src.config import Config
 from src.api.forecast import DwdMosmixParser, kml_reader
 from src.utilities.utils import create_s3_keys_weather_forecast, check_s3_key_exists, generate_random_string, download_kmz_file, generate_task_name, generate_flow_name
@@ -126,15 +129,16 @@ def export_data_to_s3(data: DataFrame) -> None:
             logger.info(f"File {object_key} already exists.")
 
 @flow(log_prints=True,name="weather_forecast_etl_s3",flow_run_name=generate_flow_name())
-def etl(station_name: str) -> None:
+def etl() -> None:
     """
     The ETL flow that orchestrates the loading, transforming, and exporting of weather forecast data.
 
     :return: None
     """
+    station_name = config.STATION_NAME
     data = load_data(station_name)
     transformed_data = transform(data)
     export_data_to_s3(transformed_data)
 
 if __name__ == "__main__":
-    etl(config.STATION_NAME)
+    etl.serve(name="deployment")

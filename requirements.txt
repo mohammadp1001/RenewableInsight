@@ -1,5 +1,5 @@
 pandas
-prefect==3.0.0rc20
+prefect
 entsoe-py
 numpy
 boto3
@@ -10,3 +10,4 @@ tenacity
 pydantic==2.8.2
 google-cloud-bigquery
 kafka-python
+pyarrow
