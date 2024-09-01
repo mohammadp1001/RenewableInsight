@@ -46,7 +46,8 @@ def main():
 
            
             Config.set_env_variable('LAST_PUBLISHED_FIELD_VALUE_GAS', producer_service.get_last_published_field_value())
-
+        else:
+            logger.error("The gas data is empty.")
         
         logger.info(f"Producer will sleep for {Config.TIME_OF_SLEEP_PRODUCER_GAS} minutes.")
         time.sleep(int(Config.TIME_OF_SLEEP_PRODUCER_GAS) * 60)

@@ -16,7 +16,7 @@ if '/home/mohammad/RenewableInsight' not in sys.path:
 from src.config import Config
 from src.utilities.bigquery_schema import get_bq_schema_from_df, generate_task_name, generate_flow_name
 
-@task(task_run_name=generate_task_name())
+@task(task_run_name=generate_task_name)
 def upload_parquet_to_bigquery(
     s3_key: str, 
     bigquery_table_id: str,  
@@ -74,15 +74,20 @@ def upload_parquet_to_bigquery(
 
     logger(f"Data successfully uploaded to {bigquery_table_id}")
 
-@flow(log_prints=True,name="s3_to_bigquery",flow_run_name=generate_flow_name())
+@flow(log_prints=True,name="s3_to_bigquery",flow_run_name=generate_flow_name)
 def etl(s3_key: str, bigquery_table_id: str, expiration_time: int) -> None:
     logger = get_run_logger()
     upload_parquet_to_bigquery(
         s3_key,
         bigquery_table_id,
-        expiration_time=7
+        expiration_time
     )
 
 if __name__ == "__main__":
-    etl()
+    params = {
+        "s3_key": "your-s3-key",
+        "bigquery_table_id": "your-bigquery-table-id",
+        "expiration_time": 7
+    }
+    etl(**params)
     

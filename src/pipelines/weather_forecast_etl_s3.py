@@ -21,8 +21,8 @@ from src.config import Config
 from src.api.forecast import DwdMosmixParser, kml_reader
 from src.utilities.utils import create_s3_keys_weather_forecast, check_s3_key_exists, generate_random_string, download_kmz_file, generate_task_name, generate_flow_name
 
-@task(task_run_name=generate_task_name())
-def load_data() -> pd.DataFrame:
+@task(task_run_name=generate_task_name)
+def load_data(station_name: str) -> pd.DataFrame:
     """
     Extracts forecast data for a given station from a KMZ file and returns it as a pandas DataFrame.
 
@@ -33,8 +33,7 @@ def load_data() -> pd.DataFrame:
 
     save_dir = Path("/tmp")
     filename = "MOSMIX_S_LATEST_240.kmz"
-    station_name = Config.STATION_NAME
-
+   
     kmz_file_path = download_kmz_file(url, save_dir, filename)
 
     parser = DwdMosmixParser()
@@ -52,7 +51,7 @@ def load_data() -> pd.DataFrame:
 
     return data
 
-@task(task_run_name=generate_task_name())
+@task(task_run_name=generate_task_name)
 def transform(data: pd.DataFrame) -> pd.DataFrame:
     """
     Transforms the forecast data by selecting specific columns, renaming them, 
@@ -87,7 +86,7 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
 
     return data
 
-@task(task_run_name=generate_task_name())
+@task(task_run_name=generate_task_name)
 def export_data_to_s3(data: DataFrame) -> None:
     """
     Exports the transformed forecast data to an S3 bucket in Parquet format.
@@ -120,15 +119,15 @@ def export_data_to_s3(data: DataFrame) -> None:
             logger.info(f"File {object_key} already exists.")
 
 @flow(log_prints=True,name="weather_forecast_etl_s3",flow_run_name=generate_flow_name())
-def etl() -> None:
+def etl(station_name: str) -> None:
     """
     The ETL flow that orchestrates the loading, transforming, and exporting of weather forecast data.
 
     :return: None
     """
-    data = load_data()
+    data = load_data(station_name)
     transformed_data = transform(data)
     export_data_to_s3(transformed_data)
 
 if __name__ == "__main__":
-    etl()
+    etl(Config.STATION_NAME)
