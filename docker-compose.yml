@@ -1,33 +1,32 @@
-version: '3.6'
 networks:
-  default:
-    name: kafka-spark-network
+ kafka-network::
+    name: kafka-network
     external: true
 services:
-  kafka_producer:
-    image: kafka_producer
-    container_name: kafka_producer
+  kafka_producer_load:
+    container_name: kafka_producer_load
     env_file:
       - .env
     build:
       context: .
-      dockerfile: ./docker_compose/kafka_producer.Dockerfile
+      dockerfile: ./docker_compose/kafka_producer_load.Dockerfile
+    environment:
+      PYTHONPATH: /app/${PROJECT_NAME}   
     volumes:
       - ./logs:/app/logs
-  magic:
-    image: mageai/mageai:latest
-    command: mage start ${PROJECT_NAME}
+      - ./src:/app/${PROJECT_NAME}/src
+      - .env:/app/${PROJECT_NAME}/.env
+   
+  kafka_producer_gas:
+    container_name: kafka_producer_gas
     env_file:
       - .env
     build:
       context: .
-      dockerfile: ./docker_compose/mage.Dockerfile
+      dockerfile: ./docker_compose/kafka_producer_gas.Dockerfile
     environment:
-      USER_CODE_PATH: ./home/src/${PROJECT_NAME}
-    ports:
-      - 6789:6789   
+      PYTHONPATH: /app/${PROJECT_NAME}
     volumes:
-      - ./src/mage:/home/src/${PROJECT_NAME}
-      - ./src/utilities:/home/src/${PROJECT_NAME}/utilities
-      - ./logs:/home/src/${PROJECT_NAME}/logs
-    restart: on-failure:5
+      - ./logs:/app/logs
+      - ./src:/app/${PROJECT_NAME}/src
+      - .env:/app/${PROJECT_NAME}/.env    

@@ -172,3 +172,5 @@ mage_data
 
 #logs
 logs
+
+service-account-file.json

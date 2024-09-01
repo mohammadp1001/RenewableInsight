@@ -1,17 +1,17 @@
-#see here for original code https://sftptogo.com/blog/python-sftp/
-from urllib.parse import urlparse
+# see here for original code https://sftptogo.com/blog/python-sftp/
 import os
 import paramiko
-from paramiko import RSAKey
-from paramiko.py3compat import decodebytes
 import logging
 
+from paramiko import RSAKey
+from paramiko.py3compat import decodebytes
+from urllib.parse import urlparse
 
 class SSH:
     
     def __init__(self, hostname,username,password,hostkey,port=22):
         """Constructor Method"""
-        # Set connection object to None (initial value)
+        
       
         self.hostname = hostname
         self.username = username
@@ -21,7 +21,6 @@ class SSH:
         self.hostkey = paramiko.RSAKey(data = paramiko.py3compat.decodebytes(hostkey.encode("ascii")))
         self.connection = paramiko.SSHClient()
         if self.hostkey is not None:
-            # manually add the server's host key
             self.connection.get_host_keys().add(hostname, 'ssh-rsa', self.hostkey)
 
         
@@ -29,7 +28,6 @@ class SSH:
         """Connects to the sftp server and returns the sftp connection object"""
 
         try:
-            # Get the sftp connection object
              self.connection.connect(
                 self.hostname,
                 port=self.port,
@@ -77,15 +75,14 @@ class SSH:
         :param local_path: The path where the file should be saved locally.
         """
         try:
-            # Check if remote_path is a directory
+            
             try:
                 self.listdir(remote_path)
                 logging.error(f"Error: The specified remote_path '{remote_path}' is a directory.")
                 return
             except IOError:
-                pass  # remote_path is not a directory, continue
+                pass  
 
-            # Ensure local_path includes the filename, especially if it's currently just a directory
             if os.path.isdir(local_path):
                 local_path = os.path.join(local_path, os.path.basename(remote_path))
 
@@ -96,8 +93,3 @@ class SSH:
 
 if __name__ == "__main__":
    pass
-
-        
-
-
-

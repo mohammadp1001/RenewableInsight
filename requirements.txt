@@ -1,0 +1,13 @@
+pandas
+prefect
+entsoe-py
+numpy
+boto3
+python-dotenv
+confluent_kafka
+yfinance
+tenacity
+pydantic==2.8.2
+google-cloud-bigquery
+kafka-python
+pyarrow
