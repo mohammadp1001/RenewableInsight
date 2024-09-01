@@ -6,7 +6,14 @@ import src.api.entsoe_api
 import src.kafka_class.producer
 from src.config import Config
 
-def main():
+try:
+    config = Config()
+    print("configuration loaded successfully!")
+except ValidationError as e:
+    print("configuration error:", e)
+
+
+def main(field_load: list[str]) -> None:
     """
     Main function to fetch, transform, and publish load data from the ENTSO-E API to a Kafka topic.
 
@@ -18,22 +25,22 @@ def main():
 
 
     kafka_props = {
-        'bootstrap_servers': [Config.BOOTSTRAP_SERVERS_PROD]
+        'bootstrap_servers': [config.BOOTSTRAP_SERVERS_PROD]
     }
 
 
     producer_service = src.kafka_class.producer.KafkaProducerService(
         props=kafka_props,
         field_name='date',
-        last_published_field_value=Config.LAST_PUBLISHED_FIELD_VALUE_LOAD
+        last_published_field_value=config.LAST_PUBLISHED_FIELD_VALUE_LOAD
     )
 
 
     data_downloader = src.api.entsoe_api.ENTSOEAPI(
         year=datetime.datetime.now().year,
         month=datetime.datetime.now().month,
-        country_code=Config.COUNTRY_CODE,
-        api_key=Config.ENTSOE_API_KEY
+        country_code=config.COUNTRY_CODE,
+        api_key=config.ENTSOE_API_KEY
     )
 
 
@@ -42,21 +49,22 @@ def main():
     }
 
     while True:
-        data_downloader.fetch_data(data_type=Config.DATA_TYPE_LOA)
+        data_downloader.fetch_data(data_type=config.DATA_TYPE_LOA)
         data = data_downloader.data
 
         if not data.empty:
             
-            records = producer_service.read_records_from_dataframe(data, filter_funcs, Config.FIELDS_LOAD)
-            producer_service.publish(topic=Config.PRODUCE_TOPIC_ACTUALLOAD_CSV, records=records)
+            records = producer_service.read_records_from_dataframe(data, filter_funcs, field_load)
+            producer_service.publish(topic=config.PRODUCE_TOPIC_ACTUALLOAD_CSV, records=records)
 
             
-            Config.set_env_variable('LAST_PUBLISHED_FIELD_VALUE_LOAD', producer_service.get_last_published_field_value())
+            config.set_env_variable('LAST_PUBLISHED_FIELD_VALUE_LOAD', producer_service.get_last_published_field_value())
         else:
             logger.error("The load data is empty.")
         
-        logger.info(f"Producer will sleep for {Config.TIME_OF_SLEEP_PRODUCER_LOAD} minutes.")
-        sleep(int(Config.TIME_OF_SLEEP_PRODUCER_LOAD) * 60)
+        logger.info(f"Producer will sleep for {config.TIME_OF_SLEEP_PRODUCER_LOAD} minutes.")
+        sleep(int(config.TIME_OF_SLEEP_PRODUCER_LOAD) * 60)
 
 if __name__ == '__main__':
-    main()
+    field_load = ['date', 'load']
+    main(field_load)

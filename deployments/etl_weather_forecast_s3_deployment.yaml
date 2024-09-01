@@ -1,0 +1,16 @@
+version: 2
+
+deployments:
+  - name: "weather_forecast_etl_s3_deployment"
+    flow_name: "etl"
+    entrypoint: "./app/${PROJECT_NAME}/flows/etl_weather_forecast_s3.py:etl"
+    infrastructure:
+      type: "docker-container"
+      image: "prefect_agent:latest"  
+      env:
+        PREFECT_API_URL: "http://localhost:4200"
+    schedule:
+      cron: "0 * * * *"  
+      timezone: "Europe/Berlin"
+    parameters:
+      station_name: "${STATION_NAME}"

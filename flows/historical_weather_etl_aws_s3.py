@@ -20,6 +20,12 @@ from src.api.parameters import WeatherParameter
 from src.api.weather import WeatherDataDownloader
 from src.utilities.utils import create_s3_keys_historical_weather, generate_random_string, check_s3_key_exists, generate_task_name, generate_flow_name
 
+try:
+    config = Config()
+    print("configuration loaded successfully!")
+except ValidationError as e:
+    print("configuration error:", e)
+    
 @task(task_run_name=generate_task_name)
 def load_data() -> pd.DataFrame:
     """
@@ -27,10 +33,10 @@ def load_data() -> pd.DataFrame:
 
     :return: A pandas DataFrame with the loaded and cleaned weather data.
     """
-    weather_param = WeatherParameter.from_name(Config.WEATHER_PARAM)
+    weather_param = WeatherParameter.from_name(config.WEATHER_PARAM)
 
     downloader = WeatherDataDownloader()
-    data = downloader.download_and_load_data(Config.STATION_CODE, weather_param)
+    data = downloader.download_and_load_data(config.STATION_CODE, weather_param)
 
     return data
 
@@ -42,12 +48,12 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
     :param data: The raw weather data as a pandas DataFrame.
     :return: A cleaned and transformed pandas DataFrame.
     """
-    weather_param = WeatherParameter.from_name(Config.WEATHER_PARAM)
+    weather_param = WeatherParameter.from_name(config.WEATHER_PARAM)
 
     data = data.drop(columns=weather_param.columns_rm, errors='ignore')
 
     data['MESS_DATUM'] = data['MESS_DATUM'].astype('str')
-    if "ST" in Config.WEATHER_PARAM:
+    if "ST" in config.WEATHER_PARAM:
         data['MESS_DATUM'] = pd.to_datetime(data['MESS_DATUM'].str.slice(stop=10), format='%Y%m%d%H')
     else:
         data['MESS_DATUM'] = pd.to_datetime(data['MESS_DATUM'], format='%Y%m%d%H')
@@ -77,12 +83,12 @@ def export_data_to_s3(data: DataFrame) -> None:
     :return: None
     """
     logger = get_run_logger()
-    bucket_name = Config.BUCKET_NAME
+    bucket_name = config.BUCKET_NAME
 
-    s3 = boto3.client('s3', aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
-                          aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY)
+    s3 = boto3.client('s3', aws_access_key_id=config.AWS_ACCESS_KEY_ID,
+                          aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY)
 
-    for object_key, date in create_s3_keys_historical_weather(Config.WEATHER_PARAM, Config.STATION_CODE):
+    for object_key, date in create_s3_keys_historical_weather(config.WEATHER_PARAM, config.STATION_CODE):
         data_ = data[(data['day'] == date.day) & (data['month'] == date.month) & (data['year'] == date.year)]
     
         if data_.empty:

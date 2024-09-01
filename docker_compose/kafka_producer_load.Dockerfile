@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 # Install Python, pip, and netcat
 RUN apt-get update && \
@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Copy the requirements file into the container
-COPY /docker_compose/requirements.txt .
+COPY ../requirements.txt .
 
 # Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt

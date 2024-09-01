@@ -11,13 +11,16 @@ from pandas import DataFrame
 from prefect import task, flow
 from prefect import get_run_logger
 
-if '/home/mohammad/RenewableInsight' not in sys.path:
-    sys.path.append('/home/mohammad/RenewableInsight')
-
 from src.config import Config
 from src.api.entsoe_api import ENTSOEAPI
 from src.utilities.utils import create_s3_keys_generation, check_s3_key_exists, generate_random_string, generate_task_name, generate_flow_name
 
+try:
+    config = Config()
+    print("configuration loaded successfully!")
+except ValidationError as e:
+    print("configuration error:", e)
+    
 @task(task_run_name=generate_task_name)
 def load_data() -> DataFrame:
     """
@@ -28,10 +31,10 @@ def load_data() -> DataFrame:
     data_downloader = ENTSOEAPI(
         year=datetime.datetime.now().year,
         month=datetime.datetime.now().month,
-        country_code=Config.COUNTRY_CODE,
-        api_key=Config.ENTSOE_API_KEY
+        country_code=config.COUNTRY_CODE,
+        api_key=config.ENTSOE_API_KEY
     )
-    data_downloader.fetch_data(data_type=Config.DATA_TYPE_GEN)
+    data_downloader.fetch_data(data_type=config.DATA_TYPE_GEN)
     data = data_downloader.data
 
     return data
@@ -72,11 +75,11 @@ def export_data_to_s3(data: DataFrame) -> None:
     """
     parquet_buffer = BytesIO()
     logger = get_run_logger()
-    bucket_name = Config.BUCKET_NAME
+    bucket_name = config.BUCKET_NAME
     s3 = boto3.client(
         's3', 
-        aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY
+        aws_access_key_id=config.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY
     )
 
     for object_key, date in create_s3_keys_generation():

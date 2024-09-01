@@ -2,7 +2,7 @@ import yfinance as yf
 import pandas as pd
 import pytz
 
-from src.config import Config
+
 from src.api.base import BaseAPI
 
 class YahooAPI(BaseAPI):

@@ -20,7 +20,11 @@ from src.config import Config
 from src.api.entsoe_api import ENTSOEAPI
 from src.utilities.utils import create_s3_keys_load, check_s3_key_exists, generate_random_string, generate_task_name, generate_flow_name
 
-
+try:
+    config = Config()
+    print("configuration loaded successfully!")
+except ValidationError as e:
+    print("configuration error:", e)
 
 @task(task_run_name=generate_task_name)
 def consume_data(wait_time: int) -> pd.DataFrame:
@@ -32,13 +36,13 @@ def consume_data(wait_time: int) -> pd.DataFrame:
     """
     logger = get_run_logger()
     consumer_config = {
-        'bootstrap.servers': Config.BOOTSTRAP_SERVERS_CONS,
-        'group.id': Config.GROUP_ID_LOAD,
+        'bootstrap.servers': config.BOOTSTRAP_SERVERS_CONS,
+        'group.id': config.GROUP_ID_LOAD,
         'auto.offset.reset': 'earliest'
     }
 
     consumer = Consumer(consumer_config)
-    consumer.subscribe([Config.PRODUCE_TOPIC_ACTUALLOAD_CSV])
+    consumer.subscribe([config.PRODUCE_TOPIC_ACTUALLOAD_CSV])
     
     messages = []
     start_time = datetime.datetime.now()
@@ -108,11 +112,11 @@ def export_data_to_s3(data: pd.DataFrame) -> None:
     :return: None
     """
     logger = get_run_logger()
-    bucket_name = Config.BUCKET_NAME
+    bucket_name = config.BUCKET_NAME
     s3 = boto3.client(
         's3', 
-        aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY
+        aws_access_key_id=config.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY
     )
 
     for object_key, date in create_s3_keys_load():

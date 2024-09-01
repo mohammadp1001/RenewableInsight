@@ -1,10 +1,12 @@
 import json
 import logging
 import pandas as pd
+
 from time import sleep
 from datetime import datetime
-from typing import Dict, Generator, Any, List, Optional
 from kafka import KafkaProducer
+from typing import Dict, Generator, Any, List, Optional
+
 
 class KafkaProducerService:
     """

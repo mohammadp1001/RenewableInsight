@@ -12,14 +12,18 @@ from pathlib import Path
 from pandas import DataFrame
 from prefect import task, flow
 from prefect import get_run_logger
+from pydantic import ValidationError
 from confluent_kafka import Consumer, KafkaError
-
-if '/home/mohammad/RenewableInsight' not in sys.path:
-    sys.path.append('/home/mohammad/RenewableInsight')
 
 from src.config import Config
 from src.api.forecast import DwdMosmixParser, kml_reader
 from src.utilities.utils import create_s3_keys_weather_forecast, check_s3_key_exists, generate_random_string, download_kmz_file, generate_task_name, generate_flow_name
+
+try:
+    config = Config()
+    print("configuration loaded successfully!")
+except ValidationError as e:
+    print("configuration error:", e)
 
 @task(task_run_name=generate_task_name)
 def load_data(station_name: str) -> pd.DataFrame:
@@ -64,9 +68,12 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
 
     data = data[columns]
 
-    data.loc[:, 'day'] = data.forecast_time.dt.day
-    data.loc[:, 'month'] = data.forecast_time.dt.month
-    data.loc[:, 'year'] = data.forecast_time.dt.year
+    data = data.assign(
+        day=data.forecast_time.dt.day,
+        month=data.forecast_time.dt.month,
+        year=data.forecast_time.dt.year
+    )
+
 
     data = data.rename(columns={
         "TTT": "temperature_2m", "TX": "temperature_max", "TN": "temperature_min",
@@ -96,11 +103,11 @@ def export_data_to_s3(data: DataFrame) -> None:
     """
     parquet_buffer = BytesIO()
     logger = get_run_logger()
-    bucket_name = Config.BUCKET_NAME
-    s3 = boto3.client('s3', aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
-                          aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY)
+    bucket_name = config.BUCKET_NAME
+    s3 = boto3.client('s3', aws_access_key_id=config.AWS_ACCESS_KEY_ID,
+                          aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY)
 
-    for object_key, date in create_s3_keys_weather_forecast(int(Config.N_DAY), Config.STATION_NAME):
+    for object_key, date in create_s3_keys_weather_forecast(int(config.N_DAY), config.STATION_NAME):
         data_ = data[(data.day == date.day) & (data.month == date.month) & (data.year == date.year)]
         if data_.empty:
             logger.info("The dataframe is empty possibly due to lack of messages.")
@@ -130,4 +137,4 @@ def etl(station_name: str) -> None:
     export_data_to_s3(transformed_data)
 
 if __name__ == "__main__":
-    etl(Config.STATION_NAME)
+    etl(config.STATION_NAME)

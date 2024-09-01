@@ -4,9 +4,9 @@ entsoe-py
 numpy
 boto3
 python-dotenv
-pyspark==3.3.1
 confluent_kafka
 yfinance
 tenacity
 pydantic==2.8.2
 google-cloud-bigquery
+kafka-python

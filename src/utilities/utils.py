@@ -11,6 +11,7 @@ import pandas as pd
 from pathlib import Path
 from typing import List
 from google.cloud import bigquery
+from pydantic import ValidationError
 from prefect.runtime import flow_run, task_run
 from typing import Generator, Tuple, List, Optional
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
@@ -19,6 +20,12 @@ from src.config import Config
 from src.api.parameters import WeatherParameter
 
 TIMEZONE = pytz.timezone('Europe/Berlin')
+
+try:
+    config = Config()
+    print("configuration loaded successfully!")
+except ValidationError as e:
+    print("configuration error:", e)
 
 def generate_random_string(n: int = 10) -> str:
     """
@@ -189,8 +196,8 @@ def list_s3_files(bucket_name: str, prefix: str = '') -> List[str]:
     logger = get_run_logger()
     s3 = boto3.client(
         's3', 
-        aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY
+        aws_access_key_id=config.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY
     )
     response = s3.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
     list_files = []
@@ -216,8 +223,8 @@ def read_s3_file(bucket_name: str, s3_key: str) -> pd.DataFrame:
     logger = get_run_logger()
     s3 = boto3.client(
         's3', 
-        aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY
+        aws_access_key_id=config.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY
     )
     
     response = s3.get_object(Bucket=bucket_name, Key=s3_key)

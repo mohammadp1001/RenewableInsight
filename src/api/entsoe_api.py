@@ -1,7 +1,6 @@
 import pandas as pd
 from entsoe import EntsoePandasClient
 from tenacity import retry, stop_after_attempt, wait_exponential
-from src.config import Config
 from src.api.base import BaseAPI
 
 class ENTSOEAPI(BaseAPI):

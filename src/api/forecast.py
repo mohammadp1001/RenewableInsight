@@ -11,7 +11,6 @@ from datetime import datetime, timezone
 from xml.etree.ElementTree import Element
 from typing import IO, Iterator, Dict, ClassVar, Optional, Tuple, Any, List, Set, Generator
 
-from src.config import Config
 from src.setup_logging import SetupLogging
 from src.api.base_parser import BaseParser
 

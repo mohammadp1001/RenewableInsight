@@ -1,48 +1,66 @@
 import os
-from dotenv import load_dotenv, find_dotenv, set_key
+from dotenv import load_dotenv, find_dotenv
+from pydantic_settings import BaseSettings
+from pydantic import validator
 
-
+# Load environment variables from the .env file
 load_dotenv(find_dotenv())
 
-class Config:
+class Config(BaseSettings):
     """
     A class to represent and manage configuration settings for the application.
-
     The configuration settings are loaded from environment variables, typically set in a .env file.
     """
 
-    AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-    BIGQUERY_TABEL_ID = os.getenv('BIGQUERRY_TABEL_ID')
-    GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-    BIGQUERY_DATASET_ID = os.getenv('BIGQUERY_DATASET_ID')
-    PROJECT_ID = os.getenv('PROJECT_ID')
-    TICKER_LABEL_GAS = os.getenv('TICKER_LABEL_GAS')
-    TICKER_LABEL_OIL = os.getenv('TICKER_LABEL_OIL')
-    LOG_DIR = os.getenv('LOG_DIR')
-    CONFIG_DIR = os.getenv('CONFIG_DIR')
-    ENTSOE_API_KEY = os.getenv('ENTSOE_API_KEY')
-    RESOURCE_PATH = os.getenv('RESOURCE_PATH')
-    BOOTSTRAP_SERVERS_CONS = os.getenv('BOOTSTRAP_SERVERS_CONS')
-    BOOTSTRAP_SERVERS_PROD = os.getenv('BOOTSTRAP_SERVERS_PROD')
-    GROUP_ID_LOAD = os.getenv('GROUP_ID_LOAD')
-    GROUP_ID_GAS = os.getenv('GROUP_ID_GAS')
-    PRODUCE_TOPIC_GAS_PRICE = os.getenv('PRODUCE_TOPIC_GAS_PRICE')
-    PRODUCE_TOPIC_ACTUALLOAD_CSV = os.getenv('PRODUCE_TOPIC_ACTUALLOAD_CSV')
-    TIME_OF_SLEEP_PRODUCER_GAS = os.getenv('TIME_OF_SLEEP_PRODUCER_GAS')
-    TIME_OF_SLEEP_PRODUCER_LOAD = os.getenv('TIME_OF_SLEEP_PRODUCER_LOAD')
-    DATA_TYPE_LOA = os.getenv('DATA_TYPE_LOA')
-    DATA_TYPE_GEN = os.getenv('DATA_TYPE_GEN')
-    BUCKET_NAME = os.getenv('BUCKET_NAME')
-    COUNTRY_CODE = os.getenv('COUNTRY_CODE')
-    LAST_PUBLISHED_FIELD_VALUE_LOAD = os.getenv('LAST_PUBLISHED_FIELD_VALUE_LOAD')
-    LAST_PUBLISHED_FIELD_VALUE_GAS = os.getenv('LAST_PUBLISHED_FIELD_VALUE_GAS')
-    FIELDS_LOAD = ['date', 'load']
-    FIELDS_GAS = ['date', 'open_price', 'close_price']
-    STATION_NAME = os.getenv('STATION_NAME')
-    STATION_CODE = os.getenv('STATION_CODE')
-    WEATHER_PARAM = os.getenv('WEATHER_PARAM')
-    N_DAY = os.getenv('N_DAY') 
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
+    BIGQUERY_TABLE_ID: str
+    GOOGLE_APPLICATION_CREDENTIALS: str
+    BIGQUERY_DATASET_ID: str
+    PROJECT_ID: str
+    TICKER_LABEL_GAS: str
+    TICKER_LABEL_OIL: str
+    LOG_DIR: str
+    CONFIG_DIR: str
+    ENTSOE_API_KEY: str
+    RESOURCE_PATH: str
+    BOOTSTRAP_SERVERS_CONS: str
+    BOOTSTRAP_SERVERS_PROD: str
+    GROUP_ID_LOAD: str
+    GROUP_ID_GAS: str
+    PRODUCE_TOPIC_GAS_PRICE: str
+    PRODUCE_TOPIC_ACTUALLOAD_CSV: str
+    TIME_OF_SLEEP_PRODUCER_GAS: int
+    TIME_OF_SLEEP_PRODUCER_LOAD: int
+    DATA_TYPE_LOA: str
+    DATA_TYPE_GEN: str
+    BUCKET_NAME: str
+    COUNTRY_CODE: str
+    LAST_PUBLISHED_FIELD_VALUE_LOAD: str
+    LAST_PUBLISHED_FIELD_VALUE_GAS: str
+    FIELDS_LOAD: list[str] = ['date', 'load']
+    FIELDS_GAS: list[str] = ['date', 'open_price', 'close_price']
+    STATION_NAME: str
+    STATION_CODE: str
+    WEATHER_PARAM: str
+    N_DAY: int
+    PROJECT_NAME: str  
+    ENV: str  
+    
+    @validator("TIME_OF_SLEEP_PRODUCER_GAS", "TIME_OF_SLEEP_PRODUCER_LOAD", "N_DAY", pre=True)
+    def convert_to_int(cls, v):
+        return int(v)
+
+    @validator("FIELDS_LOAD", "FIELDS_GAS", pre=True)
+    def validate_list_fields(cls, v):
+        if isinstance(v, str):
+            return v.split(',')
+        return v
+
+    class Config:
+        env_file = '.env'  # Specify the environment file
+        env_file_encoding = 'utf-8'
+        case_sensitive = True
 
     @staticmethod
     def set_env_variable(variable, value):
@@ -55,7 +73,7 @@ class Config:
         """
         dotenv_path = find_dotenv()
         if dotenv_path:
+            from dotenv import set_key
             set_key(dotenv_path, variable, value)
             return True
         return False
-

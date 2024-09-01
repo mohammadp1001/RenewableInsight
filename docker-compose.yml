@@ -1,6 +1,6 @@
 networks:
-  default:
-    name: kafka-spark-network
+ kafka-network::
+    name: kafka-network
     external: true
 services:
   kafka_producer_load:

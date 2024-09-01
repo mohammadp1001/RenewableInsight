@@ -5,7 +5,13 @@ import src.api.yahoo
 from src.config import Config
 import src.kafka_class.producer
 
-def main():
+try:
+    config = Config()
+    print("configuration loaded successfully!")
+except ValidationError as e:
+    print("configuration error:", e)
+
+def main(field_gas: list[str]) -> None:
     """
     Main function to continuously fetch, transform, and publish gas price data from Yahoo Finance to a Kafka topic.
 
@@ -15,7 +21,7 @@ def main():
 
  
     kafka_props = {
-        'bootstrap_servers': [Config.BOOTSTRAP_SERVERS_PROD]
+        'bootstrap_servers': [config.BOOTSTRAP_SERVERS_PROD]
     }
 
     logger = logging.getLogger(__name__)
@@ -24,11 +30,11 @@ def main():
     producer_service = src.kafka_class.producer.KafkaProducerService(
         props=kafka_props, 
         field_name='date', 
-        last_published_field_value=Config.LAST_PUBLISHED_FIELD_VALUE_GAS
+        last_published_field_value=config.LAST_PUBLISHED_FIELD_VALUE_GAS
     )
 
 
-    yahoo_finance_api = src.api.yahoo.YahooAPI(symbol=Config.TICKER_LABEL_GAS)
+    yahoo_finance_api = src.api.yahoo.YahooAPI(symbol=config.TICKER_LABEL_GAS)
 
     while True:
       
@@ -41,16 +47,17 @@ def main():
             filter_funcs = {}  
 
             
-            records = producer_service.read_records_from_dataframe(data, filter_funcs, Config.FIELDS_GAS)
-            producer_service.publish(topic=Config.PRODUCE_TOPIC_GAS_PRICE, records=records)
+            records = producer_service.read_records_from_dataframe(data, filter_funcs, field_gas)
+            producer_service.publish(topic=config.PRODUCE_TOPIC_GAS_PRICE, records=records)
 
            
-            Config.set_env_variable('LAST_PUBLISHED_FIELD_VALUE_GAS', producer_service.get_last_published_field_value())
+            config.set_env_variable('LAST_PUBLISHED_FIELD_VALUE_GAS', producer_service.get_last_published_field_value())
         else:
             logger.error("The gas data is empty.")
         
-        logger.info(f"Producer will sleep for {Config.TIME_OF_SLEEP_PRODUCER_GAS} minutes.")
-        time.sleep(int(Config.TIME_OF_SLEEP_PRODUCER_GAS) * 60)
+        logger.info(f"Producer will sleep for {config.TIME_OF_SLEEP_PRODUCER_GAS} minutes.")
+        time.sleep(int(config.TIME_OF_SLEEP_PRODUCER_GAS) * 60)
 
 if __name__ == '__main__':
-    main()
+    field_gas = ['date', 'open_price', 'close_price']
+    main(field_gas)

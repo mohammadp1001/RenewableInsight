@@ -16,6 +16,12 @@ if '/home/mohammad/RenewableInsight' not in sys.path:
 from src.config import Config
 from src.utilities.bigquery_schema import get_bq_schema_from_df, generate_task_name, generate_flow_name
 
+try:
+    config = Config()
+    print("configuration loaded successfully!")
+except ValidationError as e:
+    print("configuration error:", e)
+
 @task(task_run_name=generate_task_name)
 def upload_parquet_to_bigquery(
     s3_key: str, 
@@ -34,10 +40,10 @@ def upload_parquet_to_bigquery(
     logger = get_run_logger()
     s3 = boto3.client(
         's3', 
-        aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY
+        aws_access_key_id=config.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY
     )
-    response = s3.get_object(Bucket=Config.BUCKET_NAME, Key=s3_key)
+    response = s3.get_object(Bucket=config.BUCKET_NAME, Key=s3_key)
     parquet_file = BytesIO(response['Body'].read())
     df = pd.read_parquet(parquet_file)
     schema = get_bq_schema_from_df(df)
@@ -47,8 +53,8 @@ def upload_parquet_to_bigquery(
         expiration_time = datetime.datetime.utcnow() + datetime.timedelta(days=expiration_time)
         expiration_ms = int(expiration_time.timestamp() * 1000)
 
-    credentials = service_account.Credentials.from_service_account_file(Config.GOOGLE_APPLICATION_CREDENTIALS)
-    bigquery_client = bigquery.Client(credentials=credentials, project=Config.PROJECT_ID)
+    credentials = service_account.Credentials.from_service_account_file(config.GOOGLE_APPLICATION_CREDENTIALS)
+    bigquery_client = bigquery.Client(credentials=credentials, project=config.PROJECT_ID)
 
     dataset_ref = bigquery_client.dataset(bigquery_table_id.split('.')[0])
     table_ref = dataset_ref.table(bigquery_table_id.split('.')[1])
@@ -64,7 +70,7 @@ def upload_parquet_to_bigquery(
         bigquery_client.create_table(table)
         logger(f"Table {bigquery_table_id} created successfully.")
 
-    job_config = bigquery.LoadJobConfig(
+    job_config = bigquery.LoadJobconfig(
         write_disposition=bigquery.WriteDisposition.WRITE_APPEND, 
         schema=schema,
         source_format=bigquery.SourceFormat.PARQUET

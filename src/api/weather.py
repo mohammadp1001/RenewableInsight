@@ -6,7 +6,7 @@ import pandas as pd
 
 from io import BytesIO
 
-from src.config import Config
+
 from src.setup_logging import SetupLogging
 from src.api.parameters import WeatherParameter
 from src.api.base_downloader import BaseDownloader
