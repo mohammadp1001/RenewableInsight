@@ -1,5 +1,5 @@
 pandas
-prefect
+prefect==3.0.0rc20
 entsoe-py
 numpy
 boto3

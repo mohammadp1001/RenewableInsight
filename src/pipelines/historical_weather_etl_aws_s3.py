@@ -6,9 +6,11 @@ import datetime
 import pyarrow as pa
 import pandas as pd
 import pyarrow.parquet as pq
+
 from io import BytesIO
 from pandas import DataFrame
 from prefect import task, flow
+from prefect import get_run_logger
 
 if '/home/mohammad/RenewableInsight' not in sys.path:
     sys.path.append('/home/mohammad/RenewableInsight')
@@ -18,7 +20,7 @@ from src.api.parameters import WeatherParameter
 from src.api.weather import WeatherDataDownloader
 from src.utilities.utils import create_s3_keys_historical_weather, generate_random_string, check_s3_key_exists, generate_task_name, generate_flow_name
 
-@task(task_run_name=generate_task_name())
+@task(task_run_name=generate_task_name)
 def load_data() -> pd.DataFrame:
     """
     Load weather data for a given station and weather parameter.
@@ -32,7 +34,7 @@ def load_data() -> pd.DataFrame:
 
     return data
 
-@task(task_run_name=generate_task_name())
+@task(task_run_name=generate_task_name)
 def transform(data: pd.DataFrame) -> pd.DataFrame:
     """
     Transform the weather data by cleaning and processing it.
@@ -66,7 +68,7 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
 
     return data
 
-@task(task_run_name=generate_task_name())
+@task(task_run_name=generate_task_name)
 def export_data_to_s3(data: DataFrame) -> None:
     """
     Export the transformed weather data to an S3 bucket in Parquet format.
@@ -74,7 +76,7 @@ def export_data_to_s3(data: DataFrame) -> None:
     :param data: The transformed weather data as a pandas DataFrame.
     :return: None
     """
-    parquet_buffer = BytesIO()
+    logger = get_run_logger()
     bucket_name = Config.BUCKET_NAME
 
     s3 = boto3.client('s3', aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
@@ -82,12 +84,17 @@ def export_data_to_s3(data: DataFrame) -> None:
 
     for object_key, date in create_s3_keys_historical_weather(Config.WEATHER_PARAM, Config.STATION_CODE):
         data_ = data[(data['day'] == date.day) & (data['month'] == date.month) & (data['year'] == date.year)]
+    
         if data_.empty:
-            logging.info("The dataframe is empty.")
-            break
+            logger.info("The dataframe is empty.")
+            continue
 
+        parquet_buffer = BytesIO()
         table = pa.Table.from_pandas(data_)
         pq.write_table(table, parquet_buffer)
+
+        parquet_buffer.seek(0)
+
         filename = object_key + f"/{generate_random_string(10)}.parquet"
 
         if not check_s3_key_exists(s3, bucket_name, object_key):
@@ -96,13 +103,13 @@ def export_data_to_s3(data: DataFrame) -> None:
                 Key=filename,
                 Body=parquet_buffer.getvalue()
             )
-            logging.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
-            print(f"File has been written to s3 {bucket_name} inside {object_key}.")
+            logger.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
         else:
-            logging.info(f"File {object_key} already exists.")
-            print(f"File {object_key} already exists.")
+            logger.info(f"File {object_key} already exists.")
+      
+        parquet_buffer.close()    
 
-@flow(log_prints=True,name="historical_weather_etl_aws_s3",flow_run_name=generate_flow_name())
+@flow(log_prints=True,name="historical_weather_etl_aws_s3",flow_run_name=generate_flow_name)
 def etl() -> None:
     """
     The ETL flow that orchestrates the loading, transforming, and exporting of historical weather data.

@@ -22,7 +22,7 @@ from src.utilities.utils import create_s3_keys_load, check_s3_key_exists, genera
 
 
 
-@task(task_run_name=generate_task_name())
+@task(task_run_name=generate_task_name)
 def consume_data(wait_time: int) -> pd.DataFrame:
     """
     Consume messages from a Kafka topic for a specified duration and return them as a DataFrame.
@@ -68,7 +68,7 @@ def consume_data(wait_time: int) -> pd.DataFrame:
     data = pd.DataFrame(messages, columns=['date', 'load', 'key_id'])
     return data
 
-@task(task_run_name=generate_task_name())
+@task(task_run_name=generate_task_name)
 def transform(data: pd.DataFrame) -> pd.DataFrame:
     """
     Transform the consumed data by parsing dates, converting data types, 
@@ -99,7 +99,7 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
 
     return data
 
-@task(task_run_name=generate_task_name())
+@task(task_run_name=generate_task_name)
 def export_data_to_s3(data: pd.DataFrame) -> None:
     """
     Export the transformed data to an S3 bucket in Parquet format.
@@ -145,7 +145,7 @@ def export_data_to_s3(data: pd.DataFrame) -> None:
       
         parquet_buffer.close()
 
-@flow(log_prints=True,name="load_streaming_aws_s3",flow_run_name=generate_flow_name())
+@flow(log_prints=True,name="load_streaming_aws_s3",flow_run_name=generate_flow_name)
 def etl(wait_time: int) -> None:
     """
     The ETL flow that orchestrates the consuming, transforming, and exporting of load data.
@@ -158,4 +158,4 @@ def etl(wait_time: int) -> None:
     export_data_to_s3(transformed_data)
 
 if __name__ == "__main__":
-    etl()
+    etl(wait_time=1)

@@ -52,7 +52,8 @@ def main():
 
             
             Config.set_env_variable('LAST_PUBLISHED_FIELD_VALUE_LOAD', producer_service.get_last_published_field_value())
-
+        else:
+            logger.error("The load data was not s.")
         
         logger.info(f"Producer will sleep for {Config.TIME_OF_SLEEP_PRODUCER_LOAD} minutes.")
         sleep(int(Config.TIME_OF_SLEEP_PRODUCER_LOAD) * 60)

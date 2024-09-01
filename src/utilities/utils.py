@@ -264,10 +264,7 @@ def generate_task_name()-> str:
     flow_name = flow_run.flow_name
     task_name = task_run.task_name
 
-    # TODO use parameters
-    parameters = task_run.parameters
-    
-    
+
     task_run_name = f"{flow_name}-{task_name}-{datetime.datetime.now(TIMEZONE).strftime('%Y-%m-%d %H:%M:%S')}"
 
     return task_run_name
@@ -279,7 +276,8 @@ def generate_flow_name()-> str:
     :return flow_run_name
     """
     flow_name = flow_run.flow_name
-
+        
     flow_run_name = f"{flow_name}-{datetime.datetime.now(TIMEZONE).strftime('%Y-%m-%d %H:%M:%S')}"
 
     return flow_run_name
+    
