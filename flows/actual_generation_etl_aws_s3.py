@@ -22,19 +22,23 @@ except ValidationError as e:
     print("configuration error:", e)
     
 @task(task_run_name=generate_task_name)
-def load_data() -> DataFrame:
+def load_data(year: int, month: int, country_code: str, data_type: str) -> DataFrame:
     """
     Load data from the ENTSO-E API.
 
+    :param: year
+    :param: month
+    :param: country_code
+    :param: data_type
     :return: A pandas DataFrame containing the loaded data.
     """
     data_downloader = ENTSOEAPI(
-        year=datetime.datetime.now().year,
-        month=datetime.datetime.now().month,
-        country_code=config.COUNTRY_CODE,
+        year=year,
+        month=month,
+        country_code=country_code,
         api_key=config.ENTSOE_API_KEY
     )
-    data_downloader.fetch_data(data_type=config.DATA_TYPE_GEN)
+    data_downloader.fetch_data(data_type=data_type)
     data = data_downloader.data
 
     return data
@@ -49,16 +53,14 @@ def transform(data: DataFrame) -> DataFrame:
     """
     data['date'] = pd.to_datetime(data['date'], format='%Y-%m-%d %H:%M:%S.%f')
 
-    # Extract date and time components
     data['day'] = data['date'].dt.day
     data['month'] = data['date'].dt.month
     data['year'] = data['date'].dt.year
     data['hour'] = data['date'].dt.hour
     data['minute'] = data['date'].dt.minute
 
-    # Convert to appropriate data types for efficiency
-    data['month'] = data['month'].astype('int8')
     data['year'] = data['year'].astype('int16')
+    data['month'] = data['month'].astype('int8')
     data['hour'] = data['hour'].astype('int8')
     data['minute'] = data['minute'].astype('int8')
     data['day'] = data['day'].astype('int8')
@@ -104,13 +106,17 @@ def export_data_to_s3(data: DataFrame) -> None:
             logger.info("The dataframe is empty for the specified date.")
 
 @flow(log_prints=True,name="actual_generation_etl_aws_s3",flow_run_name=generate_flow_name)
-def etl() -> None:
+def etl(year: int, month: int, country_code: str, data_type: str) -> None:
     """
     The ETL flow that orchestrates the loading, transforming, and exporting of generation data.
-
+    
+    :param: year
+    :param: month
+    :param: country_code
+    :param: data_type
     :return: None
     """
-    raw_data = load_data()
+    raw_data = load_data(year, month, country_code, data_type)
     transformed_data = transform(raw_data)
     export_data_to_s3(transformed_data)
 
