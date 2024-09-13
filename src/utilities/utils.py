@@ -23,7 +23,6 @@ TIMEZONE = pytz.timezone('Europe/Berlin')
 
 try:
     config = Config()
-    print("configuration loaded successfully!")
 except ValidationError as e:
     print("configuration error:", e)
 

@@ -21,7 +21,6 @@ from src.config import Config
 
 try:
     config = Config()
-    print("configuration loaded successfully!")
 except ValidationError as e:
     print("configuration error:", e)
     

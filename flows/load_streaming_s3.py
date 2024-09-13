@@ -22,7 +22,6 @@ from src.utilities.utils import create_s3_keys_load, check_s3_key_exists, genera
 
 try:
     config = Config()
-    print("configuration loaded successfully!")
 except ValidationError as e:
     print("configuration error:", e)
 

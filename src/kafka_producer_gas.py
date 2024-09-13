@@ -7,7 +7,7 @@ import src.kafka_class.producer
 
 try:
     config = Config()
-    print("configuration loaded successfully!")
+
 except ValidationError as e:
     print("configuration error:", e)
 

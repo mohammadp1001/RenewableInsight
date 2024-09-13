@@ -15,7 +15,6 @@ from src.utilities.utils import generate_task_name, generate_flow_name
 
 try:
     config = Config()
-    print("configuration loaded successfully!")
 except ValidationError as e:
     print("configuration error:", e)
 

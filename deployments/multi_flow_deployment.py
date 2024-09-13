@@ -68,7 +68,7 @@ def orchestrator_historical_weather_flow(weather_param: str, station_code: str,p
     historical_weather_state = historical_weather_etl_flow(weather_param,station_code, return_state=True)
 
     if historical_weather_state.is_completed():
-        s3_to_bigquery_flow(prefix, bigquery_table_id,  expiration_time)
+        s3_to_bigquery_flow(prefix, bigquery_table_id, expiration_time)
     else:
         print(f"Flow failed with state: {historical_weather_state.type}")
 
