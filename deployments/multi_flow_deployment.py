@@ -22,7 +22,7 @@ except ValidationError as e:
 start_time = datetime.combine(datetime.now() + timedelta(days=1), datetime.min.time())
 
 @flow
-def orchestrator_weather_forecast_flow(station_name: str, n_day: int, prefix: str, bigquery_table_id: str, time_column: str, expiration_time: int):
+def orchestrator_weather_forecast_flow(station_name: str, n_day: int, prefix: str, bigquery_table_id: str, expiration_time: int):
     
     weather_state = weather_forecast_etl_flow(station_name, n_day, return_state=True)
 
@@ -32,7 +32,7 @@ def orchestrator_weather_forecast_flow(station_name: str, n_day: int, prefix: st
         print(f"Flow failed with state: {weather_state.type}")
 
 @flow
-def orchestrator_actual_generation_flow(year: int, month: int, country_code: str, data_type: str,prefix: str, bigquery_table_id: str, time_column: str, expiration_time: int):
+def orchestrator_actual_generation_flow(year: int, month: int, country_code: str, data_type: str,prefix: str, bigquery_table_id: str, expiration_time: int):
     
     actual_generation_state = actual_generation_etl_flow(year, month, country_code, data_type, return_state=True)
 
@@ -42,7 +42,7 @@ def orchestrator_actual_generation_flow(year: int, month: int, country_code: str
         print(f"Flow failed with state: {actual_generation_state.type}")
 
 @flow 
-def orchestrator_gas_streaming_flow(wait_time: int,prefix: str, bigquery_table_id: str, time_column: str, expiration_time: int):
+def orchestrator_gas_streaming_flow(wait_time: int,prefix: str, bigquery_table_id: str, expiration_time: int):
     
     gas_streaming_state = gas_streaming_s3_flow(wait_time, return_state=True)
 
@@ -53,7 +53,7 @@ def orchestrator_gas_streaming_flow(wait_time: int,prefix: str, bigquery_table_i
 
 
 @flow 
-def orchestrator_load_streaming_flow(wait_time: int,prefix: str, bigquery_table_id: str, time_column: str, expiration_time: int):
+def orchestrator_load_streaming_flow(wait_time: int,prefix: str, bigquery_table_id: str, expiration_time: int):
     
     load_streaming_state = load_streaming_s3_flow(wait_time, return_state=True)
 
@@ -63,7 +63,7 @@ def orchestrator_load_streaming_flow(wait_time: int,prefix: str, bigquery_table_
         print(f"Flow failed with state: {load_streaming_state.type}")
 
 @flow 
-def orchestrator_historical_weather_flow(weather_param: str, station_code: str,prefix: str, bigquery_table_id: str, time_column: str, expiration_time: int):
+def orchestrator_historical_weather_flow(weather_param: str, station_code: str,prefix: str, bigquery_table_id: str,expiration_time: int):
     
     historical_weather_state = historical_weather_etl_flow(weather_param,station_code, return_state=True)
 
@@ -84,7 +84,6 @@ if __name__ == "__main__":
             "n_day": 3,  
             "prefix":f"weather_forecast/{config.STATION_NAME}/",
             "bigquery_table_id": "weather_forecast_stuttgart",
-            "time_column": None,
             "expiration_time": 1
         },
         tags=["forecast", "aws", "etl"],
@@ -100,7 +99,6 @@ if __name__ == "__main__":
             "data_type": config.DATA_TYPE_GEN,
             "prefix": "electricity/generation/",
             "bigquery_table_id": "weather_forecast_stuttgart",
-            "time_column": None,
             "expiration_time": 1
         },
         tags=["generation", "aws", "etl"],
