@@ -27,30 +27,30 @@ except ValidationError as e:
     print("configuration error:", e)
     
 @task(task_run_name=generate_task_name)
-def load_data() -> pd.DataFrame:
+def load_data(weather_param: str, station_code: str) -> pd.DataFrame:
     """
     Load weather data for a given station and weather parameter.
 
     :return: A pandas DataFrame with the loaded and cleaned weather data.
     """
-    weather_param = WeatherParameter.from_name(config.WEATHER_PARAM)
+    _weather_param = WeatherParameter.from_name(weather_param)
 
     downloader = WeatherDataDownloader()
-    data = downloader.download_and_load_data(config.STATION_CODE, weather_param)
+    data = downloader.download_and_load_data(station_code, _weather_param)
 
     return data
 
 @task(task_run_name=generate_task_name)
-def transform(data: pd.DataFrame) -> pd.DataFrame:
+def transform(data: pd.DataFrame, weather_param: str) -> pd.DataFrame:
     """
     Transform the weather data by cleaning and processing it.
 
     :param data: The raw weather data as a pandas DataFrame.
     :return: A cleaned and transformed pandas DataFrame.
     """
-    weather_param = WeatherParameter.from_name(config.WEATHER_PARAM)
+    _weather_param = WeatherParameter.from_name(weather_param)
 
-    data = data.drop(columns=weather_param.columns_rm, errors='ignore')
+    data = data.drop(columns=_weather_param.columns_rm, errors='ignore')
 
     data['MESS_DATUM'] = data['MESS_DATUM'].astype('str')
     if "ST" in config.WEATHER_PARAM:
@@ -75,7 +75,7 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 @task(task_run_name=generate_task_name)
-def export_data_to_s3(data: DataFrame) -> None:
+def export_data_to_s3(data: DataFrame, weather_param: str, station_code: str) -> None:
     """
     Export the transformed weather data to an S3 bucket in Parquet format.
 
@@ -88,7 +88,7 @@ def export_data_to_s3(data: DataFrame) -> None:
     s3 = boto3.client('s3', aws_access_key_id=config.AWS_ACCESS_KEY_ID,
                           aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY)
 
-    for object_key, date in create_s3_keys_historical_weather(config.WEATHER_PARAM, config.STATION_CODE):
+    for object_key, date in create_s3_keys_historical_weather(weather_param, station_code):
         data_ = data[(data['day'] == date.day) & (data['month'] == date.month) & (data['year'] == date.year)]
     
         if data_.empty:
@@ -115,16 +115,16 @@ def export_data_to_s3(data: DataFrame) -> None:
       
         parquet_buffer.close()    
 
-@flow(log_prints=True,name="historical_weather_etl_aws_s3",flow_run_name=generate_flow_name)
-def etl() -> None:
+@flow(log_prints=True,name="historical_weather_etl_s3",flow_run_name=generate_flow_name)
+def historical_weather_etl_flow(weather_param: str, station_code: str) -> None:
     """
     The ETL flow that orchestrates the loading, transforming, and exporting of historical weather data.
 
     :return: None
     """
-    data = load_data()
-    transformed_data = transform(data)
-    export_data_to_s3(transformed_data)
+    data = load_data(weather_param, station_code)
+    transformed_data = transform(data,weather_param)
+    export_data_to_s3(transformed_data,weather_param, station_code)
 
 if __name__ == "__main__":
-    etl()
+    pass

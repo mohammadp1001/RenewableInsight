@@ -24,7 +24,6 @@ from src.utilities.utils import create_s3_keys_weather_forecast, check_s3_key_ex
 
 try:
     config = Config()
-    print("configuration loaded successfully!")
 except ValidationError as e:
     print("configuration error:", e)
 
@@ -97,26 +96,31 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 @task(task_run_name=generate_task_name)
-def export_data_to_s3(data: DataFrame) -> None:
+def export_data_to_s3(data: DataFrame, station_name: str, n_day: int) -> None:
     """
     Exports the transformed forecast data to an S3 bucket in Parquet format.
 
     :param data: The transformed forecast data as a pandas DataFrame.
     :return: None
     """
-    parquet_buffer = BytesIO()
     logger = get_run_logger()
     bucket_name = config.BUCKET_NAME
     s3 = boto3.client('s3', aws_access_key_id=config.AWS_ACCESS_KEY_ID,
                           aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY)
 
-    for object_key, date in create_s3_keys_weather_forecast(int(config.N_DAY), config.STATION_NAME):
+    for object_key, date in create_s3_keys_weather_forecast(n_day, station_name):
         data_ = data[(data.day == date.day) & (data.month == date.month) & (data.year == date.year)]
+        
         if data_.empty:
             logger.info("The dataframe is empty possibly due to lack of messages.")
             continue
+        
+        parquet_buffer = BytesIO()
         table = pa.Table.from_pandas(data_)
         pq.write_table(table, parquet_buffer)
+
+        parquet_buffer.seek(0)
+
         filename = object_key + f"/{generate_random_string(10)}.parquet"
         if not check_s3_key_exists(s3, bucket_name, object_key):
             s3.put_object(
@@ -127,18 +131,19 @@ def export_data_to_s3(data: DataFrame) -> None:
             logger.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
         else:
             logger.info(f"File {object_key} already exists.")
+        
+        parquet_buffer.close()    
 
-@flow(log_prints=True,name="weather_forecast_etl_s3",flow_run_name=generate_flow_name())
-def etl() -> None:
+@flow(log_prints=True, name="weather_forecast_etl_s3", flow_run_name=generate_flow_name)
+def weather_forecast_etl_flow(station_name: str, n_day: int) -> None:
     """
     The ETL flow that orchestrates the loading, transforming, and exporting of weather forecast data.
 
     :return: None
     """
-    station_name = config.STATION_NAME
     data = load_data(station_name)
     transformed_data = transform(data)
-    export_data_to_s3(transformed_data)
-
+    export_data_to_s3(transformed_data,station_name, n_day)
+    
 if __name__ == "__main__":
-    etl.serve(name="deployment")
+    pass

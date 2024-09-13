@@ -3,7 +3,6 @@ from dotenv import load_dotenv, find_dotenv
 from pydantic_settings import BaseSettings
 from pydantic import validator
 
-# Load environment variables from the .env file
 load_dotenv(find_dotenv())
 
 class Config(BaseSettings):
@@ -14,7 +13,8 @@ class Config(BaseSettings):
 
     AWS_ACCESS_KEY_ID: str
     AWS_SECRET_ACCESS_KEY: str
-    BIGQUERY_TABLE_ID: str
+    BIGQUERY_DATASET_ID: str
+    BIGQUERY_PROJECT_ID: str
     GOOGLE_APPLICATION_CREDENTIALS: str
     BIGQUERY_DATASET_ID: str
     PROJECT_ID: str
@@ -58,7 +58,7 @@ class Config(BaseSettings):
         return v
 
     class Config:
-        env_file = '.env'  # Specify the environment file
+        env_file = '.env'  
         env_file_encoding = 'utf-8'
         case_sensitive = True
 

@@ -17,7 +17,6 @@ from src.utilities.utils import create_s3_keys_generation, check_s3_key_exists, 
 
 try:
     config = Config()
-    print("configuration loaded successfully!")
 except ValidationError as e:
     print("configuration error:", e)
     
@@ -89,24 +88,30 @@ def export_data_to_s3(data: DataFrame) -> None:
                      (data.day == date.day) & 
                      (data.month == date.month) & 
                      (data.year == date.year)]
-        if not data_.empty:
-            table = pa.Table.from_pandas(data_)
-            pq.write_table(table, parquet_buffer)
-            filename = object_key + f"/{generate_random_string(10)}.parquet"
-            if not check_s3_key_exists(s3, bucket_name, object_key):
-                s3.put_object(
-                    Bucket=bucket_name,
-                    Key=filename,
-                    Body=parquet_buffer.getvalue()
-                )
-                logger.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
-            else:
-                logger.info(f"File {object_key} already exists.")
-        else:
-            logger.info("The dataframe is empty for the specified date.")
+        if data_.empty:
+            logger.info("The dataframe is empty possibly due to lack of messages.")
+            continue
+        
+        table = pa.Table.from_pandas(data_)
+        pq.write_table(table, parquet_buffer)
+        parquet_buffer.seek(0)
 
-@flow(log_prints=True,name="actual_generation_etl_aws_s3",flow_run_name=generate_flow_name)
-def etl(year: int, month: int, country_code: str, data_type: str) -> None:
+        filename = object_key + f"/{generate_random_string(10)}.parquet"
+        if not check_s3_key_exists(s3, bucket_name, object_key):
+            s3.put_object(
+                Bucket=bucket_name,
+                Key=filename,
+                Body=parquet_buffer.getvalue()
+            )
+            logger.info(f"File has been written to s3 {bucket_name} inside {object_key}.")
+        else:
+            logger.info(f"File {object_key} already exists.")
+       
+
+        parquet_buffer.close()    
+
+@flow(log_prints=True, name="actual_generation_etl_s3", flow_run_name=generate_flow_name)
+def actual_generation_etl_flow(year: int, month: int, country_code: str, data_type: str) -> None:
     """
     The ETL flow that orchestrates the loading, transforming, and exporting of generation data.
     
@@ -121,4 +126,4 @@ def etl(year: int, month: int, country_code: str, data_type: str) -> None:
     export_data_to_s3(transformed_data)
 
 if __name__ == "__main__":
-    etl()
+    pass

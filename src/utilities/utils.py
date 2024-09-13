@@ -184,33 +184,6 @@ def check_s3_key_exists(
         print(f"An error occurred: {e}")
         return False
 
-def list_s3_files(bucket_name: str, prefix: str = '') -> List[str]:
-    """
-    Lists files in an S3 bucket under a specified prefix.
-
-    
-    :param bucket_name: The name of the S3 bucket.
-    :param prefix: The prefix under which to list files.
-    :return: A list of file keys.
-    """
-    logger = get_run_logger()
-    s3 = boto3.client(
-        's3', 
-        aws_access_key_id=config.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY
-    )
-    response = s3.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
-    list_files = []
-    if 'Contents' in response:
-        logger(f"Files in {bucket_name}/{prefix}:")
-        for obj in response['Contents']:
-            logger(obj['Key'])
-            list_files.append(obj['Key'])
-    else:
-        logger(f"No files found in {bucket_name}/{prefix}.")
-
-    return list_files
-
 def read_s3_file(bucket_name: str, s3_key: str) -> pd.DataFrame:
     """
     Reads a Parquet file from S3 and returns it as a DataFrame.
@@ -220,7 +193,6 @@ def read_s3_file(bucket_name: str, s3_key: str) -> pd.DataFrame:
     :param s3_key: The S3 key for the Parquet file.
     :return: A pandas DataFrame containing the data from the Parquet file.
     """
-    logger = get_run_logger()
     s3 = boto3.client(
         's3', 
         aws_access_key_id=config.AWS_ACCESS_KEY_ID,
@@ -287,4 +259,4 @@ def generate_flow_name()-> str:
     flow_run_name = f"{flow_name}-{datetime.datetime.now(TIMEZONE).strftime('%Y-%m-%d %H:%M:%S')}"
 
     return flow_run_name
-    
+
