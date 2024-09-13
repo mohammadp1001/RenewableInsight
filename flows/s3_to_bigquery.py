@@ -34,7 +34,6 @@ def upload_parquet_to_bigquery(
     
     :param s3_key: The S3 key for the Parquet file.
     :param bigquery_table_id: The BigQuery table ID.
-    :param time_column: The column name for BigQuery TimePartitioning
     :param expiration_time: Expiration time in days for the BigQuery table.
     :return None
     """
@@ -124,13 +123,12 @@ def list_s3_files(prefix: str = '') -> List[str]:
     return list_files
 
 @flow(log_prints=True, name="s3_to_bigquery", flow_run_name=generate_flow_name)
-def s3_to_bigquery_flow(prefix: str, bigquery_table_id: str, time_column: str, expiration_time: int) -> None:
+def s3_to_bigquery_flow(prefix: str, bigquery_table_id: str, expiration_time: int) -> None:
     """
     Transfer flow that lists all files in the S3 bucket under a prefix and uploads them to BigQuery.
 
     :param prefix: The prefix under which to list files.
     :param bigquery_table_id: The BigQuery table ID where data will be uploaded.
-    :param time_column: The column name for BigQuery TimePartitioning
     :param expiration_time: Expiration time in days for the BigQuery table.
     """
     logger = get_run_logger()
