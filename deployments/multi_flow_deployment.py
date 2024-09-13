@@ -27,7 +27,7 @@ def orchestrator_weather_forecast_flow(station_name: str, n_day: int, prefix: st
     weather_state = weather_forecast_etl_flow(station_name, n_day, return_state=True)
 
     if weather_state.is_completed():
-        s3_to_bigquery_flow(prefix, bigquery_table_id, time_column, expiration_time)
+        s3_to_bigquery_flow(prefix, bigquery_table_id,expiration_time)
     else:
         print(f"Flow failed with state: {weather_state.type}")
 
@@ -37,7 +37,7 @@ def orchestrator_actual_generation_flow(year: int, month: int, country_code: str
     actual_generation_state = actual_generation_etl_flow(year, month, country_code, data_type, return_state=True)
 
     if actual_generation_state.is_completed():
-        s3_to_bigquery_flow(prefix, bigquery_table_id, time_column, expiration_time)
+        s3_to_bigquery_flow(prefix, bigquery_table_id, expiration_time)
     else:
         print(f"Flow failed with state: {actual_generation_state.type}")
 
@@ -47,7 +47,7 @@ def orchestrator_gas_streaming_flow(wait_time: int,prefix: str, bigquery_table_i
     gas_streaming_state = gas_streaming_s3_flow(wait_time, return_state=True)
 
     if gas_streaming_state.is_completed():
-        s3_to_bigquery_flow(prefix, bigquery_table_id, time_column, expiration_time)
+        s3_to_bigquery_flow(prefix, bigquery_table_id, expiration_time)
     else:
         print(f"Flow failed with state: {gas_streaming_state.type}")
 
@@ -58,7 +58,7 @@ def orchestrator_load_streaming_flow(wait_time: int,prefix: str, bigquery_table_
     load_streaming_state = load_streaming_s3_flow(wait_time, return_state=True)
 
     if load_streaming_state.is_completed():
-        s3_to_bigquery_flow(prefix, bigquery_table_id, time_column, expiration_time)
+        s3_to_bigquery_flow(prefix, bigquery_table_id, expiration_time)
     else:
         print(f"Flow failed with state: {load_streaming_state.type}")
 
@@ -68,7 +68,7 @@ def orchestrator_historical_weather_flow(weather_param: str, station_code: str,p
     historical_weather_state = historical_weather_etl_flow(weather_param,station_code, return_state=True)
 
     if historical_weather_state.is_completed():
-        s3_to_bigquery_flow(prefix, bigquery_table_id, time_column, expiration_time)
+        s3_to_bigquery_flow(prefix, bigquery_table_id,  expiration_time)
     else:
         print(f"Flow failed with state: {historical_weather_state.type}")
 
