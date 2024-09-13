@@ -74,7 +74,7 @@ def export_data_to_s3(data: DataFrame) -> None:
     :param data: The transformed DataFrame to be exported.
     :return: None
     """
-    parquet_buffer = BytesIO()
+    
     logger = get_run_logger()
     bucket_name = config.BUCKET_NAME
     s3 = boto3.client(
@@ -84,14 +84,13 @@ def export_data_to_s3(data: DataFrame) -> None:
     )
 
     for object_key, date in create_s3_keys_generation():
-        data_ = data[(data.hour == date.hour) & 
-                     (data.day == date.day) & 
+        data_ = data[(data.day == date.day) & 
                      (data.month == date.month) & 
                      (data.year == date.year)]
         if data_.empty:
             logger.info("The dataframe is empty possibly due to lack of messages.")
             continue
-        
+        parquet_buffer = BytesIO()
         table = pa.Table.from_pandas(data_)
         pq.write_table(table, parquet_buffer)
         parquet_buffer.seek(0)
