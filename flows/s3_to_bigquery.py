@@ -142,7 +142,6 @@ def s3_to_bigquery_flow(prefix: str, bigquery_table_id: str, expiration_time: in
         upload_parquet_to_bigquery(
             s3_key=s3_key, 
             bigquery_table_id=bigquery_table_id,
-            time_column= time_column, 
             expiration_time=expiration_time
         )
 
