@@ -26,7 +26,6 @@ except ValidationError as e:
 def upload_parquet_to_bigquery(
     s3_key: str, 
     bigquery_table_id: str, 
-    time_column: str = None, 
     expiration_time: Optional[int] = None
 ) -> None:
     """
@@ -77,19 +76,12 @@ def upload_parquet_to_bigquery(
         bigquery_client.create_table(table)
         logger.info(f"Table {bigquery_table_id} created successfully.")
     
-    if time_column:
-        job_config = bigquery.LoadJobConfig(
+
+    job_config = bigquery.LoadJobConfig(
             write_disposition=bigquery.WriteDisposition.WRITE_APPEND, 
             schema=schema,
             source_format=bigquery.SourceFormat.PARQUET,
-            time_partitioning=bigquery.TimePartitioning(field=time_column)  
-        )
-    else:
-        job_config = bigquery.LoadJobConfig(
-                write_disposition=bigquery.WriteDisposition.WRITE_APPEND, 
-                schema=schema,
-                source_format=bigquery.SourceFormat.PARQUET,
-            )
+    )
     try:
         job = bigquery_client.load_table_from_dataframe(df, table_ref, job_config=job_config)
         job.result()  
