@@ -98,7 +98,7 @@ if __name__ == "__main__":
             "country_code": config.COUNTRY_CODE ,
             "data_type": config.DATA_TYPE_GEN,
             "prefix": "electricity/generation/",
-            "bigquery_table_id": "weather_forecast_stuttgart",
+            "bigquery_table_id": "actual_generation",
             "expiration_time": 1
         },
         tags=["generation", "aws", "etl"],
