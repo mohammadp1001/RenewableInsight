@@ -26,6 +26,8 @@ class WeatherDataDownloader(BaseDownloader):
         :param base_url: The base URL for weather data. Defaults to the DWD open data URL if not provided.
         """
         super().__init__(base_url or "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/")
+        self.logger = logging.getLogger(__name__)
+
 
     def download_and_load_data(self, station_code: str, weather_param: WeatherParameter) -> pd.DataFrame:
         """
@@ -61,7 +63,7 @@ class WeatherDataDownloader(BaseDownloader):
         :param weather_param: The weather parameter enum.
         :return: The constructed URL.
         """
-        logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(__name__)
         category = weather_param.category
         suffix = weather_param.url_suffix
         
@@ -70,7 +72,7 @@ class WeatherDataDownloader(BaseDownloader):
         else:
             url = f"{self.base_url}{category}/recent/stundenwerte_{weather_param.name}_{station_code}{suffix}.zip"
         
-        logger.info(f"Constructed URL: {url}")
+        self.logger.info(f"Constructed URL: {url}")
         return url
 
     def _download_content(self, url: str) -> bytes:
@@ -81,13 +83,13 @@ class WeatherDataDownloader(BaseDownloader):
         :return: The content of the downloaded ZIP file.
         :raises requests.RequestException: If the request to download the ZIP file fails.
         """
-        logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(__name__)
         try:
             response = requests.get(url)
             response.raise_for_status()
             return response.content
         except requests.RequestException as e:
-            logger.error(f"Failed to download data: {e}")
+            self.logger.error(f"Failed to download data: {e}")
             raise
 
     def _extract_data(self, zip_content: bytes, station_code: str, weather_param: WeatherParameter) -> pd.DataFrame:
@@ -100,7 +102,7 @@ class WeatherDataDownloader(BaseDownloader):
         :return: The extracted weather data as a pandas DataFrame.
         :raises FileNotFoundError: If no matching file is found in the ZIP archive.
         """
-        logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(__name__)
         with zipfile.ZipFile(BytesIO(zip_content)) as thezip:
             pattern = re.compile(f"produkt_{weather_param.name.lower()}_stunde_.*_{station_code}.txt")
             file_name = next((s for s in thezip.namelist() if pattern.match(s)), None)
@@ -109,5 +111,5 @@ class WeatherDataDownloader(BaseDownloader):
             with thezip.open(file_name) as file:
                 df = pd.read_csv(file, delimiter=';', encoding='latin1')
         
-        logger.info(f"Extracted file: {file_name}")
+        self.logger.info(f"Extracted file: {file_name}")
         return df
