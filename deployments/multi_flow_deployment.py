@@ -7,6 +7,7 @@ if '/home/mohammad/RenewableInsight' not in sys.path:
 
 from src.config import Config
 from flows.cleanup_s3 import cleanup_flow
+from src.api.parameters import WeatherParameter
 from flows.s3_to_bigquery import s3_to_bigquery_flow
 from flows.weather_forecast_etl_s3 import weather_forecast_etl_flow
 from flows.actual_generation_etl_s3 import actual_generation_etl_flow
@@ -94,7 +95,7 @@ if __name__ == "__main__":
         interval= 120,  
         parameters={
             "year": 2024,
-            "month": 3,
+            "month": 9,
             "country_code": config.COUNTRY_CODE ,
             "data_type": config.DATA_TYPE_GEN,
             "prefix": "electricity/generation/",
@@ -104,7 +105,21 @@ if __name__ == "__main__":
         tags=["generation", "aws", "etl"],
     )
 
+    orchestrator_historical_weather_deploy = orchestrator_historical_weather_flow.to_deployment(
+        name="historical_weather_etl",
+        interval= 30,  
+        parameters={
+            "weather_param": config.WEATHER_PARAM, 
+            "station_code": config.STATION_CODE,
+            "prefix": f"historical_weather/{WeatherParameter[config.WEATHER_PARAM].category}/{config.STATION_CODE}",
+            "bigquery_table_id": f"historical_weather_{config.WEATHER_PARAM}",
+            "expiration_time": 1
+        },
+        tags=["historical", "aws", "etl"],
+    )
+
     serve(
         orchestrator_weather_forecast_deploy,
-        orchestrator_actual_generation_deploy
+        orchestrator_actual_generation_deploy,
+        orchestrator_historical_weather_deploy
     )
