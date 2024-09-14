@@ -126,4 +126,4 @@ def historical_weather_etl_flow(weather_param: str, station_code: str) -> None:
     export_data_to_s3(transformed_data,weather_param, station_code)
 
 if __name__ == "__main__":
-    pass
+    historical_weather_etl_flow(weather_param=config.WEATHER_PARAM, station_code=config.STATION_CODE)
