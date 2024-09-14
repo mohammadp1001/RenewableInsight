@@ -6,6 +6,7 @@ import pandas as pd
 
 from io import BytesIO
 from typing import Optional, List
+from bs4 import BeautifulSoup  
 
 from src.setup_logging import SetupLogging
 from src.api.parameters import WeatherParameter
@@ -88,6 +89,7 @@ class WeatherDataDownloader(BaseDownloader):
         if not isinstance(weather_param, WeatherParameter):
             raise ValueError("weather_param must be an instance of WeatherParameter Enum.")
 
+ 
     def _construct_url(self, station_code: str, weather_param: WeatherParameter, directory: Optional[str] = None) -> str:
         """
         Construct the URL for downloading the weather data based on the station code, weather parameter, and directory.
@@ -96,17 +98,45 @@ class WeatherDataDownloader(BaseDownloader):
         :param weather_param: The weather parameter enum.
         :param directory: The directory to use ('recent' or 'historical'). If None, no directory is appended.
         :return: The constructed URL.
+        :raises FileNotFoundError: If the appropriate file cannot be found in the 'historical' directory.
         """
         category = weather_param.category
         suffix = weather_param.url_suffix
 
-        if directory:
-            url = f"{self.base_url}{category}/{directory}/stundenwerte_{weather_param.name}_{station_code}{suffix}.zip"
-        else:
-            url = f"{self.base_url}{category}/stundenwerte_{weather_param.name}_{station_code}{suffix}.zip"
+        if directory == 'recent':
+            url = f"{self.base_url}{category}/recent/stundenwerte_{weather_param.name}_{station_code}{suffix}.zip"
+            self._logger.debug(f"Constructed URL for 'recent' directory: {url}")
+            return url
 
-        self._logger.debug(f"Constructed URL for '{directory}' directory: {url}")
-        return url
+        elif directory == 'historical':
+            historical_url = f"{self.base_url}{category}/historical/"
+            self._logger.debug(f"Accessing historical directory URL: {historical_url}")
+            try:
+                response = requests.get(historical_url, timeout=30)
+                response.raise_for_status()
+                soup = BeautifulSoup(response.text, 'html.parser')
+                links = [a.get('href') for a in soup.find_all('a', href=True)]
+                pattern = re.compile(
+                    f"stundenwerte_{weather_param.name}_{station_code}_\\d{{8}}_\\d{{8}}_hist\\.zip"
+                )
+                matching_files = [link for link in links if pattern.fullmatch(link)]
+
+                if not matching_files:
+                    raise FileNotFoundError(
+                        f"No historical file found for station '{station_code}' and parameter '{weather_param.name}'."
+                    )
+
+                selected_file = matching_files[0]
+                url = f"{historical_url}{selected_file}"
+                self._logger.debug(f"Constructed URL for 'historical' directory: {url}")
+                return url
+            except requests.RequestException as e:
+                self._logger.error(f"Failed to access historical directory at {historical_url}: {e}")
+                raise
+        else:
+            url = f"{self.base_url}{category}/{directory}/stundenwerte_{weather_param.name}_{station_code}{suffix}.zip"
+            self._logger.debug(f"Constructed URL for '{directory}' directory: {url}")
+            return url
 
     def _download_content(self, url: str) -> bytes:
         """
