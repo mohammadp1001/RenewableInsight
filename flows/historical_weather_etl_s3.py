@@ -1,5 +1,6 @@
 import sys
 import json
+import pytz
 import boto3
 import logging
 import datetime
@@ -48,16 +49,18 @@ def transform(data: pd.DataFrame, weather_param: str) -> pd.DataFrame:
     :return: A cleaned and transformed pandas DataFrame.
     """
     _weather_param = WeatherParameter.from_name(weather_param)
-
+    berlin_tz = pytz.timezone(config.TIMEZONE)
     data = data.drop(columns=_weather_param.columns_rm, errors='ignore')
 
     data['MESS_DATUM'] = data['MESS_DATUM'].astype('str')
     if "ST" in config.WEATHER_PARAM:
-        data['MESS_DATUM'] = pd.to_datetime(data['MESS_DATUM'].str.slice(stop=10), format='%Y%m%d%H')
+        data['MESS_DATUM'] = pd.to_datetime(data['MESS_DATUM'].str.slice(stop=10), format='%Y%m%d%H',utc=True)
     else:
-        data['MESS_DATUM'] = pd.to_datetime(data['MESS_DATUM'], format='%Y%m%d%H')
+        data['MESS_DATUM'] = pd.to_datetime(data['MESS_DATUM'], format='%Y%m%d%H',utc=True)
 
     data = data.rename(columns={"MESS_DATUM": "measurement_time"})
+    data['measurement_time'] = data['measurement_time'].dt.tz_convert(berlin_tz)
+
     data = data.drop(columns="STATIONS_ID")
 
     data['day'] = data['measurement_time'].dt.day

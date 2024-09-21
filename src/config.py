@@ -46,7 +46,9 @@ class Config(BaseSettings):
     N_DAY: int
     PROJECT_NAME: str  
     ENV: str  
-    
+    TIMEZONE: str
+    ISO8601: str
+
     @validator("TIME_OF_SLEEP_PRODUCER_GAS", "TIME_OF_SLEEP_PRODUCER_LOAD", "N_DAY", pre=True)
     def convert_to_int(cls, v):
         return int(v)
