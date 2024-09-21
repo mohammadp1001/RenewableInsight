@@ -24,53 +24,53 @@ except ValidationError as e:
 start_time = datetime.combine(datetime.now() + timedelta(days=1), datetime.min.time())
 
 @flow
-def orchestrator_weather_forecast_flow(station_name: str, n_day: int, prefix: str, bigquery_table_id: str, time_column: str, expiration_time: int):
+def orchestrator_weather_forecast_flow(station_name: str, n_day: int, prefix: str, bigquery_table_id: str, expiration_time: int):
     
     weather_state = weather_forecast_etl_flow(station_name, n_day, return_state=True)
 
     if weather_state.is_completed():
-        s3_to_bigquery_flow(prefix, bigquery_table_id,time_column, expiration_time)
+        s3_to_bigquery_flow(prefix, bigquery_table_id, expiration_time)
     else:
         print(f"Flow failed with state: {weather_state.type}")
 
 @flow
-def orchestrator_actual_generation_flow(year: int, month: int, country_code: str, data_type: str,prefix: str, bigquery_table_id: str, time_column: str, expiration_time: int):
+def orchestrator_actual_generation_flow(year: int, month: int, country_code: str, data_type: str,prefix: str, bigquery_table_id: str, expiration_time: int):
     
     actual_generation_state = actual_generation_etl_flow(year, month, country_code, data_type, return_state=True)
 
     if actual_generation_state.is_completed():
-        s3_to_bigquery_flow(prefix, bigquery_table_id, time_column, expiration_time)
+        s3_to_bigquery_flow(prefix, bigquery_table_id, expiration_time)
     else:
         print(f"Flow failed with state: {actual_generation_state.type}")
 
 @flow 
-def orchestrator_gas_streaming_flow(wait_time: int,prefix: str, bigquery_table_id: str, time_column: str, expiration_time: int):
+def orchestrator_gas_streaming_flow(wait_time: int,prefix: str, bigquery_table_id: str, expiration_time: int):
     
     gas_streaming_state = gas_streaming_s3_flow(wait_time, return_state=True)
 
     if gas_streaming_state.is_completed():
-        s3_to_bigquery_flow(prefix, bigquery_table_id, time_column, expiration_time)
+        s3_to_bigquery_flow(prefix, bigquery_table_id, expiration_time)
     else:
         print(f"Flow failed with state: {gas_streaming_state.type}")
 
 
 @flow 
-def orchestrator_load_streaming_flow(wait_time: int,prefix: str, bigquery_table_id: str, time_column: str, expiration_time: int):
+def orchestrator_load_streaming_flow(wait_time: int,prefix: str, bigquery_table_id: str, expiration_time: int):
     
     load_streaming_state = load_streaming_s3_flow(wait_time, return_state=True)
 
     if load_streaming_state.is_completed():
-        s3_to_bigquery_flow(prefix, bigquery_table_id, time_column, expiration_time)
+        s3_to_bigquery_flow(prefix, bigquery_table_id, expiration_time)
     else:
         print(f"Flow failed with state: {load_streaming_state.type}")
 
 @flow 
-def orchestrator_historical_weather_flow(weather_param: str, station_code: str,prefix: str, bigquery_table_id: str, time_column: str, expiration_time: int):
+def orchestrator_historical_weather_flow(weather_param: str, station_code: str,prefix: str, bigquery_table_id: str, expiration_time: int):
     
     historical_weather_state = historical_weather_etl_flow(weather_param,station_code, return_state=True)
 
     if historical_weather_state.is_completed():
-        s3_to_bigquery_flow(prefix, bigquery_table_id, time_column, expiration_time)
+        s3_to_bigquery_flow(prefix, bigquery_table_id, expiration_time)
     else:
         print(f"Flow failed with state: {historical_weather_state.type}")
 
@@ -86,7 +86,6 @@ if __name__ == "__main__":
             "n_day": 3,  
             "prefix":f"weather_forecast/{config.STATION_NAME}/",
             "bigquery_table_id": "weather_forecast_stuttgart",
-            "time_column":"forecast_time",
             "expiration_time": 1
         },
         tags=["forecast", "aws", "etl"],
@@ -102,7 +101,6 @@ if __name__ == "__main__":
             "data_type": config.DATA_TYPE_GEN,
             "prefix": "electricity/generation/",
             "bigquery_table_id": "actual_generation",
-             "time_column":"date",
             "expiration_time": 1
         },
         tags=["generation", "aws", "etl"],
@@ -116,7 +114,6 @@ if __name__ == "__main__":
             "station_code": config.STATION_CODE,
             "prefix": f"historical_weather/{WeatherParameter[config.WEATHER_PARAM].category}/{config.STATION_CODE}",
             "bigquery_table_id": f"historical_weather_{config.WEATHER_PARAM}",
-             "time_column":"measurement_time",
             "expiration_time": 1
         },
         tags=["historical", "aws", "etl"],
@@ -130,7 +127,6 @@ if __name__ == "__main__":
             "wait_time": 5, 
             "prefix": "electricity/load/",
             "bigquery_table_id": "load",
-             "time_column":"date",
             "expiration_time": 1
         },
         tags=["load", "aws", "streaming"],
@@ -143,7 +139,6 @@ if __name__ == "__main__":
             "wait_time": 5, 
             "prefix": "others/gas",
             "bigquery_table_id": "gas",
-             "time_column":"date",
             "expiration_time": 1
         },
         tags=["gas", "aws", "streaming"],
