@@ -1,6 +1,7 @@
 import sys
 import json
 import boto3
+import pytz
 import logging
 import datetime
 import pyarrow as pa
@@ -82,11 +83,15 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
     :return: A transformed pandas DataFrame.
     """
     logger = get_run_logger()
+    berlin_tz = pytz.timezone(config.TIMEZONE)
 
-    data['date'] = pd.to_datetime(data['date'])
+    data['date'] = pd.to_datetime(data['date'], format="ISO8601")
+    data['date'] = data['date'].dt.tz_convert(berlin_tz)
+    
     data['open_price'] = data['open_price'].astype('float32')
     data['close_price'] = data['close_price'].astype('float32')
 
+    
     data = data.drop(columns=['key_id'])
 
     logger.info("Extract date and time components.")
@@ -162,4 +167,4 @@ def gas_streaming_s3_flow(wait_time: int) -> None:
     export_data_to_s3(transformed_data)
 
 if __name__ == "__main__":
-    pass
+    gas_streaming_s3_flow(wait_time=1)

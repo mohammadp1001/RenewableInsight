@@ -1,5 +1,6 @@
 import sys
 import boto3
+import pytz
 import logging
 import datetime
 import pyarrow as pa
@@ -50,8 +51,11 @@ def transform(data: DataFrame) -> DataFrame:
     :param data: The input DataFrame to be transformed.
     :return: The transformed DataFrame with additional columns.
     """
-    data['date'] = pd.to_datetime(data['date'], format='%Y-%m-%d %H:%M:%S.%f')
+    berlin_tz = pytz.timezone(config.TIMEZONE)
 
+    data['date'] = pd.to_datetime(data['date'], format="ISO8601")
+    data['date'] = data['date'].dt.tz_convert(berlin_tz)
+    
     data['day'] = data['date'].dt.day
     data['month'] = data['date'].dt.month
     data['year'] = data['date'].dt.year

@@ -1,6 +1,7 @@
 import sys
 import json
 import boto3
+import pytz
 import logging
 import datetime
 import pyarrow as pa
@@ -67,7 +68,8 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
     :return: A transformed pandas DataFrame with selected columns and adjusted data types.
     """
     columns = ["forecast_time", "TTT", "TX", "TN", "DD", "FF", "Rad1h", "ww", "N", "SunD1"]
-
+    berlin_tz = pytz.timezone('Europe/Berlin')
+    data['forecast_time'] = data['forecast_time'].dt.tz_convert(berlin_tz)
     data = data[columns]
 
     data = data.assign(
@@ -146,4 +148,4 @@ def weather_forecast_etl_flow(station_name: str, n_day: int) -> None:
     export_data_to_s3(transformed_data,station_name, n_day)
     
 if __name__ == "__main__":
-    pass
+    weather_forecast_etl_flow(station_name= config.STATION_NAME, n_day = 5)

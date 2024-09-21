@@ -1,6 +1,7 @@
 import sys
 import json
 import boto3
+import pytz
 import logging
 import datetime
 import pyarrow as pa
@@ -81,7 +82,10 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
     :return: A transformed pandas DataFrame.
     """
     logger = get_run_logger()
-    data['date'] = pd.to_datetime(data['date'])
+    berlin_tz = pytz.timezone(config.TIMEZONE)
+
+    data['date'] = pd.to_datetime(data['date'], format="ISO8601")
+    data['date'] = data['date'].dt.tz_convert(berlin_tz)
     data['load'] = data['load'].astype('float32')
     data = data.drop(columns=['key_id'])
 
@@ -161,4 +165,4 @@ def load_streaming_s3_flow(wait_time: int) -> None:
     export_data_to_s3(transformed_data)
 
 if __name__ == "__main__":
-    pass
+    load_streaming_s3_flow(wait_time=1) 
