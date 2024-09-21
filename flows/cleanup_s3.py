@@ -105,4 +105,4 @@ def cleanup_flow(time_span_days: int) -> None:
     cleanup_s3_files(time_span_days)
  
 if __name__ == "__main__":
-    cleanup_flow(prefix="")
+    pass
