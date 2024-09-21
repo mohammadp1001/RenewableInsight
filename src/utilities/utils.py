@@ -203,34 +203,34 @@ def read_s3_file(bucket_name: str, s3_key: str) -> pd.DataFrame:
     df = pd.read_parquet(parquet_file, engine='pyarrow')
     return df
 
-def get_bq_schema_from_df(df: pd.DataFrame) -> List[bigquery.SchemaField]:
+def get_bq_schema_from_df(df: pd.DataFrame, partition_column: str) -> List[bigquery.SchemaField]:
     """
-    Generate a BigQuery schema from a pandas DataFrame.
+    Generates BigQuery schema from a pandas DataFrame.
 
-    :param df: The pandas DataFrame from which to generate the schema.
-    :return: A list of BigQuery SchemaField objects representing the schema of the DataFrame.
+    Args:
+        df (pd.DataFrame): The DataFrame containing the data.
+        partition_column (str): The column to be used for partitioning.
+
+    Returns:
+        List[bigquery.SchemaField]: The list of BigQuery schema fields.
     """
     schema = []
-    for column in df.columns:
-        dtype = df[column].dtype.name  
-        
-       
-        if dtype == 'object':
-            field_type = 'STRING'
-        elif dtype.startswith('int'):
+    for column, dtype in df.dtypes.items():
+        if column == partition_column:
+            field_type = 'DATE'  # Ensure partition_column is DATE
+        elif pd.api.types.is_integer_dtype(dtype):
             field_type = 'INTEGER'
-        elif dtype.startswith('float'):
+        elif pd.api.types.is_float_dtype(dtype):
             field_type = 'FLOAT'
-        elif dtype == 'bool':
+        elif pd.api.types.is_bool_dtype(dtype):
             field_type = 'BOOLEAN'
-        elif dtype.startswith('datetime'):
+        elif pd.api.types.is_datetime64_any_dtype(dtype):
             field_type = 'TIMESTAMP'
         else:
-            field_type = 'STRING'  
-
+            field_type = 'STRING'
         
-        schema.append(bigquery.SchemaField(column, field_type, mode='NULLABLE'))
-    
+        mode = 'REQUIRED' if not df[column].isnull().any() else 'NULLABLE'
+        schema.append(bigquery.SchemaField(column, field_type, mode=mode))
     return schema
 
 def generate_task_name()-> str:

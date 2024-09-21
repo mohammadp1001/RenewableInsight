@@ -22,14 +22,22 @@ try:
 except ValidationError as e:
     print("configuration error:", e)
 
+
 @task(task_run_name=generate_task_name)
 def upload_parquet_to_bigquery(
     s3_key: str, 
     bigquery_table_id: str, 
+    partition_column: str,  # New parameter for partitioning
     expiration_time: Optional[int] = None
 ) -> None:
     """
-    Uploads a Parquet file from S3 to a BigQuery table.
+    Uploads a Parquet file from S3 to a BigQuery table with configurable partitioning.
+    
+    Args:
+        s3_key (str): The S3 key for the Parquet file.
+        bigquery_table_id (str): The BigQuery table ID where data will be uploaded.
+        partition_column (str): The column to use for partitioning in BigQuery.
+        expiration_time (Optional[int], optional): Number of days until table expiration. Defaults to None.
     """
     logger = get_run_logger()
     s3 = boto3.client(
@@ -41,8 +49,28 @@ def upload_parquet_to_bigquery(
     
     parquet_file = BytesIO(response['Body'].read())
     df = pd.read_parquet(parquet_file)
-    schema = get_bq_schema_from_df(df)
-
+    
+    # Ensure the partition_column exists in the DataFrame
+    if partition_column not in df.columns:
+        logger.error(f"Partition column '{partition_column}' does not exist in the data.")
+        raise ValueError(f"Partition column '{partition_column}' does not exist in the data.")
+    
+    # Convert the partition_column to DATE type if it's not already
+    if not pd.api.types.is_datetime64_any_dtype(df[partition_column]):
+        logger.error(f"Partition column '{partition_column}' must be of datetime type.")
+        raise TypeError(f"Partition column '{partition_column}' must be of datetime type.")
+    
+    # Convert to UTC and extract the date component
+    df[partition_column] = df[partition_column].dt.tz_convert('UTC').dt.date
+    
+    # No need to add year and month columns as they already exist
+    # Ensure 'year' and 'month' columns are present
+    if not {'year', 'month'}.issubset(df.columns):
+        logger.error("Data must contain 'year' and 'month' columns for clustering.")
+        raise ValueError("Data must contain 'year' and 'month' columns for clustering.")
+    
+    schema = get_bq_schema_from_df(df, partition_column)
+    
     expiration_ms = None
     if expiration_time:
         expiration_time_dt = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=expiration_time)
@@ -57,13 +85,23 @@ def upload_parquet_to_bigquery(
     table_ref = bigquery_client.dataset(dataset_id).table(table_id)
 
     try:
-        bigquery_client.get_table(table_ref)
+        table = bigquery_client.get_table(table_ref)
         logger.info("Table already exists.")
     except NotFound:
         logger.info(f"Table does not exist. Creating table {table_id}.")
         table = bigquery.Table(table_ref, schema=schema)
         if expiration_ms:
             table.expires = expiration_time_dt
+        
+        # Define partitioning based on the provided partition_column
+        table.time_partitioning = bigquery.TimePartitioning(
+            type_=bigquery.TimePartitioningType.DAY,
+            field=partition_column,  # Use the provided partition_column
+        )
+        
+        # Define clustering on existing 'year' and 'month' columns
+        table.clustering_fields = ["year", "month"]
+        
         bigquery_client.create_table(table)
         logger.info(f"Table {bigquery_table_id} created successfully.")
     except Exception as e:
@@ -74,6 +112,11 @@ def upload_parquet_to_bigquery(
         write_disposition=bigquery.WriteDisposition.WRITE_APPEND, 
         schema=schema,
         source_format=bigquery.SourceFormat.PARQUET,
+        time_partitioning=bigquery.TimePartitioning(
+            type_=bigquery.TimePartitioningType.DAY,
+            field=partition_column,  # Ensure the partitioning field is set
+        ),
+        clustering_fields=["year", "month"]  # Use existing 'year' and 'month' columns
     )
     try:
         job = bigquery_client.load_table_from_dataframe(df, table_ref, job_config=job_config)
@@ -86,6 +129,7 @@ def upload_parquet_to_bigquery(
     except Exception as e:
         logger.error(f"An unexpected error occurred while uploading to BigQuery: {e}")
         raise
+
 
 @task(task_run_name="list_s3_files")
 def list_s3_files(prefix: str = '') -> List[str]:
@@ -197,12 +241,17 @@ def ensure_processed_files_table() -> None:
         raise
 
 @flow(log_prints=True, name="s3_to_bigquery", flow_run_name=generate_flow_name)
-def s3_to_bigquery_flow(prefix: str, bigquery_table_id: str, expiration_time: int) -> None:
+def s3_to_bigquery_flow(prefix: str, bigquery_table_id: str, partition_column: str, expiration_time: int) -> None:
     """
     Transfer flow that lists all files in the S3 bucket under a prefix and uploads them to BigQuery.
+
+    Args:
+        prefix (str): The prefix path in the S3 bucket to list files.
+        bigquery_table_id (str): The BigQuery table ID where data will be uploaded.
+        partition_column (str): The column to use for partitioning in BigQuery.
+        expiration_time (int): Number of days until table expiration.
     """
     logger = get_run_logger()
-    
     
     ensure_processed_files_table()
     
@@ -211,17 +260,16 @@ def s3_to_bigquery_flow(prefix: str, bigquery_table_id: str, expiration_time: in
     for s3_key in s3_keys:
         logger.info(f"Processing file: {s3_key}")
         
-       
         already_processed = check_processed_files(s3_key)
         if already_processed:
             logger.info(f"Skipping already processed file: {s3_key}")
             continue
         
         try:
-            
             upload_parquet_to_bigquery(
                 s3_key=s3_key, 
                 bigquery_table_id=bigquery_table_id,
+                partition_column=partition_column,  # Pass partition_column
                 expiration_time=expiration_time
             )
             
