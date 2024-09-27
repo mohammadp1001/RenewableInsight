@@ -89,7 +89,9 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
     berlin_tz = pytz.timezone(config.TIMEZONE)
 
     data['date'] = pd.to_datetime(data['date'], format="ISO8601")
-    data['date'] = data['date'].dt.tz_convert(berlin_tz)
+    
+    data['date'] = data['date'].dt.tz_localize('UTC')  
+    data['date'] = data['date'].dt.tz_convert(berlin_tz) 
     
     data['open_price'] = data['open_price'].astype('float32')
     data['close_price'] = data['close_price'].astype('float32')
