@@ -1,4 +1,5 @@
 import sys
+import os
 import json
 import boto3
 import pytz
@@ -14,8 +15,10 @@ from prefect import task, flow
 from prefect import get_run_logger
 from confluent_kafka import Consumer, KafkaError
 
-if '/home/mohammad/RenewableInsight' not in sys.path:
-    sys.path.append('/home/mohammad/RenewableInsight')
+
+path_to_append = os.getenv('PYTHON_APP_PATH')
+if path_to_append:
+    sys.path.append(path_to_append)
 
 from src.utilities.utils import create_s3_keys_gas, check_s3_key_exists, generate_random_string, generate_task_name, generate_flow_name
 from src.config import Config

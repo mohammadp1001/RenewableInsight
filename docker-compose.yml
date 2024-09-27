@@ -1,6 +1,6 @@
 networks:
   default:
-    name: kafka-spark-network
+    name: prefect-network
     external: true
 services:
   kafka_producer_load:
@@ -16,6 +16,7 @@ services:
       - ./logs:/app/logs
       - ./src:/app/${PROJECT_NAME}/src
       - .env:/app/${PROJECT_NAME}/.env
+    profiles: ["kafka"]     
    
   kafka_producer_gas:
     container_name: kafka_producer_gas
@@ -30,3 +31,66 @@ services:
       - ./logs:/app/logs
       - ./src:/app/${PROJECT_NAME}/src
       - .env:/app/${PROJECT_NAME}/.env    
+    profiles: ["kafka"]    
+
+  database:
+    image: postgres:latest
+    restart: always
+    container_name: prefect-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgressPass  
+      - POSTGRES_DB=prefect
+    volumes:
+      - prefectdb:/var/lib/postgresql/data  
+    expose:
+      - 5432
+    profiles: ["server"]  
+
+  server:
+    image: prefecthq/prefect:2.20.8-python3.12
+    restart: always
+    volumes:
+      - prefect:/root/.prefect
+    entrypoint: ["/opt/prefect/entrypoint.sh", "prefect", "server", "start"]
+    environment:
+      - PREFECT_UI_URL=http://127.0.0.1:4200/api
+      - PREFECT_API_URL=http://127.0.0.1:4200/api
+      - PREFECT_SERVER_API_HOST=0.0.0.0
+      - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg://postgres:postgressPass@database:5432/prefect
+    ports:
+      - 4200:4200
+    depends_on:
+      - database
+    profiles: ["server"]
+
+  
+  agent:
+    image: prefecthq/prefect:2.20.8-python3.12
+    restart: always
+    entrypoint: ["/opt/prefect/entrypoint.sh", "prefect", "agent", "start", "-q", "default"]
+    environment:
+      - PREFECT_API_URL=http://server:4200/api
+    profiles: ["agent"]
+
+  orchestrator:
+    build:
+      context: .
+      dockerfile: ./docker_compose/orchestrator.Dockerfile
+    container_name: prefect_orchestrator
+    environment:
+      - PYTHONPATH=/app/${PROJECT_NAME}
+      - PREFECT_API_URL=http://server:4200/api
+      - PYTHON_APP_PATH=/app/${PROJECT_NAME}/src
+    volumes:
+      - ./flows:/app/${PROJECT_NAME}/flows
+      - ./src:/app/${PROJECT_NAME}/src
+      - .env:/app/${PROJECT_NAME}/.env
+      - ./deployments:/app/${PROJECT_NAME}/deployments
+
+    entrypoint: ["python", "/app/${PROJECT_NAME}/deployments/multi_flow_deployment.py"] 
+    profiles: ["server"]
+
+volumes:
+  prefectdb:
+  prefect:  

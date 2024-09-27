@@ -1,4 +1,5 @@
 import sys
+import os
 import json
 import pytz
 import boto3
@@ -13,8 +14,9 @@ from pandas import DataFrame
 from prefect import task, flow
 from prefect import get_run_logger
 
-if '/home/mohammad/RenewableInsight' not in sys.path:
-    sys.path.append('/home/mohammad/RenewableInsight')
+path_to_append = os.getenv('PYTHON_APP_PATH')
+if path_to_append:
+    sys.path.append(path_to_append)
 
 from src.config import Config
 from src.api.parameters import WeatherParameter

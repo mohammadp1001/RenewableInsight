@@ -1,6 +1,8 @@
 pandas
-prefect
+prefect==2.20.8
 entsoe-py
+httpx
+pydantic_settings
 numpy
 boto3
 python-dotenv

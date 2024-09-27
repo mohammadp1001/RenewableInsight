@@ -1,10 +1,12 @@
 import sys
+import os
 from datetime import datetime, timedelta
 from prefect import flow, serve
 from prefect import get_run_logger
 
-if '/home/mohammad/RenewableInsight' not in sys.path:
-    sys.path.append('/home/mohammad/RenewableInsight')
+path_to_append = os.getenv('PYTHON_APP_PATH')
+if path_to_append:
+    sys.path.append(path_to_append)
 
 from src.config import Config
 from flows.cleanup_s3 import cleanup_flow
@@ -99,6 +101,7 @@ if __name__ == "__main__":
             "expiration_time": 7
         },
         tags=["forecast", "aws", "etl"],
+      
     )
 
     orchestrator_actual_generation_deploy = orchestrator_actual_generation_flow.to_deployment(
@@ -115,6 +118,7 @@ if __name__ == "__main__":
             "expiration_time": 7
         },
         tags=["generation", "aws", "etl"],
+    
     )
 
     orchestrator_historical_weather_deploy = orchestrator_historical_weather_flow.to_deployment(
@@ -129,6 +133,7 @@ if __name__ == "__main__":
             "expiration_time": 7
         },
         tags=["historical", "aws", "etl"],
+      
     )
 
 
@@ -143,6 +148,7 @@ if __name__ == "__main__":
             "expiration_time": 7
         },
         tags=["load", "aws", "streaming"],
+ 
     )
 
     orchestrator_gas_streaming_deploy = orchestrator_gas_streaming_flow.to_deployment(
@@ -156,6 +162,7 @@ if __name__ == "__main__":
             "expiration_time": 7
         },
         tags=["gas", "aws", "streaming"],
+        
     )
 
     orchestrator_cleanup_deploy = cleanup_flow.to_deployment(
@@ -165,13 +172,15 @@ if __name__ == "__main__":
         "time_span_days": 7   
         },
         tags=["aws", "cleanup"],
+      
     )
 
     serve(
+        
         orchestrator_weather_forecast_deploy,
         orchestrator_actual_generation_deploy,
         orchestrator_historical_weather_deploy,
         orchestrator_load_streaming_deploy,
         orchestrator_gas_streaming_deploy,
         orchestrator_cleanup_deploy
-    )
+        )
