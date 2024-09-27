@@ -1,6 +1,6 @@
 networks:
   default:
-    name: kafka-spark-network
+    name: prefect-network
     external: true
 services:
   broker:
