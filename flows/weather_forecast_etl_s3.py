@@ -40,7 +40,7 @@ def load_data(station_name: str) -> pd.DataFrame:
     logger = get_run_logger()
     url = "https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_S/all_stations/kml/MOSMIX_S_LATEST_240.kmz"
 
-    save_dir = Path("/tmp")
+    save_dir = Path("/app")
     filename = "MOSMIX_S_LATEST_240.kmz"
    
     kmz_file_path = download_kmz_file(url, save_dir, filename)

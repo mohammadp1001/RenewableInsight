@@ -16,8 +16,6 @@ services:
       - ./logs:/app/logs
       - ./src:/app/${PROJECT_NAME}/src
       - .env:/app/${PROJECT_NAME}/.env
-    profiles: ["kafka"]     
-   
   kafka_producer_gas:
     container_name: kafka_producer_gas
     env_file:
@@ -31,7 +29,7 @@ services:
       - ./logs:/app/logs
       - ./src:/app/${PROJECT_NAME}/src
       - .env:/app/${PROJECT_NAME}/.env    
-    profiles: ["kafka"]    
+      
 
   database:
     image: postgres:latest
@@ -87,7 +85,7 @@ services:
       - ./src:/app/${PROJECT_NAME}/src
       - .env:/app/${PROJECT_NAME}/.env
       - ./deployments:/app/${PROJECT_NAME}/deployments
-
+      
     entrypoint: ["python", "/app/${PROJECT_NAME}/deployments/multi_flow_deployment.py"] 
     profiles: ["server"]
 

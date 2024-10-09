@@ -90,7 +90,7 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
 
     data['date'] = pd.to_datetime(data['date'], format="ISO8601")
     
-    data['date'] = data['date'].dt.tz_localize('UTC')  
+     
     data['date'] = data['date'].dt.tz_convert(berlin_tz) 
     
     data['open_price'] = data['open_price'].astype('float32')
