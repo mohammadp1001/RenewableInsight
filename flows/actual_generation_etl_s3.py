@@ -135,4 +135,4 @@ def actual_generation_etl_flow(year: int, month: int, country_code: str, data_ty
     export_data_to_s3(transformed_data)
 
 if __name__ == "__main__":
-    pass
+    actual_generation_etl_flow(year=2024, month=10, country_code='DE', data_type='generation')

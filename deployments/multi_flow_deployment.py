@@ -111,7 +111,7 @@ if __name__ == "__main__":
         cron="*/10 * * * *",  
         parameters={
             "year": 2024,
-            "month": 9,
+            "month": 10,
             "country_code": config.COUNTRY_CODE ,
             "data_type": config.DATA_TYPE_GEN,
             "prefix": "electricity/generation/",
@@ -145,7 +145,7 @@ if __name__ == "__main__":
         # cron="*/16 * * * *",  
         cron="*/10 * * * *",
         parameters={
-            "wait_time": 15, 
+            "wait_time": 5, 
             "prefix": "electricity/load/",
             "bigquery_table_id": "load",
             "partition_column": "date",
@@ -160,7 +160,7 @@ if __name__ == "__main__":
         # cron="*/16 * * * *",
         cron="*/10 * * * *",  
         parameters={
-            "wait_time": 15, 
+            "wait_time": 5, 
             "prefix": "others/gas",
             "bigquery_table_id": "gas",
             "partition_column": "date",
