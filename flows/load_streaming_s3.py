@@ -82,21 +82,16 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
     """
     logger = get_run_logger()
     berlin_tz = pytz.timezone(config.TIMEZONE)
-
     data['date'] = pd.to_datetime(data['date'], format="ISO8601")
-   
     data['load'] = data['load'].astype('float32')
     data = data.drop(columns=['key_id'])
-
     logger.info("Extract date and time components.")
-
+    logger.info("Current date format {data.date}.")
     data['day'] = data['date'].dt.day
     data['month'] = data['date'].dt.month
     data['year'] = data['date'].dt.year
     data['hour'] = data['date'].dt.hour
     data['minute'] = data['date'].dt.minute
-
-
     data['month'] = data['month'].astype('int8')
     data['year'] = data['year'].astype('int16')
     data['hour'] = data['hour'].astype('int8')

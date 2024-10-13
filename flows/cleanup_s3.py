@@ -4,7 +4,9 @@ import boto3
 from pandas import DataFrame
 from prefect import task, flow
 from prefect import get_run_logger
+from google.cloud import bigquery
 from pydantic import ValidationError
+from google.oauth2 import service_account
 from datetime import datetime, timezone, timedelta
 
 from src.config import Config

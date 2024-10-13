@@ -93,8 +93,6 @@ def export_data_to_s3(data: DataFrame) -> None:
         data_ = data[(data.day == date.day) & 
                      (data.month == date.month) & 
                      (data.year == date.year)]
-        logger.debug(f"Query values {date.day}.{date.month}.{date.year}")
-        logger.debug(f"Data values for days {data.day[0]}")
         if data_.empty:
             logger.info("The dataframe is empty possibly due to lack of messages.")
             continue
