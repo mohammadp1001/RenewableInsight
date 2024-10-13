@@ -82,16 +82,19 @@ def create_s3_keys_weather_forecast(
         yield object_key, date
 
 
-def create_s3_keys_load() -> Generator[Tuple[str, datetime.datetime], None, None]:
+def create_s3_keys_load() -> Generator[Tuple[str, datetime], None, None]:
     """
-    Generate S3 object keys with embedded dates and hours, formatted specifically for electricity load data.
+    Generate S3 object keys for the current date with hours before the current time.
 
     :yield: A tuple containing the S3 object key and the corresponding date object for each key.
     """
-    date = datetime.datetime.today()
-    for hour in range(24):
-        object_key = f"electricity/load/load_{date.year}_{date.month:02}_{date.day:02}_{hour:02}"
-        yield object_key, date
+    now = datetime.now()
+    date = now.replace(minute=0, second=0, microsecond=0)
+
+    for hour in range(now.hour):
+        date_with_hour = date.replace(hour=hour)
+        object_key = f"electricity/load/load_{date_with_hour.year}_{date_with_hour.month:02}_{date_with_hour.day:02}_{date_with_hour.hour:02}"
+        yield object_key, date_with_hour
 
 
 def create_s3_keys_gas() -> Generator[Tuple[str, datetime.datetime], None, None]:
