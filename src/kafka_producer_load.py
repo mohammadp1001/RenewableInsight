@@ -1,10 +1,13 @@
 import logging
 import datetime
+
 from time import sleep
+from pydantic import ValidationError
+
+from src.config import Config
 
 import src.api.entsoe_api
 import src.kafka_class.producer
-from src.config import Config
 
 try:
     config = Config()

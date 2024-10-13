@@ -12,11 +12,7 @@ from io import BytesIO
 from pandas import DataFrame
 from prefect import task, flow
 from prefect import get_run_logger
-
-
-path_to_append = os.getenv('PYTHON_APP_PATH')
-if path_to_append:
-    sys.path.append(path_to_append)
+from pydantic import ValidationError
 
 from src.config import Config
 from src.api.entsoe_api import ENTSOEAPI
@@ -97,6 +93,8 @@ def export_data_to_s3(data: DataFrame) -> None:
         data_ = data[(data.day == date.day) & 
                      (data.month == date.month) & 
                      (data.year == date.year)]
+        logger.debug(f"Query values {date.day}.{date.month}.{date.year}")
+        logger.debug(f"Data values for days {data.day[0]}")
         if data_.empty:
             logger.info("The dataframe is empty possibly due to lack of messages.")
             continue
@@ -135,4 +133,4 @@ def actual_generation_etl_flow(year: int, month: int, country_code: str, data_ty
     export_data_to_s3(transformed_data)
 
 if __name__ == "__main__":
-    actual_generation_etl_flow(year=2024, month=10, country_code='DE', data_type='generation')
+    pass

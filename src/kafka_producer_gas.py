@@ -4,10 +4,10 @@ import logging
 import src.api.yahoo
 from src.config import Config
 import src.kafka_class.producer
+from pydantic import ValidationError
 
 try:
     config = Config()
-
 except ValidationError as e:
     print("configuration error:", e)
 

@@ -3,10 +3,8 @@ import os
 from datetime import datetime, timedelta
 from prefect import flow, serve
 from prefect import get_run_logger
+from pydantic import ValidationError
 
-path_to_append = os.getenv('PYTHON_APP_PATH')
-if path_to_append:
-    sys.path.append(path_to_append)
 
 from src.config import Config
 from flows.cleanup_s3 import cleanup_flow
@@ -91,7 +89,6 @@ if __name__ == "__main__":
     
     orchestrator_weather_forecast_deploy = orchestrator_weather_forecast_flow.to_deployment(
         name="weather_forecast_etl",
-        # cron="55 23 * * *",
         cron="0/15 21 * * *",
         parameters={
             "station_name": config.STATION_NAME,
@@ -107,7 +104,6 @@ if __name__ == "__main__":
 
     orchestrator_actual_generation_deploy = orchestrator_actual_generation_flow.to_deployment(
         name="actual_generation_etl",
-        # cron="0 0 */5 * *",
         cron="*/10 * * * *",  
         parameters={
             "year": 2024,
@@ -125,7 +121,6 @@ if __name__ == "__main__":
 
     orchestrator_historical_weather_deploy = orchestrator_historical_weather_flow.to_deployment(
         name="historical_weather_etl",
-        # cron="5 0 * * *",
         cron="*/10 * * * *",  
         parameters={
             "weather_param": config.WEATHER_PARAM, 
@@ -142,10 +137,9 @@ if __name__ == "__main__":
 
     orchestrator_load_streaming_deploy = orchestrator_load_streaming_flow.to_deployment(
         name="load_streaming",
-        # cron="*/16 * * * *",  
         cron="*/10 * * * *",
         parameters={
-            "wait_time": 5, 
+            "wait_time": 2, 
             "prefix": "electricity/load/",
             "bigquery_table_id": "load",
             "partition_column": "date",
@@ -157,10 +151,9 @@ if __name__ == "__main__":
 
     orchestrator_gas_streaming_deploy = orchestrator_gas_streaming_flow.to_deployment(
         name="gas_streaming",
-        # cron="*/16 * * * *",
         cron="*/10 * * * *",  
         parameters={
-            "wait_time": 5, 
+            "wait_time": 2, 
             "prefix": "others/gas",
             "bigquery_table_id": "gas",
             "partition_column": "date",
@@ -172,7 +165,6 @@ if __name__ == "__main__":
 
     orchestrator_cleanup_deploy = cleanup_flow.to_deployment(
         name="cleanup",
-        # cron="0 0 */7 * *",
         cron="0/45 22 * * *",  
         parameters={
         "time_span_days": 7   

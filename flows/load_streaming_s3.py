@@ -13,11 +13,8 @@ from io import BytesIO
 from pandas import DataFrame
 from prefect import task, flow
 from prefect import get_run_logger
+from pydantic import ValidationError
 from confluent_kafka import Consumer, KafkaError
-
-path_to_append = os.getenv('PYTHON_APP_PATH')
-if path_to_append:
-    sys.path.append(path_to_append)
 
 from src.config import Config
 from src.api.entsoe_api import ENTSOEAPI

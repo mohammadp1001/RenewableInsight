@@ -8,13 +8,10 @@ from io import BytesIO
 from prefect import task, flow
 from typing import List, Optional
 from prefect import get_run_logger
+from pydantic import ValidationError
 from google.cloud import bigquery
 from google.oauth2 import service_account
 from google.api_core.exceptions import BadRequest, NotFound
-
-path_to_append = os.getenv('PYTHON_APP_PATH')
-if path_to_append:
-    sys.path.append(path_to_append)
 
 from src.config import Config
 from src.utilities.utils import get_bq_schema_from_df, generate_task_name, generate_flow_name
