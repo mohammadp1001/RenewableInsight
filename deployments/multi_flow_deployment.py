@@ -89,7 +89,7 @@ if __name__ == "__main__":
     
     orchestrator_weather_forecast_deploy = orchestrator_weather_forecast_flow.to_deployment(
         name="weather_forecast_etl",
-        cron="0/15 21 * * *",
+         cron="*/15 * * * *",  
         parameters={
             "station_name": config.STATION_NAME,
             "n_day": 3,  

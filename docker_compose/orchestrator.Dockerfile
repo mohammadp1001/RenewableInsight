@@ -16,4 +16,4 @@ RUN pip install -r requirements.txt
 RUN apt-get update && apt-get install -y \
     wget 
 
-WORKDIR /app/{PROJECT_NAME}
+WORKDIR /app/${PROJECT_NAME}

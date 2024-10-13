@@ -86,7 +86,7 @@ services:
       - .env:/app/${PROJECT_NAME}/.env
       - ./deployments:/app/${PROJECT_NAME}/deployments
       
-    entrypoint: ["python", "-m","deployments.multi_flow_deployment"] 
+    entrypoint: ["python", "-m", "deployments.multi_flow_deployment"] 
     profiles: ["server"]
 
 volumes:
