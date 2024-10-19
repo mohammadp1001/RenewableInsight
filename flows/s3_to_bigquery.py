@@ -26,7 +26,7 @@ except ValidationError as e:
 def upload_parquet_to_bigquery(
     s3_key: str, 
     bigquery_table_id: str, 
-    partition_column: str,  # New parameter for partitioning
+    partition_column: str,  
     expiration_time: Optional[int] = None
 ) -> None:
     """

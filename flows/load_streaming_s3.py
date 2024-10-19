@@ -81,12 +81,10 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
     :return: A transformed pandas DataFrame.
     """
     logger = get_run_logger()
-    berlin_tz = pytz.timezone(config.TIMEZONE)
     data['date'] = pd.to_datetime(data['date'], format="ISO8601")
     data['load'] = data['load'].astype('float32')
     data = data.drop(columns=['key_id'])
     logger.info("Extract date and time components.")
-    logger.info("Current date format {data.date}.")
     data['day'] = data['date'].dt.day
     data['month'] = data['date'].dt.month
     data['year'] = data['date'].dt.year
