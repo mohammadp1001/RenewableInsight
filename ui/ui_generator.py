@@ -8,7 +8,7 @@ from google.cloud import bigquery
 from pydantic import ValidationError
 from google.oauth2 import service_account
 
-sys.path.append("/home/mohammad/RenewableInsight/")
+sys.path.append("./RenewableInsight/")
 
 from src.config import Config
 try:
@@ -19,7 +19,7 @@ except ValidationError as e:
     st.stop()
 
 try:
-    credentials = service_account.Credentials.from_service_account_file('/home/mohammad/RenewableInsight/service-account-file.json')
+    credentials = service_account.Credentials.from_service_account_file('./RenewableInsight/service-account-file.json')
     bigquery_client = bigquery.Client(credentials=credentials, project=config.PROJECT_ID)
 except Exception as e:
     st.error("Failed to set up BigQuery client: " + str(e))
