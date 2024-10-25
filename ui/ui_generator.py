@@ -169,7 +169,8 @@ with tab1:
             ),
         )
         st.plotly_chart(area_fig, use_container_width=True, key='area_fig')
-            query_load = """
+        
+        query_load = """
             SELECT * 
             FROM `nimble-courier-438418-n0.renewableinsight_dataset.load`
         """
