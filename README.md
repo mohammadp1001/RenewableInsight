@@ -87,13 +87,6 @@ You can also access the already deployed version of ui: https://renewableinsight
 - [Yahoo Finance](https://finance.yahoo.com) (energy pricing data)
 - [Deutscher Wetterdienst (DWD)](https://www.dwd.de) (weather data)
 
-## Contributing
-
-Feel free to fork the project and submit pull requests.
-
-## License
-
-This project is licensed under the MIT License.
 
 ---
 
