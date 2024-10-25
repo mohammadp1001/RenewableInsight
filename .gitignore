@@ -174,3 +174,5 @@ mage_data
 logs
 
 service-account-file.json
+
+.devcontainer
