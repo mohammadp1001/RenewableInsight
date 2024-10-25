@@ -60,5 +60,3 @@ Feel free to fork the project and submit pull requests.
 This project is licensed under the MIT License.
 
 ---
-Would you like to add any additional sections, such as a detailed example or more information about the intended audience?
-
