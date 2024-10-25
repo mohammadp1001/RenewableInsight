@@ -23,7 +23,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded")
 
-st.image("/home/mohammad/RenewableInsight/ui/logo1.png", use_column_width=False, width=150)
+current_dir = os.path.dirname(__file__)
+st.image(current_dir, use_column_width=False, width=150)
 st.markdown("<h1 style='color: green; font-size: 28px;'>Renewable Energy Insights for Baden Württemberg</h1>", unsafe_allow_html=True)
 
 
