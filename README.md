@@ -16,25 +16,13 @@ RenewableInsight is a Streamlit-powered application for analyzing renewable ener
    ```sh
    git clone https://github.com/mohammadp1001/RenewableInsight.git
    ```
-2. Install the required dependencies:
-   ```sh
-   pip install -r requirements.txt
-   ```
-
 ## Setup
 
-1. Create an S3 bucket and a BigQuery dataset to store the required data.
+1. Create an S3 bucket and a BigQuery dataset to store the required data. 
+   For creating the cloud resoucres you can use the terraform file.
 2. Create an account on the ENTSOE website and generate an `ENTSOE_API_KEY`.
-3. Create a `.env` file with the following format:
-   ```
-   # Example .env file
-   S3_BUCKET_NAME=<your_s3_bucket_name>
-   BIGQUERY_DATASET=<your_bigquery_dataset_name>
-   ENTSOE_API_KEY=<your_entsoe_api_key>
-   ENTSOE_API_KEY=<your_entsoe_api_key>
-   SERVICE_ACCOUNT_FILE=service-account-file.json
-   ```
-4. Ensure that the `service-account-file.json` for BigQuery exists in the main directory of the project.
+3. Ensure that the `service-account-file.json` for BigQuery exists in the main directory of the project.
+4. Edit a `env.env` file with the information you have form prvious steps. 
 
 5. Build the data pipeline using Docker Compose:
    ```sh
@@ -46,6 +34,7 @@ RenewableInsight is a Streamlit-powered application for analyzing renewable ener
    ```
 
 6. Once the pipeline is running, confirm it with the Prefect web interface available at `http://localhost:4200`.
+7. You can also check the kafka broker with web interface available at `http://localhost:9021`
 
 ## Usage
 
