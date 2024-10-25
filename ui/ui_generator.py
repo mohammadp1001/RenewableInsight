@@ -171,8 +171,6 @@ with tab1:
         st.plotly_chart(area_fig, use_container_width=True, key='area_fig')
         
 
-
-        # Query for Total Load data
         query_load = """
             SELECT * 
             FROM `nimble-courier-438418-n0.renewableinsight_dataset.load`
@@ -188,7 +186,7 @@ with tab1:
         load_5_days = load_results.groupby('date').agg({'load': 'sum'}).reset_index()
         load_5_days['date'] = load_5_days['date'].dt.strftime('%b %d')
 
-        # Query for Average Gas Prices data
+        
         query_gas = """
             SELECT * FROM `nimble-courier-438418-n0.renewableinsight_dataset.gas` 
         """
@@ -203,10 +201,10 @@ with tab1:
         gas_data = gas_data.tail(3)
         gas_data['average_price'] = gas_data[['open_price', 'close_price']].mean(axis=1)
 
-        # Create subplots
+     
         fig = make_subplots(rows=1, cols=2, subplot_titles=("Total Load for Last 5 Days", "Average Gas Prices"))
 
-        # Add Total Load subplot
+       
         fig.add_trace(
             go.Bar(
                 x=load_5_days['date'],
@@ -217,7 +215,7 @@ with tab1:
             row=1, col=1
         )
 
-        # Add Average Gas Prices subplot
+        
         fig.add_trace(
             go.Bar(
                 x=gas_data['date'],
@@ -228,7 +226,13 @@ with tab1:
             row=1, col=2
         )
 
-        # Update layout
+       
+        fig.update_xaxes(title_text="Date", row=1, col=1)
+        fig.update_yaxes(title_text="Total Load (MW)", row=1, col=1)
+
+        fig.update_xaxes(title_text="Date", row=1, col=2)
+        fig.update_yaxes(title_text="Average Gas Prices ($)", row=1, col=2)
+        
         fig.update_layout(
             title_text="Total Load and Average Gas Prices (Baden Württemberg)",
             width=800,
@@ -237,7 +241,7 @@ with tab1:
             xaxis_title="Date",
         )
 
-        # Display the plot in Streamlit
+        
         st.plotly_chart(fig, use_container_width=False, key='combined_load_gas_chart')
 
 
