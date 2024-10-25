@@ -200,6 +200,7 @@ with tab1:
         gas_data = gas_data.groupby('date', as_index=False).agg({'open_price': 'mean', 'close_price': 'mean'})
         gas_data = gas_data.tail(3)
         gas_data['average_price'] = gas_data[['open_price', 'close_price']].mean(axis=1)
+        gas_data['price_change_pct'] = gas_data['average_price'].pct_change() * 100
 
      
         fig = make_subplots(rows=1, cols=2, subplot_titles=("Total Load for Last 5 Days", "Average Gas Prices"))
@@ -216,12 +217,15 @@ with tab1:
         )
 
         
+        # Add Average Gas Prices subplot with percentage change text
         fig.add_trace(
             go.Bar(
                 x=gas_data['date'],
                 y=gas_data['average_price'],
                 name='Average Gas Prices ($)',
-                marker_color='red'
+                marker_color='red',
+                text=gas_data['price_change_pct'].apply(lambda x: f'{x:.2f}%' if pd.notna(x) else ''),
+                textposition='outside'
             ),
             row=1, col=2
         )
