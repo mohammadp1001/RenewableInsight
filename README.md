@@ -73,13 +73,6 @@ Open your web browser at `http://localhost:8501` to access the app.
 - [Yahoo Finance](https://finance.yahoo.com) (energy pricing data)
 - [Deutscher Wetterdienst (DWD)](https://www.dwd.de) (weather data)
 
-## Contributing
-
-Feel free to fork the project and submit pull requests.
-
-## License
-
-This project is licensed under the MIT License.
 
 ---
 
