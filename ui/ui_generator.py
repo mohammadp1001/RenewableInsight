@@ -8,19 +8,12 @@ from google.cloud import bigquery
 from pydantic import ValidationError
 from google.oauth2 import service_account
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from src.config import Config
 
 try:
-    config = Config()
-except ValidationError as e:
-    print("configuration error:", e)
-    st.error("Configuration error: " + str(e))
-    st.stop()
-
-try:
-    credentials = service_account.Credentials.from_service_account_file('./RenewableInsight/service-account-file.json')
-    bigquery_client = bigquery.Client(credentials=credentials, project=config.PROJECT_ID)
+    credentials = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"]
+    )
+    bigquery_client = bigquery.Client(credentials=credentials, project=st.secrets['PROJECT_ID'])
 except Exception as e:
     st.error("Failed to set up BigQuery client: " + str(e))
     st.stop()
@@ -30,7 +23,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded")
 
-# Logo and Title
 st.image("/home/mohammad/RenewableInsight/ui/logo1.png", use_column_width=False, width=150)
 st.markdown("<h1 style='color: green; font-size: 28px;'>Renewable Energy Insights for Baden Württemberg</h1>", unsafe_allow_html=True)
 
@@ -66,12 +58,12 @@ with tab2:
     col1, col2, col3 = st.columns(3, gap="small")
 
     with col1:
-        # Summing y variables for each day
+       
         aggregated_df = filtered_df.groupby(filtered_df['forecast_time']).mean().reset_index()
         aggregated_df['forecast_time'] = aggregated_df['forecast_time'].apply(lambda x: x.strftime('%b %d'))
         aggregated_df['forecast_time'] = aggregated_df['forecast_time'].astype(str)
 
-        # Plotting Wind Speed
+       
         wind_chart = px.bar(aggregated_df, x='forecast_time', y='wind_speed',
                             title='Wind Speed (Flughafen Stuttgart)',
                             template='plotly_white',
@@ -83,7 +75,7 @@ with tab2:
         st.plotly_chart(wind_chart, use_container_width=False, key='wind_speed_chart')
 
     with col2:
-        # Plotting Global Irradiance
+        
         global_irradiance_chart = px.bar(aggregated_df, x='forecast_time', y='global_irradiance',
                                          title='Global Irradiance (Flughafen Stuttgart)',
                                          template='plotly_white',
@@ -95,7 +87,7 @@ with tab2:
         st.plotly_chart(global_irradiance_chart, use_container_width=False, key='global_irradiance_chart')
 
     with col3:
-        # Plotting Sunshine Duration
+        
         sunshine_chart = px.bar(aggregated_df, x='forecast_time', y='sunshine_dur',
                                 title='Sunshine Duration (Flughafen Stuttgart)',
                                 template='plotly_white',
@@ -238,7 +230,7 @@ with tab1:
         )
         st.plotly_chart(area_fig, use_container_width=True, key='area_fig')
 
-# Add an option for users to download the data as CSV
+
 csv = filtered_df.to_csv(index=False)
 st.download_button(label="Download weather data as CSV", data=csv, file_name='weather_data.csv', mime='text/csv')
 
