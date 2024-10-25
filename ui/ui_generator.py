@@ -170,7 +170,9 @@ with tab1:
         )
         st.plotly_chart(area_fig, use_container_width=True, key='area_fig')
         
-       # Combined Total Load and Average Gas Prices in one plot
+
+
+        # Query for Total Load data
         query_load = """
             SELECT * 
             FROM `nimble-courier-438418-n0.renewableinsight_dataset.load`
@@ -183,10 +185,10 @@ with tab1:
 
         load_results['date'] = pd.to_datetime(load_results['date'], errors='coerce')
         load_results = load_results.dropna(subset=['date'])
-
         load_5_days = load_results.groupby('date').agg({'load': 'sum'}).reset_index()
         load_5_days['date'] = load_5_days['date'].dt.strftime('%b %d')
 
+        # Query for Average Gas Prices data
         query_gas = """
             SELECT * FROM `nimble-courier-438418-n0.renewableinsight_dataset.gas` 
         """
@@ -199,55 +201,45 @@ with tab1:
         gas_data['date'] = pd.to_datetime(gas_data['date']).dt.strftime('%b %d')
         gas_data = gas_data.groupby('date', as_index=False).agg({'open_price': 'mean', 'close_price': 'mean'})
         gas_data = gas_data.tail(3)
-
         gas_data['average_price'] = gas_data[['open_price', 'close_price']].mean(axis=1)
 
-        
-        fig = go.Figure()
+        # Create subplots
+        fig = make_subplots(rows=1, cols=2, subplot_titles=("Total Load for Last 5 Days", "Average Gas Prices"))
 
-        
-        fig.add_trace(go.Bar(
-            x=load_5_days['date'],
-            y=load_5_days['load'],
-            name='Total Load (MW)',
-            marker_color='blue',
-            yaxis='y1'
-        ))
-
-        
-        fig.add_trace(go.Bar(
-            x=gas_data['date'],
-            y=gas_data['average_price'],
-            name='Average Gas Prices ($)',
-            marker_color='red',
-            yaxis='y2'
-        ))
-
-       
-        fig.update_layout(
-            title='Total Load and Average Gas Prices (Baden Württemberg)',
-            xaxis=dict(title='Date'),
-            yaxis=dict(
-                title='Total Load (MW)',
-                titlefont=dict(color='blue'),
-                tickfont=dict(color='blue'),
-                side='left'
+        # Add Total Load subplot
+        fig.add_trace(
+            go.Bar(
+                x=load_5_days['date'],
+                y=load_5_days['load'],
+                name='Total Load (MW)',
+                marker_color='blue'
             ),
-            yaxis2=dict(
-                title='Average Gas Prices ($)',
-                titlefont=dict(color='red'),
-                tickfont=dict(color='red'),
-                overlaying='y',
-                side='right'
-            ),
-            barmode='group',
-            width=800,
-            height=600,
-            legend=dict(x=0.1, y=1.1)
+            row=1, col=1
         )
 
+        # Add Average Gas Prices subplot
+        fig.add_trace(
+            go.Bar(
+                x=gas_data['date'],
+                y=gas_data['average_price'],
+                name='Average Gas Prices ($)',
+                marker_color='red'
+            ),
+            row=1, col=2
+        )
 
+        # Update layout
+        fig.update_layout(
+            title_text="Total Load and Average Gas Prices (Baden Württemberg)",
+            width=800,
+            height=600,
+            showlegend=False,
+            xaxis_title="Date",
+        )
+
+        # Display the plot in Streamlit
         st.plotly_chart(fig, use_container_width=False, key='combined_load_gas_chart')
+
 
 
 csv = filtered_df.to_csv(index=False)
