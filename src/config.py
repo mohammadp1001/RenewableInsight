@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv, find_dotenv
 from pydantic_settings import BaseSettings
-from pydantic import validator
 
 load_dotenv(find_dotenv())
 
@@ -20,8 +19,6 @@ class Config(BaseSettings):
     PROJECT_ID: str
     TICKER_LABEL_GAS: str
     TICKER_LABEL_OIL: str
-    LOG_DIR: str
-    CONFIG_DIR: str
     ENTSOE_API_KEY: str
     RESOURCE_PATH: str
     BOOTSTRAP_SERVERS_CONS: str
@@ -43,21 +40,8 @@ class Config(BaseSettings):
     STATION_NAME: str
     STATION_CODE: str
     WEATHER_PARAM: str
-    N_DAY: int
     PROJECT_NAME: str  
-    ENV: str  
     TIMEZONE: str
-    ISO8601: str
-
-    @validator("TIME_OF_SLEEP_PRODUCER_GAS", "TIME_OF_SLEEP_PRODUCER_LOAD", "N_DAY", pre=True)
-    def convert_to_int(cls, v):
-        return int(v)
-
-    @validator("FIELDS_LOAD", "FIELDS_GAS", pre=True)
-    def validate_list_fields(cls, v):
-        if isinstance(v, str):
-            return v.split(',')
-        return v
 
     class Config:
         env_file = '.env'  

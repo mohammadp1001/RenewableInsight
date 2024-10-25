@@ -1,15 +1,28 @@
 import logging
 import datetime
+
 from time import sleep
+from pydantic import ValidationError
+
+from src.config import Config
 
 import src.api.entsoe_api
 import src.kafka_class.producer
-from src.config import Config
 
 try:
     config = Config()
 except ValidationError as e:
     print("configuration error:", e)
+
+# Configure logging to store logs in a file
+logging.basicConfig(
+    level=logging.INFO,  # Set the log level (INFO, DEBUG, ERROR, etc.)
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # Define the log message format
+    handlers=[
+        logging.FileHandler("/app/logs/producer_load_log.log"),  # Store logs in 'producer.log'
+        logging.StreamHandler()  # Optionally, also print logs to the console
+    ]
+)
 
 
 def main(field_load: list[str]) -> None:
@@ -50,7 +63,8 @@ def main(field_load: list[str]) -> None:
     while True:
         data_downloader.fetch_data(data_type=config.DATA_TYPE_LOA)
         data = data_downloader.data
-
+        logger.info(f"The data size is: {data.shape}.")
+        
         if not data.empty:
             
             records = producer_service.read_records_from_dataframe(data, filter_funcs, field_load)

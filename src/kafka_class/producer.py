@@ -7,6 +7,7 @@ from datetime import datetime
 from kafka import KafkaProducer
 from typing import Dict, Generator, Any, List, Optional
 
+logger = logging.getLogger(__name__)
 
 class KafkaProducerService:
     """
@@ -106,7 +107,7 @@ class KafkaProducerService:
                     continue
                 self._index += 1
                 self._mark_record_as_processed(record)
-                record['date'] = str(record['date'])  # Ensuring the date is string-encoded
+                record['date'] = str(record['date'])  
                 yield record
 
     def publish(self, topic: str, records: Generator[Dict[str, Any], None, None], batch_size: int = 5) -> None:
@@ -135,7 +136,6 @@ class KafkaProducerService:
         :param topic: The Kafka topic to publish to.
         :param batch: A list of records to publish.
         """
-        logger = logging.getLogger(__name__)
         for record in batch:
             try:
                 self.producer.send(topic=topic, value=record)

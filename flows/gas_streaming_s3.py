@@ -5,20 +5,16 @@ import boto3
 import pytz
 import logging
 import datetime
-import pyarrow as pa
 import pandas as pd
+import pyarrow as pa
 import pyarrow.parquet as pq
 
 from io import BytesIO
 from pandas import DataFrame
 from prefect import task, flow
 from prefect import get_run_logger
+from pydantic import ValidationError
 from confluent_kafka import Consumer, KafkaError
-
-
-path_to_append = os.getenv('PYTHON_APP_PATH')
-if path_to_append:
-    sys.path.append(path_to_append)
 
 from src.utilities.utils import create_s3_keys_gas, check_s3_key_exists, generate_random_string, generate_task_name, generate_flow_name
 from src.config import Config
@@ -86,27 +82,17 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
     :return: A transformed pandas DataFrame.
     """
     logger = get_run_logger()
-    berlin_tz = pytz.timezone(config.TIMEZONE)
 
     data['date'] = pd.to_datetime(data['date'], format="ISO8601")
-    
-    data['date'] = data['date'].dt.tz_localize('UTC')  
-    data['date'] = data['date'].dt.tz_convert(berlin_tz) 
-    
     data['open_price'] = data['open_price'].astype('float32')
     data['close_price'] = data['close_price'].astype('float32')
-
-    
     data = data.drop(columns=['key_id'])
-
     logger.info("Extract date and time components.")
-
     data['day'] = data['date'].dt.day
     data['year'] = data['date'].dt.year
     data['hour'] = data['date'].dt.hour
     data['month'] = data['date'].dt.month
     data['minute'] = data['date'].dt.minute
-
     data['day'] = data['day'].astype('int8')
     data['hour'] = data['hour'].astype('int8')
     data['year'] = data['year'].astype('int16')

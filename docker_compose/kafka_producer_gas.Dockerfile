@@ -19,5 +19,7 @@ COPY ../requirements.txt .
 # Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+WORKDIR /app/RenewableInsight
+
 # Specify the command to run your Kafka producer script
-CMD ["python3", "/app/RenewableInsight/src/kafka_producer_gas.py"]
+CMD ["python3", "-m","src.kafka_producer_gas"]

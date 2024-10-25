@@ -16,15 +16,9 @@ from prefect.runtime import flow_run, task_run
 from typing import Generator, Tuple, List, Optional
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 
-from src.config import Config
 from src.api.parameters import WeatherParameter
 
 TIMEZONE = pytz.timezone('Europe/Berlin')
-
-try:
-    config = Config()
-except ValidationError as e:
-    print("configuration error:", e)
 
 def generate_random_string(n: int = 10) -> str:
     """
@@ -90,14 +84,17 @@ def create_s3_keys_weather_forecast(
 
 def create_s3_keys_load() -> Generator[Tuple[str, datetime.datetime], None, None]:
     """
-    Generate S3 object keys with embedded dates and hours, formatted specifically for electricity load data.
+    Generate S3 object keys for the current date with hours before the current time.
 
     :yield: A tuple containing the S3 object key and the corresponding date object for each key.
     """
-    date = datetime.datetime.today()
-    for hour in range(24):
-        object_key = f"electricity/load/load_{date.year}_{date.month:02}_{date.day:02}_{hour:02}"
-        yield object_key, date
+    now = datetime.datetime.now(TIMEZONE)
+    date = now.replace(minute=0, second=0, microsecond=0)
+
+    for hour in range(now.hour):
+        date_with_hour = date.replace(hour=hour)
+        object_key = f"electricity/load/load_{date_with_hour.year}_{date_with_hour.month:02}_{date_with_hour.day:02}_{date_with_hour.hour:02}"
+        yield object_key, date_with_hour
 
 
 def create_s3_keys_gas() -> Generator[Tuple[str, datetime.datetime], None, None]:
@@ -183,25 +180,6 @@ def check_s3_key_exists(
         print(f"An error occurred: {e}")
         return False
 
-def read_s3_file(bucket_name: str, s3_key: str) -> pd.DataFrame:
-    """
-    Reads a Parquet file from S3 and returns it as a DataFrame.
-
-   
-    :param bucket_name: The name of the S3 bucket.
-    :param s3_key: The S3 key for the Parquet file.
-    :return: A pandas DataFrame containing the data from the Parquet file.
-    """
-    s3 = boto3.client(
-        's3', 
-        aws_access_key_id=config.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY
-    )
-    
-    response = s3.get_object(Bucket=bucket_name, Key=s3_key)
-    parquet_file = BytesIO(response['Body'].read())
-    df = pd.read_parquet(parquet_file, engine='pyarrow')
-    return df
 
 def get_bq_schema_from_df(df: pd.DataFrame, partition_column: str) -> List[bigquery.SchemaField]:
     """

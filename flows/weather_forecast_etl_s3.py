@@ -17,10 +17,6 @@ from prefect import get_run_logger
 from pydantic import ValidationError
 from confluent_kafka import Consumer, KafkaError
 
-path_to_append = os.getenv('PYTHON_APP_PATH')
-if path_to_append:
-    sys.path.append(path_to_append)
-
 from src.config import Config
 from src.api.forecast import DwdMosmixParser, kml_reader
 from src.utilities.utils import create_s3_keys_weather_forecast, check_s3_key_exists, generate_random_string, download_kmz_file, generate_task_name, generate_flow_name
@@ -40,7 +36,7 @@ def load_data(station_name: str) -> pd.DataFrame:
     logger = get_run_logger()
     url = "https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_S/all_stations/kml/MOSMIX_S_LATEST_240.kmz"
 
-    save_dir = Path("/tmp")
+    save_dir = Path("/app")
     filename = "MOSMIX_S_LATEST_240.kmz"
    
     kmz_file_path = download_kmz_file(url, save_dir, filename)

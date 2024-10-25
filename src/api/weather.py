@@ -8,11 +8,10 @@ from io import BytesIO
 from typing import Optional, List
 from bs4 import BeautifulSoup  
 
-from src.setup_logging import SetupLogging
 from src.api.parameters import WeatherParameter
 from src.api.base_downloader import BaseDownloader
 
-@SetupLogging()
+
 class WeatherDataDownloader(BaseDownloader):
     """
     A class for downloading and loading weather data from the DWD open data platform.

@@ -13,11 +13,8 @@ from io import BytesIO
 from pandas import DataFrame
 from prefect import task, flow
 from prefect import get_run_logger
+from pydantic import ValidationError
 from confluent_kafka import Consumer, KafkaError
-
-path_to_append = os.getenv('PYTHON_APP_PATH')
-if path_to_append:
-    sys.path.append(path_to_append)
 
 from src.config import Config
 from src.api.entsoe_api import ENTSOEAPI
@@ -84,25 +81,15 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
     :return: A transformed pandas DataFrame.
     """
     logger = get_run_logger()
-    berlin_tz = pytz.timezone(config.TIMEZONE)
-
     data['date'] = pd.to_datetime(data['date'], format="ISO8601")
-   
-    data['date'] = data['date'].dt.tz_localize('UTC')  
-    data['date'] = data['date'].dt.tz_convert(berlin_tz) 
-
     data['load'] = data['load'].astype('float32')
     data = data.drop(columns=['key_id'])
-
     logger.info("Extract date and time components.")
-
     data['day'] = data['date'].dt.day
     data['month'] = data['date'].dt.month
     data['year'] = data['date'].dt.year
     data['hour'] = data['date'].dt.hour
     data['minute'] = data['date'].dt.minute
-
-
     data['month'] = data['month'].astype('int8')
     data['year'] = data['year'].astype('int16')
     data['hour'] = data['hour'].astype('int8')

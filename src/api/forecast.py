@@ -12,10 +12,9 @@ from datetime import datetime, timezone
 from xml.etree.ElementTree import Element
 from typing import IO, Iterator, Dict, ClassVar, Optional, Tuple, Any, List, Set, Generator
 
-from src.setup_logging import SetupLogging
 from src.api.base_parser import BaseParser
 
-@SetupLogging()
+
 class DwdMosmixParser(BaseParser):
     """
     Parsing methods for DWD MOSMIX KML XML files.
