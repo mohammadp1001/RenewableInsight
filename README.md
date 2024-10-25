@@ -1,14 +1,11 @@
 # RenewableInsight
 
-
-
 RenewableInsight is a Streamlit-powered application for analyzing renewable energy trends. The app helps users visualize real-time and historical renewable energy data, utilizing current weather and energy pricing information.
 
 ## Features
 
 - **Real-time Renewable Energy Analysis**: Integrates weather and energy pricing data for up-to-date insights.
 - **Historical Data Visualization**: Interactive charts to track energy trends.
-
 
 ## Technologies Used
 
@@ -27,7 +24,24 @@ RenewableInsight is a Streamlit-powered application for analyzing renewable ener
 
 ## Setup
 
-1. Create an S3 bucket and a BigQuery dataset to store the required data. For creating the cloud resources, you can use the provided Terraform file.
+1. Create an S3 bucket and a BigQuery dataset to store the required data. You can easily set up these cloud resources using the provided Terraform file:
+
+   Navigate to the directory containing the Terraform file and initialize the environment:
+
+   ```sh
+   cd terraform
+   terraform init
+   ```
+
+   Apply the Terraform configuration to create the resources:
+
+   ```sh
+   terraform apply
+   ```
+
+   This will create:
+   - An AWS S3 bucket to store renewable energy data.
+   - A Google BigQuery dataset to store energy analysis data.
 
 2. Create an account on the ENTSOE website and generate an `ENTSOE_API_KEY`.
 
@@ -55,17 +69,17 @@ RenewableInsight is a Streamlit-powered application for analyzing renewable ener
 
 7. You can also check the Kafka broker with the web interface available at `http://localhost:9021`.
 
-
-
 ## Usage
 
 Run the Streamlit app locally:
 
 ```sh
-streamlit run app.py
+streamlit run ui/ui_generator.py
 ```
 
 Open your web browser at `http://localhost:8501` to access the app.
+
+You can also access the already deployed version of ui: https://renewableinsight-bw.streamlit.app/
 
 ## Data Sources
 
@@ -73,8 +87,13 @@ Open your web browser at `http://localhost:8501` to access the app.
 - [Yahoo Finance](https://finance.yahoo.com) (energy pricing data)
 - [Deutscher Wetterdienst (DWD)](https://www.dwd.de) (weather data)
 
+## Contributing
+
+Feel free to fork the project and submit pull requests.
+
+## License
+
+This project is licensed under the MIT License.
 
 ---
-
-
 
