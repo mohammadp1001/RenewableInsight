@@ -24,7 +24,8 @@ st.set_page_config(
     initial_sidebar_state="expanded")
 
 current_dir = os.path.dirname(__file__)
-st.image(current_dir, use_column_width=False, width=150)
+image_path = os.path.join(current_dir, "logo1.png")
+st.image(image_path, use_column_width=False, width=150)
 st.markdown("<h1 style='color: green; font-size: 28px;'>Renewable Energy Insights for Baden Württemberg</h1>", unsafe_allow_html=True)
 
 
