@@ -170,6 +170,7 @@ with tab1:
         )
         st.plotly_chart(area_fig, use_container_width=True, key='area_fig')
         
+       # Combined Total Load and Average Gas Prices in one plot
         query_load = """
             SELECT * 
             FROM `nimble-courier-438418-n0.renewableinsight_dataset.load`
@@ -184,35 +185,15 @@ with tab1:
         load_results = load_results.dropna(subset=['date'])
 
         load_5_days = load_results.groupby('date').agg({'load': 'sum'}).reset_index()
-
         load_5_days['date'] = load_5_days['date'].dt.strftime('%b %d')
 
-        load_5_days_fig = px.bar(load_5_days, x='date', y='load',
-                                 labels={'date': 'Date', 'load': 'Total Load (MW)'},
-                                 template='plotly_dark')
-        load_5_days_fig.update_layout(
-            title="Total Load for Last 5 Days (Baden Württemberg)",
-            autosize=False,
-            width=400,
-            height=600,
-            margin=dict(
-                l=50,
-                r=50,
-                b=100,
-                t=100,
-                pad=4
-            ),
-        )
-        load_5_days_fig.update_traces(marker_color='blue', width=0.4)
-        st.plotly_chart(load_5_days_fig, use_container_width=False, key='load_5_days_fig')
-
-        query_load = """
+        query_gas = """
             SELECT * FROM `nimble-courier-438418-n0.renewableinsight_dataset.gas` 
         """
         try:
-            gas_data = run_query(query_load)
+            gas_data = run_query(query_gas)
         except Exception as e:
-            st.error("Failed to fetch electricity load data from BigQuery: " + str(e))
+            st.error("Failed to fetch gas data from BigQuery: " + str(e))
             st.stop()
 
         gas_data['date'] = pd.to_datetime(gas_data['date']).dt.strftime('%b %d')
@@ -220,20 +201,53 @@ with tab1:
         gas_data = gas_data.tail(3)
 
         gas_data['average_price'] = gas_data[['open_price', 'close_price']].mean(axis=1)
-        gas_data['price_change_pct'] = gas_data['average_price'].pct_change() * 100
 
-        gas_chart = px.bar(gas_data, x='date', y='average_price',
-                           title='Average Gas Prices',
-                           template='plotly_white',
-                           text=gas_data['price_change_pct'].apply(lambda x: f'{x:.2f}%' if pd.notna(x) else ''),
-                           )
+        
+        fig = go.Figure()
 
-        gas_chart.update_layout(title={'x': 0.5}, yaxis_title='Price ($)',
-                                autosize=False,
-                                width=400,
-                                height=600,)
-        gas_chart.update_traces(marker_color='red', width=0.4, textposition='outside', textfont=dict(size=18))
-        st.plotly_chart(gas_chart, use_container_width=False, key='gas_price_chart')
+        
+        fig.add_trace(go.Bar(
+            x=load_5_days['date'],
+            y=load_5_days['load'],
+            name='Total Load (MW)',
+            marker_color='blue',
+            yaxis='y1'
+        ))
+
+        
+        fig.add_trace(go.Bar(
+            x=gas_data['date'],
+            y=gas_data['average_price'],
+            name='Average Gas Prices ($)',
+            marker_color='red',
+            yaxis='y2'
+        ))
+
+       
+        fig.update_layout(
+            title='Total Load and Average Gas Prices (Baden Württemberg)',
+            xaxis=dict(title='Date'),
+            yaxis=dict(
+                title='Total Load (MW)',
+                titlefont=dict(color='blue'),
+                tickfont=dict(color='blue'),
+                side='left'
+            ),
+            yaxis2=dict(
+                title='Average Gas Prices ($)',
+                titlefont=dict(color='red'),
+                tickfont=dict(color='red'),
+                overlaying='y',
+                side='right'
+            ),
+            barmode='group',
+            width=800,
+            height=600,
+            legend=dict(x=0.1, y=1.1)
+        )
+
+
+        st.plotly_chart(fig, use_container_width=False, key='combined_load_gas_chart')
 
 
 csv = filtered_df.to_csv(index=False)
