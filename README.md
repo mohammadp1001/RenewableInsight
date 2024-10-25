@@ -1,4 +1,3 @@
-Here's an improved version of the README file for your 'RenewableInsight' project to better communicate its purpose, features, and usage:
 
 # RenewableInsight
 
