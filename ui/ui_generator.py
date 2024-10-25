@@ -106,7 +106,70 @@ with tab1:
     col1, col2 = st.columns(2, gap="small")
 
     with col2:
-        query_load = """
+        pass
+    
+
+    with col1:
+        query = """
+            SELECT * FROM 
+            `nimble-courier-438418-n0.renewableinsight_dataset.actual_generation` 
+        """
+        try:
+            df = run_query(query)
+        except Exception as e:
+            st.error("Failed to fetch data from BigQuery: " + str(e))
+            st.stop() 
+        numeric_columns = [
+            "biomass_actual_aggregated",
+            "fossil_brown_coal_lignite_actual_aggregated",
+            "fossil_gas_actual_aggregated",
+            "fossil_hard_coal_actual_aggregated",
+            "fossil_oil_actual_aggregated",
+            "geothermal_actual_aggregated",
+            "hydro_pumped_storage_actual_aggregated",
+            "hydro_run-of-river_and_poundage_actual_aggregated",
+            "solar_actual_consumption",
+            "wind_offshore_actual_aggregated",
+            "wind_onshore_actual_aggregated",
+        ]
+        df[numeric_columns] = df[numeric_columns].apply(pd.to_numeric, errors='coerce')
+
+        df_aggregated = df.groupby(by=['month', 'day'])[numeric_columns].sum().reset_index()
+
+        df_aggregated["date_label"] = pd.to_datetime(df_aggregated[['month', 'day']].assign(year=2024)).dt.strftime('%b %d')
+
+        fig = go.Figure()
+
+        for energy_type in numeric_columns:
+            fig.add_trace(go.Bar(
+                x=df_aggregated["date_label"],
+                y=df_aggregated[energy_type],
+                name=energy_type.replace("_", " ").title()
+            ))
+
+        fig.update_layout(
+            title="Electricity Generation by Types (Baden Württemberg)",
+            xaxis_title="Date",
+            yaxis_title="Generated Electricity (MW)",
+            barmode="stack",
+            legend_title="Energy Type",
+            xaxis_tickangle=-45
+        )     
+        area_fig = fig
+        area_fig.update_layout(
+            autosize=False,
+            width=400,
+            height=600,
+            margin=dict(
+                l=50,
+                r=50,
+                b=100,
+                t=100,
+                pad=4
+            ),
+        )
+        st.plotly_chart(area_fig, use_container_width=True, key='area_fig')
+            query_load = """
             SELECT * 
             FROM `nimble-courier-438418-n0.renewableinsight_dataset.load`
         """
@@ -170,67 +233,6 @@ with tab1:
                                 height=600,)
         gas_chart.update_traces(marker_color='red', width=0.4, textposition='outside', textfont=dict(size=18))
         st.plotly_chart(gas_chart, use_container_width=False, key='gas_price_chart')
-
-    with col1:
-        query = """
-            SELECT * FROM 
-            `nimble-courier-438418-n0.renewableinsight_dataset.actual_generation` 
-        """
-        try:
-            df = run_query(query)
-        except Exception as e:
-            st.error("Failed to fetch data from BigQuery: " + str(e))
-            st.stop() 
-        numeric_columns = [
-            "biomass_actual_aggregated",
-            "fossil_brown_coal_lignite_actual_aggregated",
-            "fossil_gas_actual_aggregated",
-            "fossil_hard_coal_actual_aggregated",
-            "fossil_oil_actual_aggregated",
-            "geothermal_actual_aggregated",
-            "hydro_pumped_storage_actual_aggregated",
-            "hydro_run-of-river_and_poundage_actual_aggregated",
-            "solar_actual_consumption",
-            "wind_offshore_actual_aggregated",
-            "wind_onshore_actual_aggregated",
-        ]
-        df[numeric_columns] = df[numeric_columns].apply(pd.to_numeric, errors='coerce')
-
-        df_aggregated = df.groupby(by=['month', 'day'])[numeric_columns].sum().reset_index()
-
-        df_aggregated["date_label"] = pd.to_datetime(df_aggregated[['month', 'day']].assign(year=2024)).dt.strftime('%b %d')
-
-        fig = go.Figure()
-
-        for energy_type in numeric_columns:
-            fig.add_trace(go.Bar(
-                x=df_aggregated["date_label"],
-                y=df_aggregated[energy_type],
-                name=energy_type.replace("_", " ").title()
-            ))
-
-        fig.update_layout(
-            title="Electricity Generation by Types (Baden Württemberg)",
-            xaxis_title="Date",
-            yaxis_title="Generated Electricity (MW)",
-            barmode="stack",
-            legend_title="Energy Type",
-            xaxis_tickangle=-45
-        )     
-        area_fig = fig
-        area_fig.update_layout(
-            autosize=False,
-            width=400,
-            height=600,
-            margin=dict(
-                l=50,
-                r=50,
-                b=100,
-                t=100,
-                pad=4
-            ),
-        )
-        st.plotly_chart(area_fig, use_container_width=True, key='area_fig')
 
 
 csv = filtered_df.to_csv(index=False)
