@@ -1,6 +1,6 @@
 # RenewableInsight
 
-RenewableInsight is a Streamlit-based web application that provides valuable insights into renewable energy trends, real-time weather conditions, and energy pricing information. The application leverages data from Google BigQuery to deliver accurate, up-to-date information and analytics.
+RenewableInsight is a Streamlit-based web application that provides insights into renewable energy trends, real-time weather conditions, and energy pricing information. The application leverages data from Google BigQuery to deliver accurate, up-to-date information and analytics.
 
 ## Features
 
@@ -8,20 +8,15 @@ RenewableInsight is a Streamlit-based web application that provides valuable ins
 - **Historical Data Visualization**: Users can explore historical data for renewable energy production and consumption, visualized through easy-to-understand charts and graphs.
 - **BigQuery Integration**: The app pulls data from Google BigQuery, ensuring reliable and scalable data management.
 - **User-Friendly Interface**: Built with Streamlit, the app provides an intuitive interface that makes data visualization simple and accessible.
+- **CSV File Download**
 
 ## Getting Started
 
 ### Prerequisites
 
-- Python 3.7 or higher
+- Python 3.11 or higher
 - Google Cloud SDK (for BigQuery integration)
 - Streamlit
-
-To install the necessary Python packages, use the following command:
-
-```sh
-pip install -r requirements.txt
-```
 
 ### Setting Up BigQuery
 
@@ -37,6 +32,8 @@ To connect the application to Google BigQuery, follow these steps:
 
 ### Running the Application
 
+First setp use docker compose file inside the main directory to run the services.
+You can use 
 To run the Streamlit app locally, use the following command:
 
 ```sh
@@ -87,7 +84,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-For any inquiries or questions, please reach out to Mohammad Pakdaman at [mohammad@example.com](mailto:mohammad@example.com).
+For any inquiries or questions, please reach out to Mohammad Pakdaman at [mohammad.p69@gmail.com](mailto:mohammad.p69@gmail.com).
 
 ## Acknowledgements
 
