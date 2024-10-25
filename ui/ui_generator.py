@@ -7,7 +7,7 @@ import streamlit as st
 from google.cloud import bigquery
 from pydantic import ValidationError
 from google.oauth2 import service_account
-
+from plotly.subplots import make_subplots
 
 try:
     credentials = service_account.Credentials.from_service_account_info(
