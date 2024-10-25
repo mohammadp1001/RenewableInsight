@@ -8,9 +8,9 @@ from google.cloud import bigquery
 from pydantic import ValidationError
 from google.oauth2 import service_account
 
-sys.path.append("./RenewableInsight/")
-
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from src.config import Config
+
 try:
     config = Config()
 except ValidationError as e:
