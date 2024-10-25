@@ -67,7 +67,7 @@ with tab2:
 
        
         wind_chart = px.bar(aggregated_df, x='forecast_time', y='wind_speed',
-                            title='Wind Speed (Flughafen Stuttgart)   ',
+                            title='Wind Speed',
                             template='plotly_white',
                             text=aggregated_df['wind_speed'].apply(lambda x: f'{x:.2f}' if pd.notna(x) else ''))
 
@@ -79,7 +79,7 @@ with tab2:
     with col2:
         
         global_irradiance_chart = px.bar(aggregated_df, x='forecast_time', y='global_irradiance',
-                                         title='Global Irradiance (Flughafen Stuttgart)   ',
+                                         title='Global Irradiance',
                                          template='plotly_white',
                                          text=aggregated_df['global_irradiance'].apply(lambda x: f'{x:.2f}' if pd.notna(x) else ''))
 
@@ -91,7 +91,7 @@ with tab2:
     with col3:
         
         sunshine_chart = px.bar(aggregated_df, x='forecast_time', y='sunshine_dur',
-                                title='Sunshine Duration (Flughafen Stuttgart)    ',
+                                title='Sunshine Duration',
                                 template='plotly_white',
                                 text=aggregated_df['sunshine_dur'].apply(lambda x: f'{x:.2f}' if pd.notna(x) else ''))
 
