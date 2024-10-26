@@ -183,7 +183,7 @@ def check_s3_key_exists(
 
 def get_bq_schema_from_df(df: pd.DataFrame, partition_column: str) -> List[bigquery.SchemaField]:
     """
-    Generates BigQuery schema from a pandas DataFrame.
+    Generates a BigQuery schema from a pandas DataFrame, with all fields set to NULLABLE by default.
 
     Args:
         df (pd.DataFrame): The DataFrame containing the data.
@@ -195,7 +195,7 @@ def get_bq_schema_from_df(df: pd.DataFrame, partition_column: str) -> List[bigqu
     schema = []
     for column, dtype in df.dtypes.items():
         if column == partition_column:
-            field_type = 'DATE'  # Ensure partition_column is DATE
+            field_type = 'DATE'  
         elif pd.api.types.is_integer_dtype(dtype):
             field_type = 'INTEGER'
         elif pd.api.types.is_float_dtype(dtype):
@@ -207,8 +207,9 @@ def get_bq_schema_from_df(df: pd.DataFrame, partition_column: str) -> List[bigqu
         else:
             field_type = 'STRING'
         
-        mode = 'REQUIRED' if not df[column].isnull().any() else 'NULLABLE'
-        schema.append(bigquery.SchemaField(column, field_type, mode=mode))
+       
+        schema.append(bigquery.SchemaField(column, field_type, mode='NULLABLE'))
+        
     return schema
 
 def generate_task_name()-> str:

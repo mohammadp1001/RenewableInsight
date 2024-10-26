@@ -49,21 +49,20 @@ def upload_parquet_to_bigquery(
     parquet_file = BytesIO(response['Body'].read())
     df = pd.read_parquet(parquet_file)
     
-    # Ensure the partition_column exists in the DataFrame
+
     if partition_column not in df.columns:
         logger.error(f"Partition column '{partition_column}' does not exist in the data.")
         raise ValueError(f"Partition column '{partition_column}' does not exist in the data.")
     
-    # Convert the partition_column to DATE type if it's not already
+  
     if not pd.api.types.is_datetime64_any_dtype(df[partition_column]):
         logger.error(f"Partition column '{partition_column}' must be of datetime type.")
         raise TypeError(f"Partition column '{partition_column}' must be of datetime type.")
     
-    # Convert to UTC and extract the date component
+    
     df[partition_column] = df[partition_column].dt.tz_convert('UTC').dt.date
     
-    # No need to add year and month columns as they already exist
-    # Ensure 'year' and 'month' columns are present
+    
     if not {'year', 'month'}.issubset(df.columns):
         logger.error("Data must contain 'year' and 'month' columns for clustering.")
         raise ValueError("Data must contain 'year' and 'month' columns for clustering.")
@@ -92,13 +91,13 @@ def upload_parquet_to_bigquery(
         if expiration_ms:
             table.expires = expiration_time_dt
         
-        # Define partitioning based on the provided partition_column
+ 
         table.time_partitioning = bigquery.TimePartitioning(
             type_=bigquery.TimePartitioningType.DAY,
-            field=partition_column,  # Use the provided partition_column
+            field=partition_column,  
         )
         
-        # Define clustering on existing 'year' and 'month' columns
+        
         table.clustering_fields = ["year", "month"]
         
         bigquery_client.create_table(table)
@@ -113,9 +112,9 @@ def upload_parquet_to_bigquery(
         source_format=bigquery.SourceFormat.PARQUET,
         time_partitioning=bigquery.TimePartitioning(
             type_=bigquery.TimePartitioningType.DAY,
-            field=partition_column,  # Ensure the partitioning field is set
+            field=partition_column,  
         ),
-        clustering_fields=["year", "month"]  # Use existing 'year' and 'month' columns
+        clustering_fields=["year", "month"]  
     )
     try:
         job = bigquery_client.load_table_from_dataframe(df, table_ref, job_config=job_config)
@@ -268,7 +267,7 @@ def s3_to_bigquery_flow(prefix: str, bigquery_table_id: str, partition_column: s
             upload_parquet_to_bigquery(
                 s3_key=s3_key, 
                 bigquery_table_id=bigquery_table_id,
-                partition_column=partition_column,  # Pass partition_column
+                partition_column=partition_column, 
                 expiration_time=expiration_time
             )
             
