@@ -2,11 +2,6 @@
 
 RenewableInsight is a Streamlit-powered application for analyzing renewable energy trends. The app helps users visualize real-time and historical renewable energy data, utilizing current weather and energy pricing information.
 
-## Features
-
-- **Real-time Renewable Energy Analysis**: Integrates weather and energy pricing data for up-to-date insights.
-- **Historical Data Visualization**: Interactive charts to track energy trends.
-
 ## Technologies Used
 
 - **Programming Languages**: Python
