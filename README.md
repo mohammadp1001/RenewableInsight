@@ -17,13 +17,11 @@ RenewableInsight is a Streamlit-powered application for analyzing renewable ener
 
 1. Create an S3 bucket and a BigQuery dataset to store the required data. You can easily set up these cloud resources using the provided Terraform file:
 
-   Navigate to the directory containing the Terraform file and initialize the environment:
+   Navigate to the main directory and initialize the environment:
 
    ```sh
-   cd terraform
    terraform init
    ```
-
    Apply the Terraform configuration to create the resources:
 
    ```sh
@@ -31,8 +29,8 @@ RenewableInsight is a Streamlit-powered application for analyzing renewable ener
    ```
 
    This will create:
-   - An AWS S3 bucket to store renewable energy data.
-   - A Google BigQuery dataset to store energy analysis data.
+   - An AWS S3 bucket as data lake.
+   - A Google BigQuery as data warehouse.
 
 2. Create an account on the ENTSOE website and generate an `ENTSOE_API_KEY`.
 
@@ -50,16 +48,11 @@ RenewableInsight is a Streamlit-powered application for analyzing renewable ener
    docker compose up orchestrator -d
    ```
 
-   Logs for the running services can be checked with:
-
-   ```sh
-   docker compose logs -f
-   ```
+   Check if all servies are running:
 
 6. Once the pipeline is running, confirm it with the Prefect web interface available at `http://localhost:4200`.
 
 7. You can also check the Kafka broker with the web interface available at `http://localhost:9021`.
-
 
 8. Run the Streamlit app locally:
 
