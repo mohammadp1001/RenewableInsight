@@ -1,6 +1,7 @@
 # RenewableInsight
 
-RenewableInsight is a Streamlit-powered application for analyzing renewable energy trends. The app helps users visualize real-time and historical renewable energy data, utilizing current weather and energy pricing information.
+RenewableInsight is a Streamlit-powered application for analyzing renewable energy trends. This is a demo app to visualize real-time and historical renewable energy data, utilizing current weather and energy pricing information.
+
 
 ## Technologies Used
 
@@ -10,14 +11,9 @@ RenewableInsight is a Streamlit-powered application for analyzing renewable ener
 - **Data Pipeline**: Apache Kafka, Docker, Prefect
 - **Infrastructure as Code**: Terraform
 
-## Installation
 
-1. Clone the repository:
-   ```sh
-   git clone https://github.com/mohammadp1001/RenewableInsight.git
-   ```
 
-## Setup
+## How to Setup
 
 1. Create an S3 bucket and a BigQuery dataset to store the required data. You can easily set up these cloud resources using the provided Terraform file:
 
@@ -64,17 +60,16 @@ RenewableInsight is a Streamlit-powered application for analyzing renewable ener
 
 7. You can also check the Kafka broker with the web interface available at `http://localhost:9021`.
 
-## Usage
 
-Run the Streamlit app locally:
+8. Run the Streamlit app locally:
 
-```sh
-streamlit run ui/ui_generator.py
-```
+    ```sh
+   streamlit run ui/ui_generator.py
+    ```
 
-Open your web browser at `http://localhost:8501` to access the app.
+9. Open your web browser at `http://localhost:8501` to access the app.
 
-You can also access the already deployed version of ui: https://renewableinsight-bw.streamlit.app/
+10. You can also access the already deployed version of ui: https://renewableinsight-bw.streamlit.app/
 
 ## Data Sources
 
